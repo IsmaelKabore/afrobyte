@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AfroBite — Devenez Partenaire Restaurant. Publiez vos plats en vidéo et recevez des commandes sur AfroBite. Inscription gratuite.">
+    <meta name="keywords" content="AfroBite, restaurant partenaire, livraison Burkina Faso, plats vidéo, commande en ligne">
+    <meta name="author" content="AfroBite">
+    <meta property="og:title" content="AfroBite — Devenez Partenaire Restaurant">
+    <meta property="og:description" content="Publiez vos plats en vidéo et recevez des commandes sur AfroBite. C'est gratuit.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://ismaelkabore.github.io/afrobyte/iphone.png">
+    <title>AfroBite — Devenez Partenaire Restaurant</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/partenaire.css">
+</head>
+<body class="partenaire-page" data-page="partenaire">
+    <header>
+        <nav>
+            <a href="index.html" class="logo">AfroBite</a>
+            <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false"><span></span></button>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="partenaire.html">Partenaire</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="support.html">Support</a></li>
+                <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                <li><a href="terms.html">Terms & Conditions</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+
+        <!-- Section 2 — How it works (single device, steps/controls outside) -->
+        <section class="partenaire-section fade-in" id="how-it-works">
+            <h2>Comment ça marche?</h2>
+            <p class="section-subtitle">Publiez en 5 minutes</p>
+
+            <!-- Step indicator ABOVE phone -->
+            <div class="demo-step-indicator" id="demo-step-indicator">
+                <div class="step-badge" id="step-badge">1</div>
+                <div class="step-text">
+                    <div class="step-title" id="step-title">Sélectionnez « Restaurant »</div>
+                    <div class="step-sub" id="step-sub">Choisissez votre type de compte</div>
+                </div>
+            </div>
+
+            <!-- Device: screen mask + status bar + iframe + frame -->
+            <div class="how-it-works-device">
+                <div class="phone-screen">
+                    <div class="phone-status-bar" aria-hidden="true">
+                        <span class="status-time">9:41</span>
+                        <span class="status-right">
+                            <span class="status-cellular" aria-hidden="true">
+                                <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="5" width="2" height="3" fill="white"/><rect x="4" y="3" width="2" height="5" fill="white"/><rect x="8" y="2" width="2" height="6" fill="white"/><rect x="12" y="0" width="2" height="8" fill="white"/></svg>
+                            </span>
+                            <span class="status-wifi" aria-hidden="true">
+                                <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 1C8 1 10 2 11 3M6 4C7.5 4 9 5 9.5 6M6 7C6.5 7 7 6.5 7 6.5" stroke="white" stroke-width="1"/></svg>
+                            </span>
+                            <span class="status-battery" aria-hidden="true"></span>
+                        </span>
+                    </div>
+                    <iframe
+                        id="demo-iframe"
+                        src="restaurant-demo/?embed=1&amp;minimal=1"
+                        title="AfroBite - Comment publier une vidéo"
+                        loading="lazy"
+                    ></iframe>
+                </div>
+                <img src="iphone.png" alt="" class="phone-frame-img" aria-hidden="true">
+            </div>
+
+            <!-- Controls BELOW phone -->
+            <div class="demo-controls">
+                <div class="demo-btn-row">
+                    <button type="button" class="demo-btn demo-prev" id="demo-prev" aria-label="Étape précédente">←</button>
+                    <button type="button" class="demo-btn demo-play" id="demo-play" aria-label="Pause / Lecture">⏸</button>
+                    <button type="button" class="demo-btn demo-next" id="demo-next" aria-label="Étape suivante">→</button>
+                </div>
+                <div class="demo-dots" id="demo-dots"></div>
+            </div>
+        </section>
+
+        <!-- Section 3 — 3 selling points -->
+        <section class="partenaire-section fade-in" id="selling-points">
+            <h2>Pourquoi AfroBite?</h2>
+            <div class="selling-points">
+                <div class="selling-point">
+                    <div class="selling-point-icon">📹</div>
+                    <h3>Filmez vos plats</h3>
+                    <p>Montrez vos plats en vidéo. Les clients achètent ce qu'ils voient.</p>
+                </div>
+                <div class="selling-point">
+                    <div class="selling-point-icon">📦</div>
+                    <h3>Recevez des commandes</h3>
+                    <p>Les clients commandent directement depuis la vidéo. Livraison ou retrait.</p>
+                </div>
+                <div class="selling-point">
+                    <div class="selling-point-icon">💰</div>
+                    <h3>C'est gratuit</h3>
+                    <p>Aucun frais d'inscription. Commencez aujourd'hui.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Liens</h3>
+                <ul>
+                    <li><a href="partenaire.html">Partenaire</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="support.html">Support</a></li>
+                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Email: <a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a></p>
+                <p>Basé au Burkina Faso</p>
+            </div>
+            <div class="footer-section">
+                <h3>AfroBite</h3>
+                <p>Connectez vos clients, votre restaurant et vos plats.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 AfroBite. Tous droits réservés.</p>
+            <p>Contact: <a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Demo steps (synced with restaurant-demo)
+        const DEMO_STEPS = [
+            { label: "Sélectionnez « Restaurant »", sub: "Choisissez votre type de compte" },
+            { label: "Appuyez sur S'inscrire", sub: "Validez la création du compte" },
+            { label: "Créez votre restaurant", sub: "Remplissez les infos du resto" },
+            { label: "Tapez « Mes plats »", sub: "Ouvrez l'onglet en bas" },
+            { label: "Appuyez sur + Ajouter", sub: "Le bouton en bas à droite" },
+            { label: "Remplissez le plat", sub: "Ajoutez les détails et validez" },
+            { label: "Tapez « Ajouter »", sub: "L'onglet vidéo en bas" },
+            { label: "Enregistrez une vidéo", sub: "Filmez ou choisissez une vidéo" },
+            { label: "Publiez la vidéo!", sub: "Description, plat, puis Publier" },
+            { label: "Votre vidéo est live! 🎉", sub: "Visible par tous les clients" }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const iframe = document.getElementById('demo-iframe');
+            const stepBadge = document.getElementById('step-badge');
+            const stepTitle = document.getElementById('step-title');
+            const stepSub = document.getElementById('step-sub');
+            const prevBtn = document.getElementById('demo-prev');
+            const playBtn = document.getElementById('demo-play');
+            const nextBtn = document.getElementById('demo-next');
+            const dotsContainer = document.getElementById('demo-dots');
+
+            let currentIndex = 0;
+            let playing = true;
+
+            function sendGo(index) {
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({ type: 'demoGo', index: Math.max(0, Math.min(index, DEMO_STEPS.length - 1)) }, '*');
+                }
+            }
+
+            function sendPlayPause(value) {
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({ type: 'demoPlayPause', playing: value }, '*');
+                }
+            }
+
+            function updateUI(index, isPlaying) {
+                currentIndex = index;
+                playing = isPlaying;
+                const s = DEMO_STEPS[index] || DEMO_STEPS[0];
+                if (stepBadge) stepBadge.textContent = index + 1;
+                if (stepTitle) stepTitle.textContent = s.label;
+                if (stepSub) stepSub.textContent = s.sub;
+                if (playBtn) playBtn.textContent = playing ? '⏸' : '▶';
+                dotsContainer.querySelectorAll('.demo-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                    dot.classList.toggle('passed', i < index);
+                });
+            }
+
+            window.addEventListener('message', (e) => {
+                const d = e.data;
+                if (d && d.type === 'demoSlideChange') {
+                    updateUI(d.index ?? 0, d.playing ?? true);
+                }
+            });
+
+            prevBtn?.addEventListener('click', () => sendGo(currentIndex - 1));
+            nextBtn?.addEventListener('click', () => sendGo(currentIndex + 1));
+            playBtn?.addEventListener('click', () => {
+                playing = !playing;
+                sendPlayPause(playing);
+                updateUI(currentIndex, playing);
+            });
+
+            DEMO_STEPS.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'demo-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', 'Étape ' + (i + 1));
+                dot.addEventListener('click', () => sendGo(i));
+                dotsContainer?.appendChild(dot);
+            });
+        });
+
+        // IntersectionObserver for fade-in on scroll
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, observerOptions);
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        document.querySelector('.nav-toggle')?.addEventListener('click', function() {
+            const open = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !open);
+            document.querySelector('.nav-links')?.classList.toggle('open', !open);
+        });
+    </script>
+</body>
+</html>

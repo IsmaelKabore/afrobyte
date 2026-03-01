@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=partenaire.html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfroBite — Devenez Partenaire Restaurant</title>
+    <link rel="canonical" href="partenaire.html">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="partenaire">
+    <header>
+        <nav>
+            <a href="index.html" class="logo">AfroBite</a>
+            <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false"><span></span></button>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="partenaire.html">Partenaire</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="support.html">Support</a></li>
+                <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                <li><a href="terms.html">Terms & Conditions</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main style="padding:2rem;text-align:center">
+        <p>Redirection vers <a href="partenaire.html">Partenaire</a>...</p>
+    </main>
+    <script>window.location.replace('partenaire.html');</script>
+    <script>
+        document.querySelector('.nav-toggle')?.addEventListener('click', function() {
+            const open = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !open);
+            document.querySelector('.nav-links')?.classList.toggle('open', !open);
+        });
+    </script>
+</body>
+</html>

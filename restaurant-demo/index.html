@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AfroBite Demo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;color:#fff}
+body.has-nav-header #root{height:calc(100% - 56px)}
+body:not(.has-nav-header) #root{height:100%}
+#root{width:100%;overflow:hidden;display:block}
+.demo-site-header{display:none;background:rgba(10,10,10,.95);border-bottom:1px solid rgba(255,255,255,.08);padding:.75rem 1.5rem;align-items:center;gap:1.5rem;flex-wrap:wrap}
+body.has-nav-header .demo-site-header{display:flex}
+.demo-site-header a{color:rgba(255,255,255,.7);text-decoration:none;font-weight:500;font-size:.95rem}
+.demo-site-header a:hover{color:#F97316}
+.demo-site-header .logo{color:#F97316;font-weight:700;font-size:1.25rem}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+@keyframes hlPulse{0%,100%{box-shadow:0 0 8px rgba(249,115,22,.3),inset 0 0 6px rgba(249,115,22,.03)}50%{box-shadow:0 0 16px rgba(249,115,22,.45),inset 0 0 10px rgba(249,115,22,.05)}}
+@keyframes progressFill{from{width:0}to{width:100%}}
+@keyframes screenSlide{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes blink{50%{opacity:0}}
+</style>
+</head>
+<body>
+<nav class="demo-site-header" id="demo-site-header" aria-hidden="true">
+  <a href="../index.html" class="logo">AfroBite</a>
+  <a href="../partenaire.html">Partenaire</a>
+  <a href="../about.html">About</a>
+  <a href="../support.html">Support</a>
+  <a href="../privacy-policy.html">Privacy Policy</a>
+  <a href="../terms.html">Terms &amp; Conditions</a>
+</nav>
+<div id="root"></div>
+<script>
+(function(){
+  var p=new URLSearchParams(window.location.search);
+  if(p.get("embed")!=="1"){document.body.classList.add("has-nav-header");document.getElementById("demo-site-header").setAttribute("aria-hidden","false")}
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel">
+const{useState,useEffect,useCallback}=React;
+const O="#F97316",OD="#EA580C",DO="#FF5722";
+const params=new URLSearchParams(window.location.search);
+const isEmbed=params.get("embed")==="1";
+const isMinimal=params.get("minimal")==="1";
+
+const steps=[
+  {label:"Sélectionnez « Restaurant »",sub:"Choisissez votre type de compte",dur:5000},
+  {label:"Appuyez sur S'inscrire",sub:"Validez la création du compte",dur:4500},
+  {label:"Créez votre restaurant",sub:"Remplissez les infos du resto",dur:5500},
+  {label:"Tapez « Mes plats »",sub:"Ouvrez l'onglet en bas",dur:3800},
+  {label:"Appuyez sur + Ajouter",sub:"Le bouton en bas à droite",dur:3800},
+  {label:"Remplissez le plat",sub:"Ajoutez les détails et validez",dur:5500},
+  {label:"Tapez « Ajouter »",sub:"L'onglet vidéo en bas",dur:3800},
+  {label:"Enregistrez une vidéo",sub:"Filmez ou choisissez une vidéo",dur:4000},
+  {label:"Publiez la vidéo!",sub:"Description, plat, puis Publier",dur:5500},
+  {label:"Votre vidéo est live! 🎉",sub:"Visible par tous les clients",dur:5000},
+];
+
+function useTyping(text,delay=0,speed=45){
+  const[displayed,setDisplayed]=useState("");
+  useEffect(()=>{
+    setDisplayed("");let i=0;let timeout;
+    const st=setTimeout(()=>{
+      const type=()=>{if(i<=text.length){setDisplayed(text.slice(0,i));i++;timeout=setTimeout(type,speed+Math.random()*30)}};
+      type();
+    },delay);
+    return()=>{clearTimeout(st);clearTimeout(timeout)};
+  },[text,delay,speed]);
+  return displayed;
+}
+
+function TypedField({label,value,icon,delay=0,speed=40}){
+  const typed=useTyping(value,delay,speed);
+  const[show,setShow]=useState(false);
+  useEffect(()=>{const t=setTimeout(()=>setShow(true),Math.max(0,delay-200));return()=>clearTimeout(t)},[delay]);
+  return(
+    <div style={{marginBottom:6,opacity:show?1:0,transition:"opacity 0.3s ease"}}>
+      <div style={{color:"rgba(255,255,255,0.4)",fontSize:9,marginBottom:2,fontWeight:500}}>{label}</div>
+      <div style={{background:"rgba(255,255,255,0.06)",borderRadius:6,padding:"5px 8px",display:"flex",alignItems:"center",gap:4,minHeight:22}}>
+        {icon&&<span style={{fontSize:10,opacity:0.4}}>{icon}</span>}
+        <span style={{color:typed?"rgba(255,255,255,0.75)":"rgba(255,255,255,0.15)",fontSize:10}}>
+          {typed}
+          {typed.length<value.length&&<span style={{opacity:0.5,animation:"blink 0.8s step-end infinite"}}>|</span>}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function HiBox({style:s}){
+  return <div style={{position:"absolute",borderRadius:10,border:`2.5px solid ${O}`,boxShadow:`0 0 10px rgba(249,115,22,0.35),inset 0 0 6px rgba(249,115,22,0.04)`,animation:"hlPulse 1.5s ease-in-out infinite",zIndex:90,pointerEvents:"none",...s}}/>;
+}
+
+function TapLabel({label,style:s}){
+  return <div style={{position:"absolute",zIndex:100,pointerEvents:"none",background:O,borderRadius:6,padding:"3px 10px",boxShadow:"0 2px 8px rgba(249,115,22,0.35)",whiteSpace:"nowrap",...s}}><span style={{color:"#fff",fontSize:9,fontWeight:700}}>{label}</span></div>;
+}
+
+function TabBar({tabs,activeIndex,highlightIndex,highlightLabel}){
+  return(
+    <div style={{position:"absolute",left:0,right:0,bottom:0,height:48,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"flex-start",justifyContent:"space-around",paddingTop:6,borderTop:"1px solid rgba(255,255,255,0.06)",zIndex:30}}>
+      {tabs.map((tab,i)=>(
+        <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,position:"relative",minWidth:44}}>
+          <span style={{fontSize:15,opacity:i===activeIndex?1:0.3}}>{tab.icon}</span>
+          <span style={{fontSize:8,fontWeight:i===activeIndex?700:400,color:i===activeIndex?O:"rgba(255,255,255,0.35)"}}>{tab.label}</span>
+          {i===highlightIndex&&<>
+            <HiBox style={{top:-4,left:-8,width:60,height:44,borderRadius:10}}/>
+            <TapLabel label={highlightLabel||`Tapez « ${tab.label} »`} style={{bottom:50,left:"50%",transform:"translateX(-50%)"}}/>
+          </>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const RT=[
+  {icon:"🏠",label:"Accueil"},
+  {icon:"➕",label:"Ajouter"},
+  {icon:"🍽",label:"Mes plats"},
+  {icon:"📊",label:"Activité"},
+  {icon:"👤",label:"Profil"},
+];
+
+function S1(){return(
+  <div style={{flex:1,padding:14}}>
+    <div style={{textAlign:"center",marginBottom:14,marginTop:4}}>
+      <div style={{color:O,fontSize:20,fontWeight:800,letterSpacing:-0.5}}>AFROBITE</div>
+      <div style={{color:"rgba(255,255,255,0.35)",fontSize:10,marginTop:3}}>Créer un compte</div>
+    </div>
+    <div style={{display:"flex",gap:10,marginBottom:14}}>
+      <div style={{flex:1,padding:"10px 6px",borderRadius:10,border:"1px solid rgba(255,255,255,0.06)",textAlign:"center",opacity:0.3}}>
+        <span style={{fontSize:20}}>👤</span>
+        <div style={{color:"rgba(255,255,255,0.3)",fontSize:9,marginTop:3}}>Client</div>
+      </div>
+      <div style={{flex:1,padding:"10px 6px",borderRadius:10,border:`2px solid ${O}`,background:"rgba(249,115,22,0.08)",textAlign:"center",position:"relative"}}>
+        <span style={{fontSize:20}}>🍽</span>
+        <div style={{color:O,fontSize:9,fontWeight:700,marginTop:3}}>Restaurant</div>
+        <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:12}}/>
+        <TapLabel label="Sélectionnez ici" style={{top:-24,left:"50%",transform:"translateX(-50%)"}}/>
+      </div>
+    </div>
+    <TypedField label="Nom d'utilisateur" value="chez_amidou" icon="👤" delay={800} speed={50}/>
+    <TypedField label="Email" value="amidou@mail.bf" icon="✉️" delay={1600} speed={45}/>
+    <TypedField label="Mot de passe" value="••••••••" icon="🔒" delay={2400} speed={60}/>
+    <div style={{marginTop:6,background:DO,borderRadius:8,padding:"9px",textAlign:"center",opacity:0,animation:"fadeIn 0.4s ease 3200ms forwards"}}>
+      <span style={{color:"#fff",fontSize:11,fontWeight:700}}>S'inscrire</span>
+    </div>
+  </div>
+)}
+
+function S2(){return(
+  <div style={{flex:1,padding:14}}>
+    <div style={{textAlign:"center",marginBottom:14,marginTop:4}}>
+      <div style={{color:O,fontSize:20,fontWeight:800}}>AFROBITE</div>
+    </div>
+    <div style={{display:"flex",gap:10,marginBottom:14}}>
+      <div style={{flex:1,padding:"10px 6px",borderRadius:10,border:"1px solid rgba(255,255,255,0.06)",textAlign:"center",opacity:0.3}}>
+        <span style={{fontSize:20}}>👤</span>
+        <div style={{color:"rgba(255,255,255,0.3)",fontSize:9,marginTop:3}}>Client</div>
+      </div>
+      <div style={{flex:1,padding:"10px 6px",borderRadius:10,border:`2px solid ${O}`,background:"rgba(249,115,22,0.1)",textAlign:"center"}}>
+        <span style={{fontSize:20}}>🍽</span>
+        <div style={{color:O,fontSize:9,fontWeight:700,marginTop:3}}>Restaurant ✓</div>
+      </div>
+    </div>
+    <TypedField label="Nom d'utilisateur" value="chez_amidou" icon="👤" delay={0} speed={0}/>
+    <TypedField label="Email" value="amidou@mail.bf" icon="✉️" delay={0} speed={0}/>
+    <TypedField label="Mot de passe" value="••••••••" icon="🔒" delay={0} speed={0}/>
+    <div style={{marginTop:6,background:DO,borderRadius:8,padding:"10px",textAlign:"center",position:"relative"}}>
+      <span style={{color:"#fff",fontSize:12,fontWeight:700}}>S'inscrire →</span>
+      <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
+      <TapLabel label="Appuyez ici" style={{top:-24,left:"50%",transform:"translateX(-50%)"}}/>
+    </div>
+  </div>
+)}
+
+function S3(){return(
+  <div style={{flex:1}}>
+    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",gap:6}}>
+      <span style={{color:"rgba(255,255,255,0.3)",fontSize:12}}>←</span>
+      <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Créer mon restaurant</span>
+    </div>
+    <div style={{padding:12}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,animation:"fadeIn 0.4s ease"}}>
+        <div style={{width:40,height:40,borderRadius:20,background:"rgba(249,115,22,0.1)",display:"flex",alignItems:"center",justifyContent:"center",border:`1.5px dashed ${O}`}}>
+          <span style={{fontSize:16}}>📷</span>
+        </div>
+        <div>
+          <div style={{color:"#fff",fontSize:10,fontWeight:600}}>Logo (optionnel)</div>
+          <div style={{color:"rgba(255,255,255,0.25)",fontSize:8}}>Appuyez pour ajouter</div>
+        </div>
+      </div>
+      <TypedField label="Nom du restaurant *" value="Chez Amidou" delay={200} speed={55}/>
+      <TypedField label="Pays *" value="Burkina Faso" delay={800} speed={40}/>
+      <TypedField label="Ville *" value="Ouagadougou" delay={1400} speed={45}/>
+      <TypedField label="Téléphone *" value="+226 70 12 34 56" delay={2000} speed={35}/>
+      <div style={{marginTop:4,opacity:0,animation:"fadeIn 0.4s ease 2600ms forwards"}}>
+        <div style={{color:"rgba(255,255,255,0.4)",fontSize:9,marginBottom:3}}>Catégories *</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+          {["Braisé","Africain","Grillades"].map((c,i)=>
+            <span key={c} style={{background:"rgba(249,115,22,0.15)",color:O,fontSize:9,padding:"3px 9px",borderRadius:5,fontWeight:600,opacity:0,animation:`fadeIn 0.3s ease ${2800+i*150}ms forwards`}}>{c}</span>
+          )}
+        </div>
+      </div>
+      <div style={{marginTop:8,background:DO,borderRadius:8,padding:"9px",textAlign:"center",position:"relative",opacity:0,animation:"fadeIn 0.4s ease 3400ms forwards"}}>
+        <span style={{color:"#fff",fontSize:11,fontWeight:700}}>Créer mon restaurant →</span>
+        <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
+        <TapLabel label="Créez votre resto" style={{top:-24,left:"50%",transform:"translateX(-50%)"}}/>
+      </div>
+    </div>
+  </div>
+)}
+
+function S4(){return(
+  <div style={{flex:1,position:"relative",paddingBottom:48}}>
+    <div style={{position:"absolute",top:0,left:0,right:0,bottom:48,background:"linear-gradient(135deg,#1a0a00,#2d1200,#0d0400)"}}/>
+    <div style={{position:"absolute",top:0,left:0,right:0,bottom:48,display:"flex",alignItems:"center",justifyContent:"center",opacity:0.06,fontSize:50}}>🍛</div>
+    <div style={{position:"absolute",top:4,left:0,right:0,display:"flex",justifyContent:"center",zIndex:5}}>
+      <div style={{background:O,borderRadius:9999,padding:"3px 12px",display:"flex",alignItems:"center",gap:3}}>
+        <span style={{fontSize:8}}>🔥</span>
+        <span style={{color:"#fff",fontSize:8,fontWeight:700}}>POPULAR</span>
+      </div>
+    </div>
+    <TabBar tabs={RT} activeIndex={0} highlightIndex={2} highlightLabel="Tapez « Mes plats »"/>
+  </div>
+)}
+
+function S5(){return(
+  <div style={{flex:1,position:"relative",paddingBottom:48}}>
+    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+      <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Mes plats</span>
+    </div>
+    <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:16,marginTop:24}}>
+      <span style={{fontSize:42,opacity:0.12}}>🍽</span>
+      <div style={{color:"rgba(255,255,255,0.35)",fontSize:11,textAlign:"center",marginTop:8}}>Aucun plat pour le moment</div>
+      <div style={{color:"rgba(255,255,255,0.2)",fontSize:9,textAlign:"center",marginTop:3}}>Ajoutez votre premier plat</div>
+    </div>
+    <div style={{position:"absolute",bottom:62,right:14,zIndex:10}}>
+      <div style={{display:"flex",alignItems:"center",gap:6,background:`linear-gradient(135deg,${DO},${OD})`,borderRadius:14,padding:"10px 18px",boxShadow:"0 4px 16px rgba(249,115,22,0.35)",opacity:0,animation:"bounceIn 0.5s ease 300ms forwards",position:"relative"}}>
+        <span style={{color:"#fff",fontSize:16,fontWeight:300}}>+</span>
+        <span style={{color:"#fff",fontSize:11,fontWeight:700}}>Ajouter un plat</span>
+        <HiBox style={{top:-4,left:-4,right:-4,bottom:-4,borderRadius:16}}/>
+        <TapLabel label="Ajoutez un plat" style={{top:-24,left:"50%",transform:"translateX(-50%)"}}/>
+      </div>
+    </div>
+    <TabBar tabs={RT} activeIndex={2}/>
+  </div>
+)}
+
+function S6(){return(
+  <div style={{flex:1}}>
+    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",gap:6}}>
+      <span style={{color:"rgba(255,255,255,0.3)",fontSize:12}}>←</span>
+      <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Ajouter un plat</span>
+    </div>
+    <div style={{padding:11}}>
+      <div style={{width:"100%",height:46,borderRadius:8,background:"rgba(255,255,255,0.03)",border:"1.5px dashed rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:8,animation:"fadeIn 0.4s ease"}}>
+        <span style={{fontSize:16}}>📸</span>
+        <span style={{color:"rgba(255,255,255,0.2)",fontSize:8,marginLeft:4}}>Photo du plat *</span>
+      </div>
+      <TypedField label="Nom du plat *" value="Poulet Braisé Spécial" delay={300} speed={45}/>
+      <TypedField label="Prix (FCFA) *" value="3 500" icon="💰" delay={1200} speed={55}/>
+      <TypedField label="Description *" value="Poulet braisé avec attieke et alloco" delay={1700} speed={35}/>
+      <TypedField label="Catégorie *" value="Plat principal" delay={2800} speed={50}/>
+      <TypedField label="Temps de préparation" value="30 min" icon="⏱" delay={3400} speed={50}/>
+      <div style={{marginTop:5,background:DO,borderRadius:8,padding:"9px",textAlign:"center",position:"relative",opacity:0,animation:"fadeIn 0.4s ease 4200ms forwards"}}>
+        <span style={{color:"#fff",fontSize:11,fontWeight:700}}>Ajouter le plat ✓</span>
+        <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
+        <TapLabel label="Validez le plat" style={{top:-24,left:"50%",transform:"translateX(-50%)"}}/>
+      </div>
+    </div>
+  </div>
+)}
+
+function S7(){return(
+  <div style={{flex:1,position:"relative",paddingBottom:48}}>
+    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+      <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Mes plats</span>
+    </div>
+    <div style={{padding:11}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",opacity:0,animation:"slideIn 0.4s ease 200ms forwards"}}>
+        <div style={{width:36,height:36,borderRadius:8,background:"linear-gradient(135deg,rgba(249,115,22,0.15),rgba(234,88,12,0.08))",display:"flex",alignItems:"center",justifyContent:"center",fontSize:17}}>🍗</div>
+        <div style={{flex:1}}>
+          <div style={{color:"#fff",fontSize:11,fontWeight:600}}>Poulet Braisé Spécial</div>
+          <div style={{color:O,fontSize:10,fontWeight:700}}>3 500 FCFA</div>
+        </div>
+        <span style={{fontSize:8,color:"#4CAF50",fontWeight:600,background:"rgba(76,175,80,0.1)",padding:"2px 6px",borderRadius:4}}>✓ Dispo</span>
+      </div>
+      <div style={{background:"rgba(76,175,80,0.08)",border:"1px solid rgba(76,175,80,0.2)",borderRadius:8,padding:"8px",marginTop:10,textAlign:"center",opacity:0,animation:"fadeIn 0.4s ease 500ms forwards"}}>
+        <span style={{color:"#4CAF50",fontSize:10,fontWeight:600}}>✓ Plat ajouté avec succès!</span>
+      </div>
+    </div>
+    <TabBar tabs={RT} activeIndex={2} highlightIndex={1} highlightLabel="Tapez « Ajouter »"/>
+  </div>
+)}
+
+function S8(){return(
+  <div style={{flex:1,position:"relative",paddingBottom:48}}>
+    <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div style={{textAlign:"center",marginBottom:20,animation:"fadeIn 0.4s ease"}}>
+        <span style={{fontSize:42}}>🎬</span>
+        <div style={{color:"#fff",fontSize:15,fontWeight:700,marginTop:6}}>Ajouter une vidéo</div>
+        <div style={{color:"rgba(255,255,255,0.35)",fontSize:10,marginTop:3}}>Filmez votre plat en action</div>
+      </div>
+      <div style={{width:"100%",display:"flex",flexDirection:"column",gap:10}}>
+        <div style={{background:`linear-gradient(135deg,${DO},${OD})`,borderRadius:12,padding:"13px 16px",display:"flex",alignItems:"center",gap:8,opacity:0,animation:"slideIn 0.4s ease 300ms forwards",boxShadow:"0 4px 14px rgba(249,115,22,0.3)",position:"relative"}}>
+          <span style={{fontSize:17}}>📹</span>
+          <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Enregistrer une vidéo</span>
+          <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:14}}/>
+          <TapLabel label="Filmez votre plat" style={{top:-24,right:0}}/>
+        </div>
+        <div style={{background:"transparent",border:`1.5px solid ${O}`,borderRadius:12,padding:"13px 16px",display:"flex",alignItems:"center",gap:8,opacity:0,animation:"slideIn 0.4s ease 500ms forwards"}}>
+          <span style={{fontSize:17}}>🖼</span>
+          <span style={{color:O,fontSize:12,fontWeight:500}}>Choisir depuis la galerie</span>
+        </div>
+      </div>
+    </div>
+    <TabBar tabs={RT} activeIndex={1}/>
+  </div>
+)}
+
+function S9(){return(
+  <div style={{flex:1}}>
+    <div style={{padding:"8px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+      <div style={{display:"flex",alignItems:"center",gap:6}}>
+        <span style={{color:"rgba(255,255,255,0.3)",fontSize:12}}>←</span>
+        <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Aperçu</span>
+      </div>
+      <div style={{position:"relative"}}>
+        <div style={{background:O,borderRadius:6,padding:"5px 14px"}}>
+          <span style={{color:"#fff",fontSize:11,fontWeight:700}}>Publier</span>
+        </div>
+        <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:8}}/>
+        <TapLabel label="Publiez! 🚀" style={{bottom:-24,right:0}}/>
+      </div>
+    </div>
+    <div style={{height:105,background:"linear-gradient(135deg,#1a0a00,#2d1200,#0d0400)",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
+      <span style={{fontSize:32,opacity:0.15}}>🍗</span>
+      <div style={{position:"absolute",bottom:4,background:"rgba(0,0,0,0.6)",borderRadius:4,padding:"2px 8px"}}>
+        <span style={{color:"rgba(255,255,255,0.4)",fontSize:8}}>▶ 0:15</span>
+      </div>
+    </div>
+    <div style={{padding:10}}>
+      <TypedField label="Description *" value="Le meilleur poulet braisé de Ouaga avec sa sauce piment!" delay={200} speed={30}/>
+      <div style={{background:"rgba(249,115,22,0.06)",border:`1.5px solid rgba(249,115,22,0.2)`,borderRadius:8,padding:"8px 10px",marginBottom:6,display:"flex",alignItems:"center",gap:6,opacity:0,animation:"fadeIn 0.4s ease 2200ms forwards"}}>
+        <span style={{fontSize:13}}>🍗</span>
+        <div style={{flex:1}}>
+          <div style={{color:"#fff",fontSize:10,fontWeight:600}}>Poulet Braisé Spécial</div>
+          <div style={{color:O,fontSize:9,fontWeight:700}}>3 500 FCFA</div>
+        </div>
+        <span style={{color:O,fontSize:12,fontWeight:700}}>✓</span>
+      </div>
+      <TypedField label="Catégorie" value="Braisé" delay={2800} speed={60}/>
+      <TypedField label="Tags" value="#poulet #braise #ouaga" delay={3200} speed={40}/>
+    </div>
+  </div>
+)}
+
+function S10(){
+  const[st,setSt]=useState(true);
+  useEffect(()=>{const t=setTimeout(()=>setSt(false),3000);return()=>clearTimeout(t)},[]);
+  return(
+  <div style={{flex:1,position:"relative",paddingBottom:48}}>
+    <div style={{position:"absolute",top:0,left:0,right:0,bottom:48,background:"linear-gradient(135deg,#1a0a00 0%,#2d1200 30%,#0d0400 100%)"}}/>
+    <div style={{position:"absolute",top:0,left:0,right:0,bottom:48,display:"flex",alignItems:"center",justifyContent:"center",opacity:0.08,fontSize:60}}>🍗</div>
+    <div style={{position:"absolute",left:0,right:0,bottom:48,height:"55%",background:"linear-gradient(to bottom,transparent,rgba(0,0,0,0.65))",pointerEvents:"none"}}/>
+    {st&&<div style={{position:"absolute",inset:0,bottom:48,display:"flex",alignItems:"center",justifyContent:"center",zIndex:60,background:"rgba(0,0,0,0.55)"}}>
+      <div style={{background:"rgba(0,0,0,0.85)",borderRadius:16,padding:"22px 28px",textAlign:"center",border:"1.5px solid rgba(76,175,80,0.25)",animation:"fadeIn 0.5s ease both"}}>
+        <span style={{fontSize:44}}>🎉</span>
+        <div style={{color:"#4CAF50",fontSize:16,fontWeight:800,marginTop:8}}>Bravo!</div>
+        <div style={{color:"#fff",fontSize:12,fontWeight:600,marginTop:4}}>Vidéo publiée avec succès</div>
+        <div style={{color:"rgba(255,255,255,0.4)",fontSize:10,marginTop:3}}>Les clients peuvent la voir</div>
+      </div>
+    </div>}
+    <div style={{position:"absolute",top:4,left:0,right:0,display:"flex",justifyContent:"center",zIndex:5}}>
+      <div style={{background:O,borderRadius:9999,padding:"3px 12px",display:"flex",alignItems:"center",gap:3}}>
+        <span style={{fontSize:8}}>🔥</span><span style={{color:"#fff",fontSize:8,fontWeight:700}}>POPULAR</span>
+      </div>
+    </div>
+    <div style={{position:"absolute",top:3,right:10,display:"flex",gap:4,zIndex:5}}>
+      <span style={{fontSize:14,opacity:0.7}}>🛒</span><span style={{fontSize:14,opacity:0.7}}>🔍</span>
+    </div>
+    <div style={{position:"absolute",right:10,bottom:130,display:"flex",flexDirection:"column",alignItems:"center",gap:8,zIndex:5}}>
+      {[{i:"❤️",l:"1"},{i:"💬",l:"0"},{i:"↗️",l:"0"},{i:"🔖"},{i:"🔊"}].map((x,idx)=>
+        <div key={idx} style={{textAlign:"center",opacity:0,animation:`fadeIn 0.3s ease ${800+idx*120}ms forwards`}}>
+          <span style={{fontSize:16}}>{x.i}</span>
+          {x.l&&<div style={{color:"rgba(255,255,255,0.65)",fontSize:8}}>{x.l}</div>}
+        </div>
+      )}
+    </div>
+    <div style={{position:"absolute",left:12,right:50,bottom:92,zIndex:5,opacity:0,animation:"slideIn 0.5s ease 800ms forwards"}}>
+      <div style={{color:"#fff",fontSize:13,fontWeight:700,textShadow:"0 1px 5px rgba(0,0,0,0.5)"}}>Poulet Braisé Spécial</div>
+      <div style={{color:"rgba(255,255,255,0.8)",fontSize:10,marginTop:2}}>Le meilleur poulet braisé de Ouaga!</div>
+      <div style={{display:"flex",gap:5,marginTop:5}}>
+        <div style={{background:"rgba(0,0,0,0.35)",borderRadius:8,padding:"2px 8px",display:"flex",alignItems:"center",gap:3}}>
+          <span style={{fontSize:8}}>🍽</span><span style={{color:"#fff",fontSize:9,fontWeight:500}}>Chez Amidou</span>
+        </div>
+        <div style={{background:"rgba(56,142,60,0.9)",borderRadius:6,padding:"2px 6px"}}>
+          <span style={{color:"#fff",fontSize:8,fontWeight:600}}>Livraison</span>
+        </div>
+      </div>
+    </div>
+    <div style={{position:"absolute",left:12,right:12,bottom:56,display:"flex",gap:6,zIndex:5,opacity:0,animation:"slideIn 0.5s ease 1000ms forwards"}}>
+      <div style={{height:30,padding:"0 10px",background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,display:"flex",alignItems:"center",gap:4}}>
+        <span style={{fontSize:10}}>📋</span><span style={{color:"#fff",fontSize:9,fontWeight:500}}>Menu</span>
+      </div>
+      <div style={{height:30,flex:1,background:`linear-gradient(to right,${O},${OD})`,borderRadius:8,display:"flex",overflow:"hidden"}}>
+        <div style={{flex:7,display:"flex",alignItems:"center",gap:4,padding:"0 8px"}}>
+          <span style={{fontSize:10}}>🛒</span><span style={{color:"#fff",fontSize:9,fontWeight:600}}>Ajouter</span>
+        </div>
+        <div style={{flex:3,background:"#DC4A0C",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <span style={{color:"#fff",fontSize:8,fontWeight:700}}>3 500 F</span>
+        </div>
+      </div>
+    </div>
+    <TabBar tabs={RT} activeIndex={0}/>
+  </div>
+)}
+
+const allS=[S1,S2,S3,S4,S5,S6,S7,S8,S9,S10];
+
+function App(){
+  const[cur,setCur]=useState(0);
+  const[playing,setPlaying]=useState(true);
+  const[sKey,setSKey]=useState(0);
+
+  useEffect(()=>{
+    if(!playing)return;
+    const t=setTimeout(()=>{
+      setCur(p=>{const n=(p+1)%steps.length;setSKey(k=>k+1);return n});
+    },steps[cur].dur);
+    return()=>clearTimeout(t);
+  },[cur,playing]);
+
+  const go=useCallback(i=>{setCur(i);setSKey(k=>k+1)},[]);
+  const Scr=allS[cur];
+
+  // PostMessage for parent sync (embed mode)
+  useEffect(()=>{
+    if(!isEmbed||!window.parent)return;
+    try{window.parent.postMessage({type:"demoSlideChange",index:cur,playing,totalSteps:steps.length},"*");}catch(_){}
+  },[cur,playing]);
+
+  useEffect(()=>{
+    if(!isEmbed)return;
+    const handler=e=>{
+      try{
+        const d=e.data;
+        if(d&&d.type==="demoGo"){setCur(Math.max(0,Math.min(d.index||0,steps.length-1)));setSKey(k=>k+1);}
+        else if(d&&d.type==="demoPlayPause"){setPlaying(!!d.playing);}
+      }catch(_){}
+    };
+    window.addEventListener("message",handler);
+    return()=>window.removeEventListener("message",handler);
+  },[]);
+
+  useEffect(()=>{if(isEmbed&&window.parent){try{window.parent.postMessage({type:"demoEmbedReady"},"*");}catch(_){}}},[]);
+
+  // EMBED MINIMAL: screen only (steps/controls rendered by parent)
+  if(isEmbed&&isMinimal){
+    return(
+      <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",background:"#000",position:"relative",paddingTop:32}}>
+        <div key={sKey} style={{flex:1,display:"flex",flexDirection:"column",animation:"screenSlide 0.3s ease"}}>
+          <Scr/>
+        </div>
+      </div>
+    );
+  }
+
+  // EMBED FULL: screens with step overlay (legacy)
+  if(isEmbed){
+    return(
+      <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",background:"#000",position:"relative"}}>
+        <div style={{position:"absolute",top:0,left:0,right:0,zIndex:200,background:"linear-gradient(to bottom,rgba(0,0,0,0.8),transparent)",padding:"8px 12px 16px",pointerEvents:"none"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <div style={{background:`linear-gradient(135deg,${O},${OD})`,borderRadius:6,width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <span style={{color:"#fff",fontSize:12,fontWeight:800}}>{cur+1}</span>
+            </div>
+            <div>
+              <div style={{color:"#fff",fontSize:11,fontWeight:700}}>{steps[cur].label}</div>
+              <div style={{color:O,fontSize:8,fontWeight:500}}>{steps[cur].sub}</div>
+            </div>
+          </div>
+        </div>
+        <div key={sKey} style={{flex:1,display:"flex",flexDirection:"column",animation:"screenSlide 0.3s ease",paddingTop:50}}>
+          <Scr/>
+        </div>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(255,255,255,0.03)",zIndex:200}}>
+          <div key={`p-${cur}-${sKey}`} style={{height:"100%",background:`linear-gradient(to right,${O},${OD})`,borderRadius:2,animation:`progressFill ${steps[cur].dur}ms linear`,width:"100%"}}/>
+        </div>
+      </div>
+    );
+  }
+
+  // STANDALONE MODE: with controls
+  return(
+    <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"#0a0a0a",padding:16}}>
+      <div style={{textAlign:"center",marginBottom:12}}>
+        <span style={{color:O,fontSize:20,fontWeight:800,letterSpacing:-0.5}}>AFROBITE</span>
+        <div style={{color:"rgba(255,255,255,0.35)",fontSize:11,marginTop:2}}>Comment publier une vidéo</div>
+      </div>
+
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,background:"rgba(249,115,22,0.06)",borderRadius:12,padding:"8px 18px",border:"1.5px solid rgba(249,115,22,0.15)"}}>
+        <div style={{background:`linear-gradient(135deg,${O},${OD})`,borderRadius:8,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(249,115,22,0.3)"}}>
+          <span style={{color:"#fff",fontSize:16,fontWeight:800}}>{cur+1}</span>
+        </div>
+        <div>
+          <div style={{color:"#fff",fontSize:14,fontWeight:700}}>{steps[cur].label}</div>
+          <div style={{color:O,fontSize:10,fontWeight:500,marginTop:1}}>{steps[cur].sub}</div>
+        </div>
+      </div>
+
+      {/* Screen in a simple container */}
+      <div style={{width:280,height:520,borderRadius:12,overflow:"hidden",background:"#000",position:"relative"}}>
+        <div key={sKey} style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",animation:"screenSlide 0.3s ease"}}>
+          <Scr/>
+        </div>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(255,255,255,0.03)",zIndex:40}}>
+          <div key={`p-${cur}-${sKey}`} style={{height:"100%",background:`linear-gradient(to right,${O},${OD})`,borderRadius:2,animation:playing?`progressFill ${steps[cur].dur}ms linear`:"none",width:playing?"100%":"0%"}}/>
+        </div>
+      </div>
+
+      <div style={{display:"flex",alignItems:"center",gap:10,marginTop:16}}>
+        <button onClick={()=>go((cur-1+steps.length)%steps.length)} style={{width:36,height:36,borderRadius:9999,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.04)",color:"rgba(255,255,255,0.5)",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>←</button>
+        <button onClick={()=>setPlaying(!playing)} style={{width:44,height:44,borderRadius:9999,border:`2px solid ${O}`,background:playing?O:"transparent",color:"#fff",fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s",boxShadow:playing?"0 2px 12px rgba(249,115,22,0.3)":"none"}}>{playing?"⏸":"▶"}</button>
+        <button onClick={()=>go((cur+1)%steps.length)} style={{width:36,height:36,borderRadius:9999,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.04)",color:"rgba(255,255,255,0.5)",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>→</button>
+      </div>
+
+      <div style={{display:"flex",gap:4,marginTop:12}}>
+        {steps.map((_,i)=>
+          <button key={i} onClick={()=>go(i)} style={{width:i===cur?24:7,height:7,borderRadius:4,border:"none",background:i===cur?O:i<cur?"rgba(249,115,22,0.3)":"rgba(255,255,255,0.06)",cursor:"pointer",transition:"all 0.3s",boxShadow:i===cur?"0 0 8px rgba(249,115,22,0.3)":"none"}}/>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

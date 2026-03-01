@@ -23,13 +23,14 @@ body {
     background-color: var(--bg-white);
 }
 
-/* Header */
+/* Header - consistent dark theme across all pages */
 header {
-    background-color: var(--bg-white);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: rgba(10, 10, 10, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     position: sticky;
     top: 0;
     z-index: 100;
+    overflow: visible;
 }
 
 nav {
@@ -53,19 +54,79 @@ nav {
 .nav-links {
     display: flex;
     list-style: none;
-    gap: 2rem;
+    gap: 1.25rem;
     flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+.nav-links li {
+    flex-shrink: 0;
 }
 
 .nav-links a {
-    color: var(--text-dark);
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
+    white-space: nowrap;
 }
 
 .nav-links a:hover {
     color: var(--primary-orange);
+}
+
+/* Active page highlight */
+body[data-page="index"] .nav-links a[href="index.html"],
+body[data-page="about"] .nav-links a[href="about.html"],
+body[data-page="support"] .nav-links a[href="support.html"],
+body[data-page="partenaire"] .nav-links a[href="partenaire.html"],
+body[data-page="privacy"] .nav-links a[href="privacy-policy.html"],
+body[data-page="terms"] .nav-links a[href="terms.html"] {
+    color: var(--primary-orange);
+    font-weight: 600;
+}
+
+/* Nav toggle (mobile hamburger) */
+.nav-toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+}
+
+.nav-toggle::before,
+.nav-toggle::after,
+.nav-toggle span {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.nav-toggle::before { top: 14px; }
+.nav-toggle span { top: 50%; margin-top: -1px; }
+.nav-toggle::after { bottom: 14px; }
+
+.nav-toggle[aria-expanded="true"]::before {
+    top: 50%;
+    margin-top: -1px;
+    transform: rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] span {
+    opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"]::after {
+    bottom: 50%;
+    margin-bottom: -1px;
+    transform: rotate(-45deg);
 }
 
 /* Main Content */
@@ -408,16 +469,6 @@ footer {
         font-size: 1.75rem;
     }
     
-    nav {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .nav-links {
-        margin-top: 1rem;
-        gap: 1rem;
-    }
-    
     .steps {
         grid-template-columns: 1fr;
     }
@@ -426,6 +477,31 @@ footer {
         display: block;
         width: 100%;
         margin: 0.5rem 0;
+    }
+}
+
+/* Mobile nav - hamburger only on small screens so Partenaire etc. stay visible on tablets */
+@media (max-width: 640px) {
+    nav {
+        flex-wrap: wrap;
+    }
+    
+    .nav-toggle {
+        display: block;
+        order: 2;
+        margin-left: auto;
+    }
+    
+    .nav-links {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        margin-top: 1rem;
+        gap: 0.5rem;
+    }
+    
+    .nav-links.open {
+        display: flex;
     }
 }
 

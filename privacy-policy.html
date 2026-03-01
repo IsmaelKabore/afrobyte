@@ -12,12 +12,14 @@
     <title>Privacy Policy | AfroBite</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body data-page="privacy">
     <header>
         <nav>
             <a href="index.html" class="logo">AfroBite</a>
+            <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false"><span></span></button>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
+                <li><a href="partenaire.html">Partenaire</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="support.html">Support</a></li>
                 <li><a href="privacy-policy.html">Privacy Policy</a></li>
@@ -198,10 +200,11 @@
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul>
+                    <li><a href="partenaire.html">Partenaire</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="support.html">Support</a></li>
                     <li><a href="privacy-policy.html">Privacy Policy</a></li>
                     <li><a href="terms.html">Terms & Conditions</a></li>
-                    <li><a href="support.html">Support</a></li>
-                    <li><a href="about.html">About Us</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -219,5 +222,12 @@
             <p>Contact: <a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a></p>
         </div>
     </footer>
+    <script>
+        document.querySelector('.nav-toggle')?.addEventListener('click', function() {
+            const open = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !open);
+            document.querySelector('.nav-links')?.classList.toggle('open', !open);
+        });
+    </script>
 </body>
 </html>
