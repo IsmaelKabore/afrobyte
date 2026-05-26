@@ -2,8 +2,9 @@
 
 :root {
     --partenaire-bg: #0a0a0a;
-    --partenaire-orange: #F97316;
-    --partenaire-orange-dark: #EA580C;
+    --partenaire-gold: #D4A017;
+    --partenaire-gold-light: #E8B839;
+    --partenaire-gold-dark: #B8860B;
     --partenaire-text: #ffffff;
     --partenaire-text-muted: rgba(255, 255, 255, 0.7);
     --partenaire-text-dim: rgba(255, 255, 255, 0.5);
@@ -47,7 +48,7 @@ body.partenaire-page {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(249, 115, 22, 0.08) 0%, transparent 50%);
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212, 160, 23, 0.1) 0%, transparent 50%);
     pointer-events: none;
 }
 
@@ -71,7 +72,7 @@ body.partenaire-page {
     padding: 1rem 2.5rem;
     font-size: 1.125rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--partenaire-orange), var(--partenaire-orange-dark));
+    background: linear-gradient(135deg, var(--partenaire-gold), var(--partenaire-gold-dark));
     color: white;
     text-decoration: none;
     border-radius: 12px;
@@ -114,7 +115,7 @@ body.partenaire-page {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--partenaire-orange), var(--partenaire-orange-dark));
+    background: linear-gradient(135deg, var(--partenaire-gold), var(--partenaire-gold-dark));
     color: #fff;
     font-size: 1rem;
     font-weight: 800;
@@ -132,7 +133,7 @@ body.partenaire-page {
 }
 
 .step-sub {
-    color: var(--partenaire-orange);
+    color: var(--partenaire-gold);
     font-size: 0.8rem;
     font-weight: 500;
     margin-top: 0.2rem;
@@ -270,8 +271,8 @@ body.partenaire-page {
 .demo-play {
     width: 52px;
     height: 52px;
-    border: 2px solid var(--partenaire-orange);
-    background: var(--partenaire-orange);
+    border: 2px solid var(--partenaire-gold);
+    background: var(--partenaire-gold);
     color: #fff;
     font-size: 1.25rem;
 }
@@ -306,7 +307,7 @@ body.partenaire-page {
 
 .demo-dot.active {
     width: 24px;
-    background: var(--partenaire-orange);
+    background: var(--partenaire-gold);
 }
 
 /* Section common */
@@ -365,7 +366,7 @@ body.partenaire-page {
 
 .selling-point h3 {
     font-size: 1.5rem;
-    color: var(--partenaire-orange);
+    color: var(--partenaire-gold);
     margin-bottom: 0.75rem;
 }
 
@@ -456,7 +457,7 @@ body.partenaire-page {
     padding: 1rem 2rem;
     font-size: 1.125rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--partenaire-orange), var(--partenaire-orange-dark));
+    background: linear-gradient(135deg, var(--partenaire-gold), var(--partenaire-gold-dark));
     color: white;
     text-decoration: none;
     border-radius: 12px;
@@ -475,7 +476,7 @@ body.partenaire-page {
 }
 
 .partenaire-cta-footer .contact-links a {
-    color: var(--partenaire-orange);
+    color: var(--partenaire-gold);
     text-decoration: none;
 }
 
