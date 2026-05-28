@@ -49,7 +49,8 @@ After this initial setup, every push to GitHub triggers automatic redeployment o
 
 ### Important path for restaurant onboarding
 
-- `https://<your-vercel-domain>/partenaire.html`
+- Production: `https://afrobite.app/partenaire.html`
+- After connecting your GoDaddy domain to Vercel, point `afrobite.app` DNS to Vercel and set the custom domain in the Vercel project settings.
 
 ## Local Development
 
