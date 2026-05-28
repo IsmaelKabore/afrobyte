@@ -4,7 +4,7 @@ Official website for AfroBite - A food delivery platform operating in Burkina Fa
 
 ## Overview
 
-This is a static, production-ready website for AfroBite, designed for deployment on GitHub Pages. The website serves as the official company presence and includes all necessary legal pages for payment API verification.
+This is a static, production-ready website for AfroBite, designed for deployment on Vercel. The website serves as the official company presence and includes the external restaurant onboarding page used for iOS App Store compliance.
 
 ## Features
 
@@ -36,34 +36,20 @@ afrobyte/
 └── README.md           # This file
 ```
 
-## Deployment to GitHub Pages
+## Deployment to Vercel
 
-### Method 1: Using GitHub Web Interface
+1. Import this repository in Vercel.
+2. Keep root directory as project root (`afrobyte` repository root).
+3. Framework preset: **Other** (static site).
+4. Build command: empty.
+5. Output directory: empty.
+6. Deploy.
 
-1. Push all files to your GitHub repository
-2. Go to repository Settings → Pages
-3. Under "Source", select the branch containing your files (usually `main`)
-4. Select `/ (root)` as the folder
-5. Click Save
-6. Your site will be available at `https://[username].github.io/afrobyte/`
+After this initial setup, every push to GitHub triggers automatic redeployment on Vercel.
 
-### Method 2: Using GitHub CLI
+### Important path for restaurant onboarding
 
-```bash
-# Initialize git repository (if not already done)
-git init
-git add .
-git commit -m "Initial commit: AfroBite website"
-
-# Add remote repository
-git remote add origin https://github.com/[username]/afrobyte.git
-
-# Push to GitHub
-git branch -M main
-git push -u origin main
-```
-
-Then follow Method 1 steps 2-6 to enable GitHub Pages.
+- `https://<your-vercel-domain>/partenaire.html`
 
 ## Local Development
 
