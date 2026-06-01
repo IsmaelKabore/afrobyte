@@ -35,6 +35,7 @@
     displayId: document.getElementById('order-display-id'),
     restaurantName: document.getElementById('order-restaurant'),
     amount: document.getElementById('order-amount'),
+    paymentRef: document.getElementById('order-payment-ref'),
     accountHolderName: document.getElementById('account-holder-name'),
     phone: document.getElementById('orange-money-phone'),
     additionalInfo: document.getElementById('additional-info'),
@@ -78,6 +79,10 @@
       }
       if (fields.amount) {
         fields.amount.textContent = Number(claims.amount || 0).toLocaleString('fr-FR');
+      }
+      if (fields.paymentRef) {
+        fields.paymentRef.textContent =
+          claims.paymentReference || claims.transactionId || '—';
       }
       if (fields.accountHolderName && claims.customerName && !fields.accountHolderName.value) {
         fields.accountHolderName.value = claims.customerName;
@@ -125,6 +130,9 @@
         });
         const data = await res.json();
         if (!res.ok) {
+          if (data.error === 'already_refunded') {
+            throw new Error('Cette commande a déjà été remboursée.');
+          }
           throw new Error(data.error || 'Échec de l\'envoi');
         }
 
