@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Confirmation de demande de remboursement AfroBite.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="assets/logo-afrobite.png" type="image/png">
+    <title>Demande enregistrée | AfroBite</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="refund-confirmation">
+    <header class="site-header">
+        <nav class="site-nav">
+            <a href="index.html" class="logo-link" aria-label="AfroBite — Accueil">
+                <img src="assets/logo-afrobite.png" alt="AfroBite" class="logo-img" width="132" height="44">
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="content-section refund-section">
+            <div class="container refund-container">
+                <div class="refund-confirmation">
+                    <div class="refund-success-icon" aria-hidden="true">✓</div>
+                    <h1>Demande enregistrée</h1>
+
+                    <p class="refund-ticket-label">Ticket :</p>
+                    <p class="refund-ticket-id" id="ticket-id">REF-2026-000000</p>
+
+                    <div class="refund-confirmation-body">
+                        <p>Votre demande de remboursement a bien été reçue.</p>
+                        <p>Le remboursement sera effectué par <strong>Orange Money</strong> sous <strong>7 jours ouvrés</strong>.</p>
+                        <p>Vous recevrez une notification dans l'application AfroBite lorsque le remboursement sera traité.</p>
+                    </div>
+
+                    <p class="refund-support">
+                        Support : <a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 AfroBite. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var ticket = params.get('ticket');
+        var el = document.getElementById('ticket-id');
+        if (ticket && el) el.textContent = ticket;
+      })();
+    </script>
+</body>
+</html>

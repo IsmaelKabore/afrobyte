@@ -13,28 +13,21 @@ This is a static, production-ready website for AfroBite, designed for deployment
 - **Privacy Policy**: Comprehensive privacy policy for payment verification
 - **Terms & Conditions**: Full terms of service
 - **Support Page**: Contact information, FAQ, and support form
+- **Refund Page**: Orange Money refund request form (`refund.html`) with Vercel serverless API
 
-## Design
+## Refund flow (Orange Money only)
 
-- Clean, modern, mobile-first design
-- Professional fintech-style layout
-- Warm orange (#FF6B35) primary color
-- Deep green (#2D5016) accent color
-- Fully responsive across all devices
+1. User chooses cash refund in the AfroBite app → Cloud Function `requestCashRefund` opens `https://afrobite.app/refund/{token}`.
+2. Static page `refund.html` decodes the JWT for display and submits to Cloud Function `submitRefundRequest`.
+3. Firestore collection `refund_requests` stores the ticket; confirmation shows `REF-2026-XXXXXX`.
 
-## File Structure
+### Secret (Firebase only — never commit)
 
+```bash
+firebase functions:secrets:set AFROBITE_REFUND_JWT_SECRET
 ```
-afrobyte/
-├── index.html          # Home page
-├── about.html          # About page
-├── privacy-policy.html # Privacy Policy
-├── terms.html          # Terms & Conditions
-├── support.html        # Support page
-├── css/
-│   └── styles.css      # Main stylesheet
-└── README.md           # This file
-```
+
+Same secret is used by foodtok Cloud Functions and verified on submit.
 
 ## Deployment to Vercel
 

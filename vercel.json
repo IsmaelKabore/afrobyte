@@ -1,6 +1,9 @@
 {
   "cleanUrls": false,
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/refund/:token", "destination": "/refund.html?token=:token" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

@@ -820,3 +820,119 @@ footer {
         padding: 3rem 1rem;
     }
 }
+
+/* ── Refund flow (Orange Money only) ── */
+.refund-section {
+    min-height: 60vh;
+}
+
+.refund-container {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.refund-logo-wrap {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.refund-logo {
+    margin: 0 auto;
+}
+
+.refund-title {
+    text-align: center;
+    font-size: 1.65rem;
+    margin-bottom: 1.25rem;
+}
+
+.refund-order-summary {
+    background: var(--bg-warm);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.refund-order-line {
+    margin: 0.35rem 0;
+    color: var(--text);
+}
+
+.refund-form {
+    margin-top: 0;
+}
+
+.refund-timeline {
+    background: var(--gold-glow);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1rem;
+    margin: 1rem 0 1.25rem;
+    font-size: 0.95rem;
+}
+
+.refund-support {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.refund-error {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.refund-error-text {
+    color: var(--text-muted);
+    margin: 1rem 0;
+}
+
+.refund-confirmation {
+    text-align: center;
+    padding: 2rem 0 3rem;
+}
+
+.refund-success-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    background: #16a34a;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 64px;
+}
+
+.refund-ticket-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.refund-ticket-id {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--gold-dark);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.02em;
+}
+
+.refund-confirmation-body {
+    text-align: left;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.refund-confirmation-body p {
+    margin: 0 0 0.85rem;
+}
+
+.refund-confirmation-body p:last-child {
+    margin-bottom: 0;
+}

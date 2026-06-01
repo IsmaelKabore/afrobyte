@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Demande de remboursement AfroBite — Orange Money uniquement.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="assets/logo-afrobite.png" type="image/png">
+    <title>Demande de remboursement | AfroBite</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="refund">
+    <header class="site-header">
+        <nav class="site-nav">
+            <a href="index.html" class="logo-link" aria-label="AfroBite — Accueil">
+                <img src="assets/logo-afrobite.png" alt="AfroBite" class="logo-img" width="132" height="44">
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="content-section refund-section">
+            <div class="container refund-container">
+
+                <div id="refund-error-view" class="refund-error" hidden>
+                    <h1>Demande de remboursement</h1>
+                    <p id="refund-error-message" class="refund-error-text"></p>
+                    <p>Besoin d'aide ? <a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a></p>
+                </div>
+
+                <div id="refund-form-view">
+                    <div class="refund-logo-wrap">
+                        <img src="assets/logo-afrobite.png" alt="AfroBite" class="refund-logo" width="160" height="54">
+                    </div>
+
+                    <h1 class="refund-title">Demande de remboursement</h1>
+
+                    <div class="refund-order-summary">
+                        <p class="refund-order-line"><strong>Commande #<span id="order-display-id">—</span></strong></p>
+                        <p class="refund-order-line">Restaurant : <span id="order-restaurant">—</span></p>
+                        <p class="refund-order-line">Montant : <span id="order-amount">—</span> FCFA</p>
+                    </div>
+
+                    <form class="contact-form refund-form" id="refund-form" novalidate>
+                        <div class="form-group">
+                            <label for="account-holder-name">Nom du titulaire du compte Orange Money *</label>
+                            <input type="text" id="account-holder-name" name="accountHolderName" required
+                                placeholder="Nom complet du titulaire" autocomplete="name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="orange-money-phone">Numéro Orange Money *</label>
+                            <input type="tel" id="orange-money-phone" name="phone" required
+                                placeholder="22670123456 ou +22670123456" inputmode="tel" autocomplete="tel">
+                            <p class="form-note">Format Burkina Faso : 226 suivi de 8 chiffres.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="additional-info">Remarque additionnelle (optionnel)</label>
+                            <textarea id="additional-info" name="additionalInfo" rows="3"
+                                placeholder="Informations utiles pour traiter votre demande"></textarea>
+                        </div>
+
+                        <p class="refund-timeline">
+                            <strong>Délai estimé :</strong> Sous 7 jours ouvrés
+                        </p>
+
+                        <button type="submit" class="btn btn-primary btn-block" id="refund-submit">
+                            Soumettre la demande
+                        </button>
+                    </form>
+
+                    <p class="refund-support">
+                        Support : <a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 AfroBite. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script src="js/refund.js"></script>
+</body>
+</html>
