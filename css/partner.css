@@ -1,0 +1,207 @@
+.partner-page {
+  min-height: 100dvh;
+  background: linear-gradient(165deg, #1a1408 0%, #3d2f0a 35%, #f5e6c8 85%, #fffdf8 100%);
+  color: #1a1408;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.partner-page .site-header {
+  background: rgba(26, 20, 8, 0.92);
+}
+
+.partner-hero {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+  text-align: center;
+}
+
+.partner-hero h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+
+.partner-hero p {
+  margin-top: 0.75rem;
+  color: #5c4a1a;
+  line-height: 1.5;
+}
+
+.partner-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.partner-choice {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  text-decoration: none;
+  font-weight: 600;
+  min-height: 3.5rem;
+}
+
+.partner-choice-restaurant {
+  background: linear-gradient(135deg, #f5e6c8, #d4a017);
+  color: #1a1408;
+}
+
+.partner-choice-livreur {
+  background: #1a1408;
+  color: #f5e6c8;
+  border: 2px solid #d4a017;
+}
+
+.partner-flow {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.partner-card {
+  background: rgba(255, 253, 248, 0.97);
+  border: 1px solid rgba(212, 160, 23, 0.35);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  box-shadow: 0 8px 32px rgba(26, 20, 8, 0.1);
+}
+
+.partner-card label {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5c4a1a;
+}
+
+.partner-card input,
+.partner-card select,
+.partner-card textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #e8d5a3;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+}
+
+.partner-card textarea {
+  min-height: 6rem;
+}
+
+.checkbox,
+.radio {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.checkbox input,
+.radio input {
+  width: auto;
+  margin: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 1rem;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #f5e6c8, #d4a017);
+  color: #1a1408;
+}
+
+.btn-google {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #1a1408;
+}
+
+.btn-apple {
+  background: #1a1408;
+  color: #fff;
+}
+
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.divider {
+  text-align: center;
+  margin: 1rem 0;
+  font-size: 0.75rem;
+  color: #8a7340;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: #f0e6ce;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tab.active {
+  background: #d4a017;
+}
+
+.error {
+  color: #c62828;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+.hint {
+  font-size: 0.875rem;
+  color: #5c4a1a;
+}
+
+.signed-in {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #b8860b;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+
+.success-card {
+  text-align: center;
+}
+
+.confirm-only[hidden] {
+  display: none !important;
+}
