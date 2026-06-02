@@ -9,7 +9,7 @@
     <meta property="og:title" content="AfroBite — Devenez Partenaire Restaurant">
     <meta property="og:description" content="Publiez vos plats en vidéo et recevez des commandes sur AfroBite. C'est gratuit.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://ismaelkabore.github.io/afrobyte/iphone.png">
+    <meta property="og:image" content="https://afrobite.app/iphone.png">
     <link rel="icon" href="assets/logo-afrobite.png" type="image/png">
     <title>AfroBite — Devenez Partenaire Restaurant</title>
     <link rel="stylesheet" href="css/styles.css">
@@ -136,6 +136,10 @@
                         Détails (optionnel)
                         <textarea name="details" rows="4" placeholder="Cuisine, horaires, capacité, zones de livraison…"></textarea>
                     </label>
+                    <label>
+                        Instagram (optionnel)
+                        <input type="text" name="instagram" placeholder="@nom_restaurant">
+                    </label>
                 </div>
                 <button type="submit" id="partner-submit-btn" class="partner-submit-btn">Envoyer la demande</button>
                 <p id="partner-form-message" class="partner-form-message" aria-live="polite"></p>
@@ -163,6 +167,7 @@
             <div class="footer-section">
                 <h3>Contact</h3>
                 <p><a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a></p>
+                <p><a href="https://instagram.com/afrobite.app" target="_blank" rel="noopener noreferrer">Instagram @afrobite.app</a></p>
                 <p>Burkina Faso</p>
             </div>
         </div>
@@ -313,6 +318,7 @@
                 phone: partnerForm.phone.value.trim(),
                 address: partnerForm.address.value.trim(),
                 details: partnerForm.details.value.trim(),
+                instagram: partnerForm.instagram.value.trim(),
                 source: 'afrobyte_partenaire_page',
                 submittedAtClient: new Date().toISOString(),
             };
