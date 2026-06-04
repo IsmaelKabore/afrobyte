@@ -40,10 +40,13 @@ Same secret is used by foodtok Cloud Functions and verified on submit.
 
 After this initial setup, every push to GitHub triggers automatic redeployment on Vercel.
 
-### Important path for restaurant onboarding
+### Partenariat (un seul site, un seul projet Vercel `afrobyte`)
 
-- Production: `https://afrobite.app/partenaire.html`
-- After connecting your GoDaddy domain to Vercel, point `afrobite.app` DNS to Vercel and set the custom domain in the Vercel project settings.
+- **Étape 1 — collecte** : `https://afrobite.app/partenaire.html` → `submitPartnerLead` (restaurant ou société de livraison)
+- **Étape 4 — compte** : `partner-restaurant.html`, `partner-societe-livraison.html`, `partner-livreur.html` (après validation AfroBite)
+- **Admin** : projet séparé `chop-tok-admin` sur Vercel — ne pas dupliquer sur afrobyte
+
+Déploiement : push GitHub → le projet Vercel **afrobyte** existant redéploie automatiquement. Ne pas créer de second projet Vercel.
 
 ## Local Development
 

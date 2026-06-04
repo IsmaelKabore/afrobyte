@@ -9,4 +9,3 @@ package-lock.json
 service-account*.json
 .vercel
 js/mapbox-config.js
-js/mapbox-config.js

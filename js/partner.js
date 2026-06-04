@@ -129,6 +129,105 @@
     });
   }
 
+  async function loadMapboxGl() {
+    if (window.mapboxgl) return window.mapboxgl;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css';
+    document.head.appendChild(link);
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js';
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+    return window.mapboxgl;
+  }
+
+  function attachRestaurantLocationPicker(addressInput, latInput, lngInput) {
+    const token = window.AFROBITE_MAPBOX_TOKEN;
+    if (!token || !addressInput?.parentElement) return;
+
+    const picker = document.createElement('div');
+    picker.className = 'location-picker';
+    const hint = document.createElement('p');
+    hint.className = 'hint';
+    hint.textContent =
+      'Recherchez une adresse, placez le repère sur la carte ou utilisez votre position GPS.';
+    const mapEl = document.createElement('div');
+    mapEl.className = 'mapbox-mini-map';
+    const gpsBtn = document.createElement('button');
+    gpsBtn.type = 'button';
+    gpsBtn.className = 'btn btn-secondary location-gps-btn';
+    gpsBtn.textContent = 'Utiliser ma position GPS';
+    picker.appendChild(hint);
+    picker.appendChild(mapEl);
+    picker.appendChild(gpsBtn);
+    addressInput.parentElement.appendChild(picker);
+
+    const setCoords = async (lat, lng) => {
+      latInput.value = String(lat);
+      lngInput.value = String(lng);
+      try {
+        const url =
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json` +
+          `?access_token=${encodeURIComponent(token)}&limit=1&language=fr`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.features?.[0]) addressInput.value = data.features[0].place_name;
+      } catch (_) {}
+    };
+
+    let map;
+    let marker;
+    loadMapboxGl().then((mapboxgl) => {
+      mapboxgl.accessToken = token;
+      const center = [-1.51966, 12.371427];
+      map = new mapboxgl.Map({
+        container: mapEl,
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center,
+        zoom: 12,
+      });
+      marker = new mapboxgl.Marker({ draggable: true }).setLngLat(center).addTo(map);
+      const onMove = () => {
+        const { lng, lat } = marker.getLngLat();
+        setCoords(lat, lng);
+      };
+      marker.on('dragend', onMove);
+      map.on('click', (e) => {
+        marker.setLngLat(e.lngLat);
+        onMove();
+      });
+    });
+
+    gpsBtn.onclick = () => {
+      if (!navigator.geolocation) {
+        alert('La géolocalisation n\'est pas disponible sur cet appareil.');
+        return;
+      }
+      gpsBtn.disabled = true;
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          await setCoords(lat, lng);
+          if (marker && map) {
+            marker.setLngLat([lng, lat]);
+            map.flyTo({ center: [lng, lat], zoom: 15 });
+          }
+          gpsBtn.disabled = false;
+        },
+        () => {
+          alert('Impossible d\'obtenir votre position. Autorisez le GPS ou placez le repère sur la carte.');
+          gpsBtn.disabled = false;
+        },
+        { enableHighAccuracy: true, timeout: 15000 }
+      );
+    };
+  }
+
   function bindWhatsAppToggle(checkboxId, wrapId, inputId, phoneInputId) {
     const cb = document.getElementById(checkboxId);
     const wrap = document.getElementById(wrapId);
@@ -151,7 +250,7 @@
     container.innerHTML = `
       <div class="partner-card partner-auth">
         <h2>Connexion AfroBite</h2>
-        <p class="hint">Connectez-vous avant de remplir le formulaire.</p>
+        <p class="hint">Étape 4 — après validation par l'équipe AfroBite. Si vous n'avez pas encore envoyé votre demande, commencez par <a href="partenaire.html#partner-onboarding-form">partenaire.html</a>.</p>
         <div class="auth-buttons">
           <button type="button" class="btn btn-google" id="btn-google">Continuer avec Google</button>
           <button type="button" class="btn btn-apple" id="btn-apple">Continuer avec Apple</button>
@@ -281,14 +380,10 @@
           <form id="restaurant-form">
             <label>Nom du restaurant *<input name="restaurantName" required /></label>
             <label>Responsable *<input name="ownerName" required /></label>
-            <label>Téléphone *<input id="phoneNumber" name="phoneNumber" type="tel" placeholder="+22670123456" required /></label>
-            <label class="checkbox"><input type="checkbox" id="wa-same" checked /> Mon numéro WhatsApp est le même</label>
-            <div id="wa-wrap" hidden>
-              <label>WhatsApp *<input name="whatsappNumber" type="tel" placeholder="+22670123456" /></label>
-            </div>
+            <label>WhatsApp *<input id="whatsappNumber" name="whatsappNumber" type="tel" placeholder="+22670123456" required /></label>
             <label>Email *<input name="email" type="email" value="${user.email || ''}" required /></label>
-            <label>Localisation du restaurant (optionnel)
-              <input name="address" id="restaurant-address" placeholder="Rechercher sur la carte…" autocomplete="off" />
+            <label>Adresse du restaurant
+              <input name="address" id="restaurant-address" placeholder="Rechercher une adresse…" autocomplete="off" />
               <input type="hidden" name="latitude" id="restaurant-lat" />
               <input type="hidden" name="longitude" id="restaurant-lng" />
             </label>
@@ -304,36 +399,28 @@
           </form>
         </div>`;
       document.getElementById('sign-out').onclick = () => auth.signOut().then(() => location.reload());
-      bindWhatsAppToggle('wa-same', 'wa-wrap', 'whatsappNumber', 'phoneNumber');
-      const phoneInput = document.querySelector('[name="phoneNumber"]');
-      if (phoneInput && !phoneInput.id) phoneInput.id = 'phoneNumber';
-      const waInput = document.querySelector('[name="whatsappNumber"]');
-      if (waInput && !waInput.id) waInput.id = 'whatsappNumber';
 
       const addrInput = document.getElementById('restaurant-address');
+      const latInput = document.getElementById('restaurant-lat');
+      const lngInput = document.getElementById('restaurant-lng');
       attachMapboxAddressSearch(addrInput, ({ lat, lng }) => {
-        document.getElementById('restaurant-lat').value = lat;
-        document.getElementById('restaurant-lng').value = lng;
+        latInput.value = lat;
+        lngInput.value = lng;
       });
+      attachRestaurantLocationPicker(addrInput, latInput, lngInput);
 
       document.getElementById('restaurant-form').onsubmit = async (e) => {
         e.preventDefault();
         const fd = new FormData(e.target);
         const err = document.getElementById('form-error');
         err.hidden = true;
-        const phone = normalizePhone(fd.get('phoneNumber'));
-        if (!validPhone(phone)) {
-          err.textContent = 'Téléphone invalide (format +226…).';
-          err.hidden = false;
-          return;
-        }
-        const waSame = document.getElementById('wa-same').checked;
-        const whatsapp = waSame ? phone : normalizePhone(fd.get('whatsappNumber'));
+        const whatsapp = normalizePhone(fd.get('whatsappNumber'));
         if (!validPhone(whatsapp)) {
-          err.textContent = 'WhatsApp invalide.';
+          err.textContent = 'WhatsApp invalide (format international +226…).';
           err.hidden = false;
           return;
         }
+        const phone = whatsapp;
         let logoBase64 = null;
         const file = fd.get('logo');
         if (file && file.size) {
@@ -357,7 +444,7 @@
             restaurantName: fd.get('restaurantName'),
             ownerName: fd.get('ownerName'),
             phoneNumber: phone,
-            whatsappSameAsPhone: waSame,
+            whatsappSameAsPhone: true,
             whatsappNumber: whatsapp,
             email: fd.get('email'),
             address: fd.get('address'),
@@ -424,13 +511,8 @@
           <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
             <button type="button" id="sign-out" class="link-btn">Changer</button></p>
           <form id="delivery-form">
-            <label>Prénom *<input name="firstName" required /></label>
-            <label>Nom *<input name="lastName" required /></label>
-            <label>Téléphone *<input name="phoneNumber" id="phoneNumber" type="tel" placeholder="+22670123456" required /></label>
-            <label class="checkbox"><input type="checkbox" id="wa-same" checked /> Mon numéro WhatsApp est le même</label>
-            <div id="wa-wrap" hidden>
-              <label>WhatsApp *<input name="whatsappNumber" id="whatsappNumber" type="tel" /></label>
-            </div>
+            <label>Nom complet *<input name="fullName" required placeholder="Prénom et nom" /></label>
+            <label>WhatsApp *<input name="whatsappNumber" id="whatsappNumber" type="tel" placeholder="+22670123456" required /></label>
             <label>Email *<input name="email" type="email" value="${user.email || ''}" required /></label>
             <label>Ville *<select name="city" required>${CITIES.map((c) => `<option value="${c}">${c}</option>`).join('')}</select></label>
             <label>Société de livraison *<select name="companyId" required>${companyOptions}</select></label>
@@ -448,35 +530,31 @@
           </form>
         </div>`;
       document.getElementById('sign-out').onclick = () => auth.signOut().then(() => location.reload());
-      bindWhatsAppToggle('wa-same', 'wa-wrap', 'whatsappNumber', 'phoneNumber');
 
       document.getElementById('delivery-form').onsubmit = async (e) => {
         e.preventDefault();
         const fd = new FormData(e.target);
         const err = document.getElementById('form-error');
         err.hidden = true;
-        const phone = normalizePhone(fd.get('phoneNumber'));
-        if (!validPhone(phone)) {
-          err.textContent = 'Téléphone invalide.';
-          err.hidden = false;
-          return;
-        }
-        const waSame = document.getElementById('wa-same').checked;
-        const whatsapp = waSame ? phone : normalizePhone(fd.get('whatsappNumber'));
+        const whatsapp = normalizePhone(fd.get('whatsappNumber'));
         if (!validPhone(whatsapp)) {
-          err.textContent = 'WhatsApp invalide.';
+          err.textContent = 'WhatsApp invalide (format +226…).';
           err.hidden = false;
           return;
         }
+        const fullName = String(fd.get('fullName') || '').trim();
+        const parts = fullName.split(/\s+/);
+        const firstName = parts[0] || fullName;
+        const lastName = parts.slice(1).join(' ') || fullName;
         try {
           const companyId = fd.get('companyId');
           const company = companies.find((c) => c.id === companyId);
           await callFunction('submitPartnerApplication', {
             partnerType: 'delivery',
-            firstName: fd.get('firstName'),
-            lastName: fd.get('lastName'),
-            phoneNumber: phone,
-            whatsappSameAsPhone: waSame,
+            firstName,
+            lastName,
+            phoneNumber: whatsapp,
+            whatsappSameAsPhone: true,
             whatsappNumber: whatsapp,
             email: fd.get('email'),
             city: fd.get('city'),
@@ -531,11 +609,7 @@
           <form id="societe-form">
             <label>Nom de la société *<input name="companyName" required /></label>
             <label>Nom du gérant *<input name="ownerName" required /></label>
-            <label>Téléphone du gérant *<input name="phoneNumber" id="phoneNumber" type="tel" placeholder="+22670123456" required /></label>
-            <label class="checkbox"><input type="checkbox" id="wa-same" checked /> Mon numéro WhatsApp est le même</label>
-            <div id="wa-wrap" hidden>
-              <label>WhatsApp *<input name="whatsappNumber" id="whatsappNumber" type="tel" /></label>
-            </div>
+            <label>WhatsApp du gérant *<input name="whatsappNumber" id="whatsappNumber" type="tel" placeholder="+22670123456" required /></label>
             <label>Email *<input name="email" type="email" value="${user.email || ''}" required /></label>
             <label>Ville *<select name="city" required>${CITIES.map((c) => `<option value="${c}">${c}</option>`).join('')}</select></label>
             <fieldset>
@@ -551,18 +625,15 @@
           </form>
         </div>`;
       document.getElementById('sign-out').onclick = () => auth.signOut().then(() => location.reload());
-      bindWhatsAppToggle('wa-same', 'wa-wrap', 'whatsappNumber', 'phoneNumber');
 
       document.getElementById('societe-form').onsubmit = async (e) => {
         e.preventDefault();
         const fd = new FormData(e.target);
         const err = document.getElementById('form-error');
         err.hidden = true;
-        const phone = normalizePhone(fd.get('phoneNumber'));
-        if (!validPhone(phone)) { err.textContent = 'Téléphone invalide.'; err.hidden = false; return; }
-        const waSame = document.getElementById('wa-same').checked;
-        const whatsapp = waSame ? phone : normalizePhone(fd.get('whatsappNumber'));
+        const whatsapp = normalizePhone(fd.get('whatsappNumber'));
         if (!validPhone(whatsapp)) { err.textContent = 'WhatsApp invalide.'; err.hidden = false; return; }
+        const phone = whatsapp;
         const vehicleTypes = fd.getAll('vehicleTypes');
         try {
           await callFunction('submitPartnerApplication', {
@@ -570,7 +641,7 @@
             companyName: fd.get('companyName'),
             ownerName: fd.get('ownerName'),
             phoneNumber: phone,
-            whatsappSameAsPhone: waSame,
+            whatsappSameAsPhone: true,
             whatsappNumber: whatsapp,
             email: fd.get('email'),
             city: fd.get('city'),
@@ -595,28 +666,8 @@
     });
   }
 
-  function initPartenaireHub() {
-    const root = document.getElementById('partner-app');
-    if (!root) return;
-    const tabs = document.querySelectorAll('[data-partner-tab]');
-    const frame = document.createElement('iframe');
-    frame.title = 'Inscription partenaire AfroBite';
-    frame.style.cssText = 'width:100%;min-height:780px;border:0;border-radius:12px;background:#1a1208;';
-    root.appendChild(frame);
-
-    const setTab = (t) => {
-      tabs.forEach((el) => el.classList.toggle('active', el.dataset.partnerTab === t));
-      frame.src = t === 'livreur' ? 'partner-livreur.html' : 'partner-restaurant.html';
-    };
-    tabs.forEach((el) => {
-      el.addEventListener('click', () => setTab(el.dataset.partnerTab));
-    });
-    setTab('restaurant');
-  }
-
   const page = document.body.dataset.partnerPage;
-  if (page === 'partenaire') initPartenaireHub();
-  else if (page === 'restaurant') initRestaurantPage();
+  if (page === 'restaurant') initRestaurantPage();
   else if (page === 'livreur') initLivreurPage();
   else if (page === 'societe') initSocietePage();
 })();

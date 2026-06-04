@@ -1,5 +1,8 @@
 {
   "name": "afrobyte",
   "private": true,
-  "description": "AfroBite official website (static + refund form)"
+  "description": "AfroBite official website (static + refund form)",
+  "scripts": {
+    "vercel-build": "node scripts/generate-mapbox-config.js"
+  }
 }
