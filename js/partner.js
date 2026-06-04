@@ -396,17 +396,36 @@
   function initLeadForms() {
     const leadTabs = document.querySelectorAll('[data-lead-tab]');
     const leadPanels = document.querySelectorAll('[data-lead-panel]');
+    const societeForm = document.getElementById('partner-lead-form-societe');
+    const societeSuccess = document.getElementById('societe-success-block');
     if (!leadTabs.length) return;
 
-    leadTabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const t = tab.dataset.leadTab;
-        leadTabs.forEach((el) => el.classList.toggle('active', el === tab));
-        leadPanels.forEach((panel) => {
-          panel.hidden = panel.dataset.leadPanel !== t;
-        });
+    let societeSubmitted = false;
+
+    function setLeadTab(tabId) {
+      leadTabs.forEach((el) => el.classList.toggle('active', el.dataset.leadTab === tabId));
+      leadPanels.forEach((panel) => {
+        const panelId = panel.dataset.leadPanel;
+        if (tabId === 'restaurant') {
+          panel.hidden = panelId !== 'restaurant';
+        } else {
+          if (panelId === 'restaurant') {
+            panel.hidden = true;
+          } else if (panelId === 'societe') {
+            panel.hidden = societeSubmitted;
+          } else if (panelId === 'societe-success') {
+            panel.hidden = !societeSubmitted;
+          }
+        }
       });
+    }
+
+    leadTabs.forEach((tab) => {
+      tab.addEventListener('click', () => setLeadTab(tab.dataset.leadTab));
     });
+    setLeadTab(
+      location.hash === '#societe-livraison' || location.hash === '#societe' ? 'societe' : 'restaurant'
+    );
 
     const addrInput = document.getElementById('lead-restaurant-address');
     const latInput = document.getElementById('lead-restaurant-lat');
@@ -478,6 +497,13 @@
           if (latInput) latInput.value = '';
           if (lngInput) lngInput.value = '';
           message.classList.add('success');
+          if (partnerType === 'delivery_company') {
+            societeSubmitted = true;
+            if (societeForm) societeForm.hidden = true;
+            if (societeSuccess) societeSuccess.hidden = false;
+            setLeadTab('societe');
+            return;
+          }
           message.textContent =
             'Merci. Notre équipe vous contactera sur WhatsApp pour la suite du partenariat.';
         } catch (ex) {
@@ -519,17 +545,16 @@
     }
   }
 
-  function initAccountSection() {
-    const root = document.getElementById('partner-app');
-    const tabs = document.querySelectorAll('[data-partner-tab]');
-    if (!root || !tabs.length) return;
+  function initPartnerAccountBlock(rootId, accountType) {
+    const root = document.getElementById(rootId);
+    if (!root) return;
 
     initFirebase();
-    let accountTab = 'restaurant';
     let companies = [];
     let accountReady = false;
 
     const loadCompanies = async () => {
+      if (accountType !== 'livreur') return;
       try {
         const res = await callFunction('listActiveDeliveryCompanies', {}, { requireUser: false });
         companies = res.companies || [];
@@ -542,11 +567,11 @@
       if (accountReady) return;
       const user = auth.currentUser;
       if (!user) {
-        renderAuth(root, accountTab === 'livreur' ? 'delivery' : 'restaurant', () => render());
+        renderAuth(root, accountType === 'livreur' ? 'delivery' : 'restaurant', () => render());
         return;
       }
 
-      if (accountTab === 'livreur' && !companies.length) await loadCompanies();
+      if (accountType === 'livreur' && !companies.length) await loadCompanies();
       const companyOptions = companies.length
         ? companies.map((c) => `<option value="${c.id}">${c.name}</option>`).join('')
         : '<option value="">— Société à confirmer par l\'admin —</option>';
@@ -554,8 +579,8 @@
       root.innerHTML = `
         <div class="partner-card">
           <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
-            <button type="button" id="sign-out-top" class="link-btn">Changer</button></p>
-          ${accountTab === 'livreur' ? `
+            <button type="button" id="sign-out-top-${rootId}" class="link-btn">Changer</button></p>
+          ${accountType === 'livreur' ? `
             <label>Nom complet (optionnel)<input id="account-full-name" placeholder="Prénom et nom" /></label>
             <label>WhatsApp (optionnel)<input id="account-whatsapp" type="tel" placeholder="+22670123456" /></label>
             <label>Société de livraison (optionnel)
@@ -568,12 +593,12 @@
           <button type="button" class="btn btn-primary" id="account-finalize">Créer mon compte</button>
         </div>`;
 
-      document.getElementById('sign-out-top').onclick = () =>
+      document.getElementById(`sign-out-top-${rootId}`).onclick = () =>
         auth.signOut().then(() => location.reload());
 
       document.getElementById('account-finalize').onclick = () => {
         const extra = {};
-        if (accountTab === 'livreur') {
+        if (accountType === 'livreur') {
           extra.fullName = document.getElementById('account-full-name')?.value?.trim() || '';
           const wa = normalizePhone(document.getElementById('account-whatsapp')?.value || '');
           if (wa && validPhone(wa)) extra.whatsappNumber = wa;
@@ -583,20 +608,11 @@
             extra.companyName = companies.find((c) => c.id === companyId)?.name || null;
           }
         }
-        finalizePartnerAccount(root, accountTab, extra).then(() => {
+        finalizePartnerAccount(root, accountType, extra).then(() => {
           accountReady = true;
         });
       };
     };
-
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        accountTab = tab.dataset.partnerTab;
-        accountReady = false;
-        tabs.forEach((el) => el.classList.toggle('active', el === tab));
-        render();
-      });
-    });
 
     auth.onAuthStateChanged(() => {
       accountReady = false;
@@ -607,17 +623,20 @@
 
   function initPartenairePage() {
     initLeadForms();
-    initAccountSection();
-    if (location.hash === '#create-account') {
-      document.getElementById('create-account')?.scrollIntoView({ behavior: 'smooth' });
-    } else if (location.hash === '#partner-onboarding-form') {
+    initPartnerAccountBlock('partner-app-restaurant', 'restaurant');
+    initPartnerAccountBlock('partner-app-livreur', 'livreur');
+    if (location.hash === '#create-driver-account' || location.hash === '#create-account') {
+      document.getElementById('create-driver-account')?.scrollIntoView({ behavior: 'smooth' });
+    } else if (location.hash === '#partner-onboarding-form' || location.hash === '#societe-livraison' || location.hash === '#societe') {
       document.getElementById('partner-onboarding-form')?.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
   const page = document.body.dataset.partnerPage;
   if (page === 'partenaire') initPartenairePage();
-  else if (page === 'restaurant' || page === 'livreur' || page === 'societe') {
-    location.replace('partenaire.html#create-account');
+  else if (page === 'restaurant' || page === 'societe') {
+    location.replace('partenaire.html#partner-onboarding-form');
+  } else if (page === 'livreur') {
+    location.replace('partenaire.html#create-driver-account');
   }
 })();
