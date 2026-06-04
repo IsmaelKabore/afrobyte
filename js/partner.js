@@ -428,7 +428,99 @@
     });
   }
 
+  // ── Delivery company application ─────────────────────────────────────────
+  function initSocietePage() {
+    const root = document.getElementById('partner-app');
+    if (!root) return;
+    initFirebase();
+
+    const start = async () => {
+      const existing = await checkExisting('delivery_company');
+      if (existing && existing.status !== 'rejected') {
+        showConfirmation(
+          root,
+          'Une candidature existe déjà pour ce compte (statut : ' + existing.status + ').'
+        );
+        return;
+      }
+      renderForm();
+    };
+
+    const renderForm = () => {
+      const user = auth.currentUser;
+      root.innerHTML = `
+        <div class="partner-card">
+          <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
+            <button type="button" id="sign-out" class="link-btn">Changer</button></p>
+          <form id="societe-form">
+            <label>Nom de la société *<input name="companyName" required /></label>
+            <label>Nom du gérant *<input name="ownerName" required /></label>
+            <label>Téléphone du gérant *<input name="phoneNumber" id="phoneNumber" type="tel" placeholder="+22670123456" required /></label>
+            <label class="checkbox"><input type="checkbox" id="wa-same" checked /> Mon numéro WhatsApp est le même</label>
+            <div id="wa-wrap" hidden>
+              <label>WhatsApp *<input name="whatsappNumber" id="whatsappNumber" type="tel" /></label>
+            </div>
+            <label>Email *<input name="email" type="email" value="${user.email || ''}" required /></label>
+            <label>Ville *<select name="city" required>${CITIES.map((c) => `<option value="${c}">${c}</option>`).join('')}</select></label>
+            <fieldset>
+              <legend>Types de véhicules *</legend>
+              <label class="checkbox"><input type="checkbox" name="vehicleTypes" value="motorcycle" checked /> Moto</label>
+              <label class="checkbox"><input type="checkbox" name="vehicleTypes" value="bicycle" /> Vélo</label>
+              <label class="checkbox"><input type="checkbox" name="vehicleTypes" value="car" /> Voiture</label>
+            </fieldset>
+            <label>Réseaux sociaux (optionnel)<input name="socialMedia" placeholder="Facebook / Instagram" /></label>
+            <label>Note (optionnel)<textarea name="note"></textarea></label>
+            <p id="form-error" class="error" hidden></p>
+            <button type="submit" class="btn btn-primary">Envoyer ma candidature</button>
+          </form>
+        </div>`;
+      document.getElementById('sign-out').onclick = () => auth.signOut().then(() => location.reload());
+      bindWhatsAppToggle('wa-same', 'wa-wrap', 'whatsappNumber', 'phoneNumber');
+
+      document.getElementById('societe-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const err = document.getElementById('form-error');
+        err.hidden = true;
+        const phone = normalizePhone(fd.get('phoneNumber'));
+        if (!validPhone(phone)) { err.textContent = 'Téléphone invalide.'; err.hidden = false; return; }
+        const waSame = document.getElementById('wa-same').checked;
+        const whatsapp = waSame ? phone : normalizePhone(fd.get('whatsappNumber'));
+        if (!validPhone(whatsapp)) { err.textContent = 'WhatsApp invalide.'; err.hidden = false; return; }
+        const vehicleTypes = fd.getAll('vehicleTypes');
+        try {
+          await callFunction('submitPartnerApplication', {
+            partnerType: 'delivery_company',
+            companyName: fd.get('companyName'),
+            ownerName: fd.get('ownerName'),
+            phoneNumber: phone,
+            whatsappSameAsPhone: waSame,
+            whatsappNumber: whatsapp,
+            email: fd.get('email'),
+            city: fd.get('city'),
+            vehicleTypes,
+            socialMedia: fd.get('socialMedia'),
+            note: fd.get('note'),
+          });
+          showConfirmation(
+            root,
+            'Votre demande a été reçue. L\'équipe AfroBite vous contactera sur WhatsApp dans les prochains jours.'
+          );
+        } catch (ex) {
+          err.textContent = ex.message;
+          err.hidden = false;
+        }
+      };
+    };
+
+    auth.onAuthStateChanged((u) => {
+      if (u) start();
+      else renderAuth(root, 'delivery_company', start);
+    });
+  }
+
   const page = document.body.dataset.partnerPage;
   if (page === 'restaurant') initRestaurantPage();
   else if (page === 'livreur') initLivreurPage();
+  else if (page === 'societe') initSocietePage();
 })();
