@@ -35,7 +35,49 @@
         <label>Mot de passe<input type="password" name="password" required /></label>
         <button type="submit" class="btn-primary">Se connecter</button>
         <p id="login-error" class="error" hidden></p>
-      </form>`;
+      </form>
+      <div class="partner-card" style="margin-top:1rem;">
+        <p style="color:#ccc;margin-bottom:0.75rem;">Ou connectez-vous avec :</p>
+        <button type="button" id="google-login" class="btn-secondary" style="width:100%;margin-bottom:0.5rem;">Google</button>
+        <button type="button" id="apple-login" class="btn-secondary" style="width:100%;">Apple</button>
+      </div>`;
+    const goAfterLogin = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      const token = await user.getIdTokenResult(true);
+      if (!token.claims.companyAdminOf) {
+        window.location.href = 'unauthorized.html';
+        return;
+      }
+      window.location.href = 'dashboard.html';
+    };
+
+    document.getElementById('google-login').onclick = async () => {
+      const err = document.getElementById('login-error');
+      err.hidden = true;
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        await auth.signInWithPopup(provider);
+        await goAfterLogin();
+      } catch (ex) {
+        err.textContent = ex.message;
+        err.hidden = false;
+      }
+    };
+
+    document.getElementById('apple-login').onclick = async () => {
+      const err = document.getElementById('login-error');
+      err.hidden = true;
+      try {
+        const provider = new firebase.auth.OAuthProvider('apple.com');
+        await auth.signInWithPopup(provider);
+        await goAfterLogin();
+      } catch (ex) {
+        err.textContent = ex.message;
+        err.hidden = false;
+      }
+    };
+
     document.getElementById('login-form').onsubmit = async (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
@@ -43,7 +85,7 @@
       err.hidden = true;
       try {
         await auth.signInWithEmailAndPassword(fd.get('email'), fd.get('password'));
-        window.location.href = 'dashboard.html';
+        await goAfterLogin();
       } catch (ex) {
         err.textContent = ex.message;
         err.hidden = false;
