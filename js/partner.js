@@ -246,14 +246,27 @@
     sync();
   }
 
+  function setButtonLoading(btn, loading, defaultLabel) {
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.classList.toggle('is-loading', loading);
+    btn.textContent = loading ? 'Envoi en cours…' : defaultLabel;
+  }
+
   function renderAuth(container, partnerType, onAuthed) {
     container.innerHTML = `
       <div class="partner-card partner-auth">
-        <h2>Connexion AfroBite</h2>
-        <p class="hint">Connectez-vous avant de remplir le formulaire.</p>
+        <h2>Créer votre compte</h2>
+        <p class="hint">Connectez-vous pour envoyer votre candidature.</p>
         <div class="auth-buttons">
-          <button type="button" class="btn btn-google" id="btn-google">Continuer avec Google</button>
-          <button type="button" class="btn btn-apple" id="btn-apple">Continuer avec Apple</button>
+          <button type="button" class="btn btn-google" id="btn-google">
+            <img src="assets/logo_google.png" alt="" width="20" height="20" />
+            Continuer avec Google
+          </button>
+          <button type="button" class="btn btn-apple" id="btn-apple">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 20.28c-.98.95-2.05 1.88-3.71 1.88-1.56 0-2.05-.93-3.82-.93-1.77 0-2.32.9-3.78.98-1.51.08-2.66-1.33-3.66-2.28C1.79 16.17 1 12.45 2.43 9.05c.72-1.66 2-2.73 3.4-2.73 1.41 0 2.3.93 3.47.93 1.15 0 1.85-.93 3.5-.93 1.25 0 2.57.68 3.3 1.75-2.9 1.6-2.43 5.77.48 7.21-.6 1.55-1.38 3.1-2.53 4.04zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+            Continuer avec Apple
+          </button>
         </div>
         <div class="divider">ou email</div>
         <div class="tabs">
@@ -285,31 +298,46 @@
     });
 
     document.getElementById('btn-google').onclick = async () => {
+      const btn = document.getElementById('btn-google');
+      btn.disabled = true;
+      btn.classList.add('is-loading');
       try {
         await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
         onAuthed();
       } catch (e) {
         showErr(e);
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('is-loading');
       }
     };
 
     document.getElementById('btn-apple').onclick = async () => {
+      const btn = document.getElementById('btn-apple');
+      btn.disabled = true;
+      btn.classList.add('is-loading');
       try {
         const p = new firebase.auth.OAuthProvider('apple.com');
         await auth.signInWithPopup(p);
         onAuthed();
       } catch (e) {
         showErr(e);
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('is-loading');
       }
     };
 
     document.getElementById('email-auth-form').onsubmit = async (e) => {
       e.preventDefault();
+      const authSubmit = document.getElementById('auth-submit');
+      setButtonLoading(authSubmit, true, 'Continuer');
       const email = document.getElementById('auth-email').value.trim();
       const pass = document.getElementById('auth-password').value;
       const pass2 = document.getElementById('auth-password2').value;
       if (mode === 'signup' && pass !== pass2) {
         showErr(new Error('Les mots de passe ne correspondent pas.'));
+        setButtonLoading(authSubmit, false, 'Continuer');
         return;
       }
       try {
@@ -321,6 +349,8 @@
         onAuthed();
       } catch (ex) {
         showErr(ex);
+      } finally {
+        setButtonLoading(authSubmit, false, 'Continuer');
       }
     };
 
@@ -332,6 +362,23 @@
     auth.onAuthStateChanged((u) => {
       if (u) onAuthed();
     });
+  }
+
+  function renderAuthBelow(root, partnerType, onAuthed) {
+    const sep = document.createElement('div');
+    sep.className = 'partner-section-separator';
+    sep.innerHTML = '<hr /><h3>Créer votre compte</h3><p class="hint">Étape finale — requis pour envoyer la candidature.</p>';
+    const slot = document.createElement('div');
+    slot.id = 'partner-auth-slot';
+    root.appendChild(sep);
+    root.appendChild(slot);
+    if (auth.currentUser) {
+      slot.innerHTML = `<p class="signed-in">Connecté : <strong>${auth.currentUser.email || auth.currentUser.uid}</strong>
+        <button type="button" id="sign-out" class="link-btn">Changer de compte</button></p>`;
+      document.getElementById('sign-out').onclick = () => auth.signOut().then(() => location.reload());
+    } else {
+      renderAuth(slot, partnerType, onAuthed);
+    }
   }
 
   function showConfirmation(root, message) {
@@ -375,13 +422,13 @@
       const user = auth.currentUser;
       root.innerHTML = `
         <div class="partner-card">
-          <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
-            <button type="button" id="sign-out" class="link-btn">Changer</button></p>
+          ${user ? `<p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
+            <button type="button" id="sign-out-top" class="link-btn">Changer</button></p>` : ''}
           <form id="restaurant-form">
             <label>Nom du restaurant *<input name="restaurantName" required /></label>
             <label>Responsable *<input name="ownerName" required /></label>
             <label>WhatsApp *<input id="whatsappNumber" name="whatsappNumber" type="tel" placeholder="+22670123456" required /></label>
-            <label>Email *<input name="email" type="email" value="${user.email || ''}" required /></label>
+            <label>Email *<input name="email" type="email" value="${user ? (user.email || '') : ''}" required /></label>
             <label>Adresse du restaurant
               <input name="address" id="restaurant-address" placeholder="Rechercher une adresse…" autocomplete="off" />
               <input type="hidden" name="latitude" id="restaurant-lat" />
@@ -395,10 +442,14 @@
             <label>Instagram<input name="instagram" /></label>
             <label>TikTok<input name="tiktok" /></label>
             <p id="form-error" class="error" hidden></p>
-            <button type="submit" class="btn btn-primary">Envoyer ma candidature</button>
+            <button type="submit" class="btn btn-primary" id="restaurant-submit">Envoyer ma candidature</button>
           </form>
         </div>`;
-      document.getElementById('sign-out').onclick = () => auth.signOut().then(() => location.reload());
+      if (user) {
+        const so = document.getElementById('sign-out-top');
+        if (so) so.onclick = () => auth.signOut().then(() => location.reload());
+      }
+      renderAuthBelow(root, 'restaurant', () => renderForm());
 
       const addrInput = document.getElementById('restaurant-address');
       const latInput = document.getElementById('restaurant-lat');
@@ -411,13 +462,21 @@
 
       document.getElementById('restaurant-form').onsubmit = async (e) => {
         e.preventDefault();
-        const fd = new FormData(e.target);
         const err = document.getElementById('form-error');
+        const submitBtn = document.getElementById('restaurant-submit');
         err.hidden = true;
+        if (!auth.currentUser) {
+          err.textContent = 'Créez votre compte ou connectez-vous ci-dessous avant d\'envoyer.';
+          err.hidden = false;
+          return;
+        }
+        setButtonLoading(submitBtn, true, 'Envoyer ma candidature');
+        const fd = new FormData(e.target);
         const whatsapp = normalizePhone(fd.get('whatsappNumber'));
         if (!validPhone(whatsapp)) {
           err.textContent = 'WhatsApp invalide (format international +226…).';
           err.hidden = false;
+          setButtonLoading(submitBtn, false, 'Envoyer ma candidature');
           return;
         }
         const phone = whatsapp;
@@ -427,6 +486,7 @@
           if (file.size > 2 * 1024 * 1024) {
             err.textContent = 'Logo max 2 Mo.';
             err.hidden = false;
+            setButtonLoading(submitBtn, false, 'Envoyer ma candidature');
             return;
           }
           logoBase64 = await new Promise((res, rej) => {
@@ -467,14 +527,14 @@
         } catch (ex) {
           err.textContent = ex.message;
           err.hidden = false;
+        } finally {
+          setButtonLoading(submitBtn, false, 'Envoyer ma candidature');
         }
       };
     };
 
-    auth.onAuthStateChanged((u) => {
-      if (u) start();
-      else renderAuth(root, 'restaurant', start);
-    });
+    auth.onAuthStateChanged(() => start());
+    start();
   }
 
   function initLivreurPage() {
@@ -508,12 +568,12 @@
         : '<option value="">— Aucune société active —</option>';
       root.innerHTML = `
         <div class="partner-card">
-          <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
-            <button type="button" id="sign-out" class="link-btn">Changer</button></p>
+          ${user ? `<p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
+            <button type="button" id="sign-out-top" class="link-btn">Changer</button></p>` : ''}
           <form id="delivery-form">
             <label>Nom complet *<input name="fullName" required placeholder="Prénom et nom" /></label>
             <label>WhatsApp *<input name="whatsappNumber" id="whatsappNumber" type="tel" placeholder="+22670123456" required /></label>
-            <label>Email *<input name="email" type="email" value="${user.email || ''}" required /></label>
+            <label>Email *<input name="email" type="email" value="${user ? (user.email || '') : ''}" required /></label>
             <label>Ville *<select name="city" required>${CITIES.map((c) => `<option value="${c}">${c}</option>`).join('')}</select></label>
             <label>Société de livraison *<select name="companyId" required>${companyOptions}</select></label>
             <label>Immatriculation (optionnel)<input name="licensePlate" /></label>
@@ -526,20 +586,32 @@
             </fieldset>
             <label>Note (optionnel)<textarea name="note"></textarea></label>
             <p id="form-error" class="error" hidden></p>
-            <button type="submit" class="btn btn-primary">Envoyer ma candidature</button>
+            <button type="submit" class="btn btn-primary" id="delivery-submit">Envoyer ma candidature</button>
           </form>
         </div>`;
-      document.getElementById('sign-out').onclick = () => auth.signOut().then(() => location.reload());
+      if (user) {
+        const so = document.getElementById('sign-out-top');
+        if (so) so.onclick = () => auth.signOut().then(() => location.reload());
+      }
+      renderAuthBelow(root, 'delivery', () => renderForm());
 
       document.getElementById('delivery-form').onsubmit = async (e) => {
         e.preventDefault();
-        const fd = new FormData(e.target);
         const err = document.getElementById('form-error');
+        const submitBtn = document.getElementById('delivery-submit');
         err.hidden = true;
+        if (!auth.currentUser) {
+          err.textContent = 'Créez votre compte ou connectez-vous ci-dessous avant d\'envoyer.';
+          err.hidden = false;
+          return;
+        }
+        setButtonLoading(submitBtn, true, 'Envoyer ma candidature');
+        const fd = new FormData(e.target);
         const whatsapp = normalizePhone(fd.get('whatsappNumber'));
         if (!validPhone(whatsapp)) {
           err.textContent = 'WhatsApp invalide (format +226…).';
           err.hidden = false;
+          setButtonLoading(submitBtn, false, 'Envoyer ma candidature');
           return;
         }
         const fullName = String(fd.get('fullName') || '').trim();
@@ -572,14 +644,14 @@
         } catch (ex) {
           err.textContent = ex.message;
           err.hidden = false;
+        } finally {
+          setButtonLoading(submitBtn, false, 'Envoyer ma candidature');
         }
       };
     };
 
-    auth.onAuthStateChanged((u) => {
-      if (u) start();
-      else renderAuth(root, 'delivery', start);
-    });
+    auth.onAuthStateChanged(() => start());
+    start();
   }
 
   // ── Delivery company application ─────────────────────────────────────────
@@ -604,13 +676,13 @@
       const user = auth.currentUser;
       root.innerHTML = `
         <div class="partner-card">
-          <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
-            <button type="button" id="sign-out" class="link-btn">Changer</button></p>
+          ${user ? `<p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
+            <button type="button" id="sign-out-top" class="link-btn">Changer</button></p>` : ''}
           <form id="societe-form">
             <label>Nom de la société *<input name="companyName" required /></label>
             <label>Nom du gérant *<input name="ownerName" required /></label>
             <label>WhatsApp du gérant *<input name="whatsappNumber" id="whatsappNumber" type="tel" placeholder="+22670123456" required /></label>
-            <label>Email *<input name="email" type="email" value="${user.email || ''}" required /></label>
+            <label>Email *<input name="email" type="email" value="${user ? (user.email || '') : ''}" required /></label>
             <label>Ville *<select name="city" required>${CITIES.map((c) => `<option value="${c}">${c}</option>`).join('')}</select></label>
             <fieldset>
               <legend>Types de véhicules *</legend>
@@ -621,18 +693,34 @@
             <label>Réseaux sociaux (optionnel)<input name="socialMedia" placeholder="Facebook / Instagram" /></label>
             <label>Note (optionnel)<textarea name="note"></textarea></label>
             <p id="form-error" class="error" hidden></p>
-            <button type="submit" class="btn btn-primary">Envoyer ma candidature</button>
+            <button type="submit" class="btn btn-primary" id="societe-submit">Envoyer ma candidature</button>
           </form>
         </div>`;
-      document.getElementById('sign-out').onclick = () => auth.signOut().then(() => location.reload());
+      if (user) {
+        const so = document.getElementById('sign-out-top');
+        if (so) so.onclick = () => auth.signOut().then(() => location.reload());
+      }
+      renderAuthBelow(root, 'delivery_company', () => renderForm());
 
       document.getElementById('societe-form').onsubmit = async (e) => {
         e.preventDefault();
-        const fd = new FormData(e.target);
         const err = document.getElementById('form-error');
+        const submitBtn = document.getElementById('societe-submit');
         err.hidden = true;
+        if (!auth.currentUser) {
+          err.textContent = 'Créez votre compte ou connectez-vous ci-dessous avant d\'envoyer.';
+          err.hidden = false;
+          return;
+        }
+        setButtonLoading(submitBtn, true, 'Envoyer ma candidature');
+        const fd = new FormData(e.target);
         const whatsapp = normalizePhone(fd.get('whatsappNumber'));
-        if (!validPhone(whatsapp)) { err.textContent = 'WhatsApp invalide.'; err.hidden = false; return; }
+        if (!validPhone(whatsapp)) {
+          err.textContent = 'WhatsApp invalide.';
+          err.hidden = false;
+          setButtonLoading(submitBtn, false, 'Envoyer ma candidature');
+          return;
+        }
         const phone = whatsapp;
         const vehicleTypes = fd.getAll('vehicleTypes');
         try {
@@ -656,14 +744,14 @@
         } catch (ex) {
           err.textContent = ex.message;
           err.hidden = false;
+        } finally {
+          setButtonLoading(submitBtn, false, 'Envoyer ma candidature');
         }
       };
     };
 
-    auth.onAuthStateChanged((u) => {
-      if (u) start();
-      else renderAuth(root, 'delivery_company', start);
-    });
+    auth.onAuthStateChanged(() => start());
+    start();
   }
 
   function initPartenaireHub() {

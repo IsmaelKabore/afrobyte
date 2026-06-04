@@ -226,6 +226,69 @@
   text-align: center;
 }
 
-.confirm-only[hidden] {
-  display: none !important;
+.btn-google,
+.btn-apple {
+  gap: 0.5rem;
+}
+
+.btn-google img,
+.btn-apple svg {
+  flex-shrink: 0;
+}
+
+.btn.is-loading {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.partner-section-separator {
+  margin: 2rem 0 1rem;
+  text-align: center;
+}
+
+.partner-section-separator hr {
+  border: none;
+  border-top: 1px solid rgba(212, 160, 23, 0.45);
+  margin-bottom: 1.25rem;
+}
+
+.partner-section-separator h3 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #1a1408;
+  margin: 0 0 0.35rem;
+}
+
+.partner-auth h2 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  margin: 0 0 0.35rem;
+}
+
+@media (max-width: 480px) {
+  .partner-hero {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .partner-hero h1 {
+    font-size: 1.5rem;
+  }
+
+  .partner-flow {
+    padding: 1rem 0.75rem 2.5rem;
+  }
+
+  .partner-card {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+
+  .btn {
+    min-height: 2.75rem;
+    font-size: 0.9375rem;
+  }
+
+  .mapbox-mini-map {
+    height: 180px;
+  }
 }
