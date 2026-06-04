@@ -7,3 +7,6 @@ package-lock.json
 .DS_Store
 *.log
 service-account*.json
+.vercel
+js/mapbox-config.js
+js/mapbox-config.js

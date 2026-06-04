@@ -52,15 +52,15 @@
     return PHONE_RE.test(normalizePhone(input));
   }
 
-  async function callFunction(name, data) {
+  async function callFunction(name, data, { requireUser = true } = {}) {
     const user = auth.currentUser;
-    if (!user) throw new Error('Non connecté');
-    const token = await user.getIdToken();
+    if (requireUser && !user) throw new Error('Non connecté');
+    const token = user ? await user.getIdToken() : null;
     const res = await fetch(`${FUNCTIONS_BASE}/${name}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({ data }),
     });
@@ -82,6 +82,51 @@
       'auth/popup-closed-by-user': 'Connexion annulée.',
     };
     return m[code] || 'Erreur de connexion.';
+  }
+
+  function attachMapboxAddressSearch(inputEl, onPick) {
+    const token = window.AFROBITE_MAPBOX_TOKEN;
+    if (!token || !inputEl) return;
+    let list = inputEl.parentElement.querySelector('.mapbox-suggestions');
+    if (!list) {
+      list = document.createElement('ul');
+      list.className = 'mapbox-suggestions';
+      list.hidden = true;
+      inputEl.parentElement.appendChild(list);
+    }
+    let timer;
+    inputEl.addEventListener('input', () => {
+      clearTimeout(timer);
+      const q = inputEl.value.trim();
+      if (q.length < 3) {
+        list.hidden = true;
+        return;
+      }
+      timer = setTimeout(async () => {
+        try {
+          const url =
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json` +
+            `?access_token=${encodeURIComponent(token)}&limit=5&country=bf&language=fr`;
+          const res = await fetch(url);
+          const data = await res.json();
+          list.innerHTML = '';
+          (data.features || []).forEach((f) => {
+            const li = document.createElement('li');
+            li.textContent = f.place_name;
+            li.onclick = () => {
+              inputEl.value = f.place_name;
+              list.hidden = true;
+              const [lng, lat] = f.center;
+              onPick({ lat, lng, placeName: f.place_name });
+            };
+            list.appendChild(li);
+          });
+          list.hidden = !list.children.length;
+        } catch (_) {
+          list.hidden = true;
+        }
+      }, 350);
+    });
   }
 
   function bindWhatsAppToggle(checkboxId, wrapId, inputId, phoneInputId) {
@@ -242,7 +287,11 @@
               <label>WhatsApp *<input name="whatsappNumber" type="tel" placeholder="+22670123456" /></label>
             </div>
             <label>Email *<input name="email" type="email" value="${user.email || ''}" required /></label>
-            <label>Adresse *<input name="address" required /></label>
+            <label>Localisation du restaurant (optionnel)
+              <input name="address" id="restaurant-address" placeholder="Rechercher sur la carte…" autocomplete="off" />
+              <input type="hidden" name="latitude" id="restaurant-lat" />
+              <input type="hidden" name="longitude" id="restaurant-lng" />
+            </label>
             <label>Ville *<select name="city" required>${CITIES.map((c) => `<option value="${c}">${c}</option>`).join('')}</select></label>
             <label>Description (50–500 car.) *<textarea name="description" minlength="50" maxlength="500" required></textarea></label>
             <label>Logo (optionnel, JPG/PNG max 2 Mo)<input type="file" name="logo" accept="image/jpeg,image/png" /></label>
@@ -260,6 +309,12 @@
       if (phoneInput && !phoneInput.id) phoneInput.id = 'phoneNumber';
       const waInput = document.querySelector('[name="whatsappNumber"]');
       if (waInput && !waInput.id) waInput.id = 'whatsappNumber';
+
+      const addrInput = document.getElementById('restaurant-address');
+      attachMapboxAddressSearch(addrInput, ({ lat, lng }) => {
+        document.getElementById('restaurant-lat').value = lat;
+        document.getElementById('restaurant-lng').value = lng;
+      });
 
       document.getElementById('restaurant-form').onsubmit = async (e) => {
         e.preventDefault();
@@ -295,6 +350,8 @@
           });
         }
         try {
+          const lat = parseFloat(fd.get('latitude'));
+          const lng = parseFloat(fd.get('longitude'));
           await callFunction('submitPartnerApplication', {
             partnerType: 'restaurant',
             restaurantName: fd.get('restaurantName'),
@@ -304,6 +361,8 @@
             whatsappNumber: whatsapp,
             email: fd.get('email'),
             address: fd.get('address'),
+            latitude: Number.isFinite(lat) ? lat : null,
+            longitude: Number.isFinite(lng) ? lng : null,
             city: fd.get('city'),
             description: fd.get('description'),
             websiteUrl: fd.get('websiteUrl'),
@@ -350,8 +409,16 @@
       renderForm();
     };
 
-    const renderForm = () => {
+    const renderForm = async () => {
       const user = auth.currentUser;
+      let companies = [];
+      try {
+        const res = await callFunction('listActiveDeliveryCompanies', {}, { requireUser: false });
+        companies = res.companies || [];
+      } catch (_) {}
+      const companyOptions = companies.length
+        ? companies.map((c) => `<option value="${c.id}">${c.name}</option>`).join('')
+        : '<option value="">— Aucune société active —</option>';
       root.innerHTML = `
         <div class="partner-card">
           <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
@@ -366,6 +433,9 @@
             </div>
             <label>Email *<input name="email" type="email" value="${user.email || ''}" required /></label>
             <label>Ville *<select name="city" required>${CITIES.map((c) => `<option value="${c}">${c}</option>`).join('')}</select></label>
+            <label>Société de livraison *<select name="companyId" required>${companyOptions}</select></label>
+            <label>Immatriculation (optionnel)<input name="licensePlate" /></label>
+            <label>Pièce d'identité / CNB (optionnel)<input name="idDocumentRef" placeholder="Réf. ou n° document" /></label>
             <fieldset>
               <legend>Type de véhicule *</legend>
               <label class="radio"><input type="radio" name="vehicleType" value="motorcycle" required checked /> Moto</label>
@@ -399,6 +469,8 @@
           return;
         }
         try {
+          const companyId = fd.get('companyId');
+          const company = companies.find((c) => c.id === companyId);
           await callFunction('submitPartnerApplication', {
             partnerType: 'delivery',
             firstName: fd.get('firstName'),
@@ -408,6 +480,10 @@
             whatsappNumber: whatsapp,
             email: fd.get('email'),
             city: fd.get('city'),
+            companyId: companyId || null,
+            companyName: company?.name || null,
+            licensePlate: fd.get('licensePlate'),
+            idDocumentRef: fd.get('idDocumentRef'),
             vehicleType: fd.get('vehicleType'),
             note: fd.get('note'),
           });
@@ -519,8 +595,28 @@
     });
   }
 
+  function initPartenaireHub() {
+    const root = document.getElementById('partner-app');
+    if (!root) return;
+    const tabs = document.querySelectorAll('[data-partner-tab]');
+    const frame = document.createElement('iframe');
+    frame.title = 'Inscription partenaire AfroBite';
+    frame.style.cssText = 'width:100%;min-height:780px;border:0;border-radius:12px;background:#1a1208;';
+    root.appendChild(frame);
+
+    const setTab = (t) => {
+      tabs.forEach((el) => el.classList.toggle('active', el.dataset.partnerTab === t));
+      frame.src = t === 'livreur' ? 'partner-livreur.html' : 'partner-restaurant.html';
+    };
+    tabs.forEach((el) => {
+      el.addEventListener('click', () => setTab(el.dataset.partnerTab));
+    });
+    setTab('restaurant');
+  }
+
   const page = document.body.dataset.partnerPage;
-  if (page === 'restaurant') initRestaurantPage();
+  if (page === 'partenaire') initPartenaireHub();
+  else if (page === 'restaurant') initRestaurantPage();
   else if (page === 'livreur') initLivreurPage();
   else if (page === 'societe') initSocietePage();
 })();
