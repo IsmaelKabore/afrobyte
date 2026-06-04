@@ -14,6 +14,7 @@
     <title>AfroBite — Devenez Partenaire Restaurant</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/partenaire.css">
+    <link rel="stylesheet" href="css/partner.css">
 </head>
 <body class="partenaire-page" data-page="partenaire" data-partner-page="partenaire">
     <header class="site-header">
@@ -107,12 +108,72 @@
             </div>
         </section>
 
+        <section class="partenaire-section fade-in" id="partner-onboarding-form">
+            <h2>Candidature entreprise</h2>
+            <p class="section-subtitle">Restaurant ou société de livraison — nous vous contactons sur WhatsApp avant toute activation.</p>
+            <div class="partner-type-tabs" role="tablist" id="lead-type-tabs">
+                <button type="button" class="partner-tab active" data-lead-tab="restaurant" role="tab">Restaurant</button>
+                <button type="button" class="partner-tab" data-lead-tab="societe" role="tab">Société de livraison</button>
+            </div>
+            <form id="partner-lead-form-restaurant" class="partner-form" novalidate data-lead-panel="restaurant">
+                <div class="partner-form-grid">
+                    <label>Nom du restaurant *<input type="text" name="restaurantName" required /></label>
+                    <label>Nom du responsable *<input type="text" name="ownerName" required /></label>
+                    <label>WhatsApp *<input type="tel" name="phone" placeholder="+22670123456" required /></label>
+                    <label>Email *<input type="email" name="email" required /></label>
+                    <label>Ville *<select name="city" required>
+                        <option value="Ouagadougou">Ouagadougou</option>
+                        <option value="Bobo-Dioulasso">Bobo-Dioulasso</option>
+                        <option value="Koudougou">Koudougou</option>
+                        <option value="Ouahigouya">Ouahigouya</option>
+                        <option value="Banfora">Banfora</option>
+                        <option value="Dédougou">Dédougou</option>
+                        <option value="Autre">Autre</option>
+                    </select></label>
+                    <label class="full">Adresse / localisation *
+                        <input type="text" name="address" id="lead-restaurant-address" placeholder="Adresse ou quartier" required autocomplete="off" />
+                        <input type="hidden" name="latitude" id="lead-restaurant-lat" />
+                        <input type="hidden" name="longitude" id="lead-restaurant-lng" />
+                    </label>
+                    <label class="full">Description ou note<textarea name="description" rows="4" placeholder="Cuisine, capacité, horaires…"></textarea></label>
+                </div>
+                <button type="submit" class="partner-submit-btn" data-lead-submit>Envoyer la candidature</button>
+                <p class="partner-form-message" aria-live="polite" data-lead-message></p>
+            </form>
+            <form id="partner-lead-form-societe" class="partner-form" novalidate data-lead-panel="societe" hidden>
+                <div class="partner-form-grid">
+                    <label>Nom de la société *<input type="text" name="companyName" required /></label>
+                    <label>Nom du responsable *<input type="text" name="ownerName" required /></label>
+                    <label>WhatsApp *<input type="tel" name="phone" placeholder="+22670123456" required /></label>
+                    <label>Email *<input type="email" name="email" required /></label>
+                    <label>Ville *<select name="city" required>
+                        <option value="Ouagadougou">Ouagadougou</option>
+                        <option value="Bobo-Dioulasso">Bobo-Dioulasso</option>
+                        <option value="Koudougou">Koudougou</option>
+                        <option value="Ouahigouya">Ouahigouya</option>
+                        <option value="Banfora">Banfora</option>
+                        <option value="Dédougou">Dédougou</option>
+                        <option value="Autre">Autre</option>
+                    </select></label>
+                    <label class="full">Zone couverte *<input type="text" name="coveredZone" placeholder="Quartiers, communes, villes desservies" required /></label>
+                    <label>Nombre approximatif de livreurs<input type="number" name="approximateDriverCount" min="1" placeholder="Ex. 10" /></label>
+                    <label class="full">Description ou note<textarea name="note" rows="4" placeholder="Flotte, types de véhicules, expérience…"></textarea></label>
+                </div>
+                <button type="submit" class="partner-submit-btn" data-lead-submit>Envoyer la candidature</button>
+                <p class="partner-form-message" aria-live="polite" data-lead-message></p>
+            </form>
+        </section>
+
+        <div class="partner-page-separator" aria-hidden="true">
+            <hr />
+        </div>
+
         <section class="partenaire-section fade-in" id="create-account">
             <h2>Créer votre compte</h2>
-            <p class="section-subtitle">Restaurant ou livreur — validation par l'équipe AfroBite (statut en attente)</p>
+            <p class="section-subtitle">Compte restaurant ou livreur — distinct de la candidature entreprise. Validation AfroBite requise avant accès à l'application.</p>
             <div class="partner-type-tabs" role="tablist">
-                <button type="button" class="partner-tab active" data-partner-tab="restaurant" role="tab">Restaurant</button>
-                <button type="button" class="partner-tab" data-partner-tab="livreur" role="tab">Livreur</button>
+                <button type="button" class="partner-tab active" data-partner-tab="restaurant" role="tab">Compte restaurant</button>
+                <button type="button" class="partner-tab" data-partner-tab="livreur" role="tab">Compte livreur</button>
             </div>
             <div id="partner-app" class="partner-app-wrap"></div>
         </section>
@@ -180,6 +241,9 @@
         }
         .partner-tab.active { background: #d4a017; color: #1a1208; border-color: #d4a017; }
         .partner-app-wrap { max-width: 640px; margin: 0 auto; text-align: left; }
+        .partner-page-separator { max-width: 820px; margin: 2.5rem auto; padding: 0 1rem; }
+        .partner-page-separator hr { border: none; border-top: 1px solid rgba(212, 160, 23, 0.45); }
+        .partner-form select { border: 1px solid #d9c9ac; border-radius: 10px; padding: 11px 12px; font-size: 15px; background: #fff; width: 100%; }
         .mapbox-suggestions { list-style: none; margin: 0; padding: 0; background: #fff; border-radius: 8px; max-height: 180px; overflow-y: auto; }
         .mapbox-suggestions li { padding: 10px 12px; cursor: pointer; color: #222; border-bottom: 1px solid #eee; }
         .mapbox-suggestions li:hover { background: #f5f0e6; }
