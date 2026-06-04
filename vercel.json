@@ -3,9 +3,13 @@
   "trailingSlash": false,
   "rewrites": [
     { "source": "/refund/:token", "destination": "/refund.html?token=:token" },
-    { "source": "/partner", "destination": "/partner.html" },
+    { "source": "/partner", "destination": "/partenaire.html" },
     { "source": "/partner/restaurant", "destination": "/partner-restaurant.html" },
-    { "source": "/partner/livreur", "destination": "/partner-livreur.html" }
+    { "source": "/partner/livreur", "destination": "/partner-livreur.html" },
+    { "source": "/partner/societe-livraison", "destination": "/partner-societe-livraison.html" }
+  ],
+  "redirects": [
+    { "source": "/partner.html", "destination": "/partenaire.html", "permanent": true }
   ],
   "headers": [
     {
