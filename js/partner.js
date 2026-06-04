@@ -250,7 +250,7 @@
     container.innerHTML = `
       <div class="partner-card partner-auth">
         <h2>Connexion AfroBite</h2>
-        <p class="hint">Étape 4 — après validation par l'équipe AfroBite. Si vous n'avez pas encore envoyé votre demande, commencez par <a href="partenaire.html#partner-onboarding-form">partenaire.html</a>.</p>
+        <p class="hint">Connectez-vous avant de remplir le formulaire.</p>
         <div class="auth-buttons">
           <button type="button" class="btn btn-google" id="btn-google">Continuer avec Google</button>
           <button type="button" class="btn btn-apple" id="btn-apple">Continuer avec Apple</button>
@@ -666,8 +666,28 @@
     });
   }
 
+  function initPartenaireHub() {
+    const root = document.getElementById('partner-app');
+    if (!root) return;
+    const tabs = document.querySelectorAll('[data-partner-tab]');
+    const frame = document.createElement('iframe');
+    frame.title = 'Inscription partenaire AfroBite';
+    frame.style.cssText = 'width:100%;min-height:780px;border:0;border-radius:12px;background:#1a1208;';
+    root.appendChild(frame);
+
+    const setTab = (t) => {
+      tabs.forEach((el) => el.classList.toggle('active', el.dataset.partnerTab === t));
+      frame.src = t === 'livreur' ? 'partner-livreur.html' : 'partner-restaurant.html';
+    };
+    tabs.forEach((el) => {
+      el.addEventListener('click', () => setTab(el.dataset.partnerTab));
+    });
+    setTab('restaurant');
+  }
+
   const page = document.body.dataset.partnerPage;
-  if (page === 'restaurant') initRestaurantPage();
+  if (page === 'partenaire') initPartenaireHub();
+  else if (page === 'restaurant') initRestaurantPage();
   else if (page === 'livreur') initLivreurPage();
   else if (page === 'societe') initSocietePage();
 })();
