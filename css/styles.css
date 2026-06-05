@@ -133,12 +133,85 @@ a.logo {
 body[data-page="index"] .nav-links a[href="index.html"],
 body[data-page="about"] .nav-links a[href="about.html"],
 body[data-page="support"] .nav-links a[href="support.html"],
-body[data-page="partenaire"] .nav-links a[href="partenaire.html"],
+body[data-page="partenaire"] .nav-dropdown-trigger,
+body[data-page="partenaire-restaurant"] .nav-dropdown-trigger,
+body[data-page="partenaire-livraison"] .nav-dropdown-trigger,
 body[data-page="privacy"] .nav-links a[href="privacy-policy.html"],
 body[data-page="terms"] .nav-links a[href="terms.html"] {
     color: var(--gold-light);
     font-weight: 600;
     background: rgba(212, 160, 23, 0.12);
+}
+
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-trigger {
+    color: rgba(255, 255, 255, 0.72);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    padding: 0.35rem 0.5rem;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+    background: none;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.nav-dropdown-trigger::after {
+    content: '▾';
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.nav-dropdown-trigger:hover,
+.nav-dropdown.open .nav-dropdown-trigger {
+    color: var(--gold-light);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    min-width: 11rem;
+    list-style: none;
+    margin: 0;
+    padding: 0.35rem;
+    background: #141414;
+    border: 1px solid rgba(212, 160, 23, 0.25);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    z-index: 50;
+}
+
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown.open .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu {
+    display: block;
+}
+
+.nav-dropdown-menu a {
+    display: block;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.nav-dropdown-menu a:hover {
+    background: rgba(212, 160, 23, 0.15);
+    color: var(--gold-light);
 }
 
 .nav-toggle {
@@ -800,6 +873,23 @@ footer {
 
     .nav-links a {
         padding: 0.65rem 0.75rem;
+    }
+
+    .nav-dropdown-menu {
+        position: static;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        padding: 0 0 0 0.75rem;
+        margin-top: 0.15rem;
+    }
+
+    .nav-dropdown:hover .nav-dropdown-menu {
+        display: none;
+    }
+
+    .nav-dropdown.open .nav-dropdown-menu {
+        display: block;
     }
 
     .page-hero {

@@ -40,12 +40,19 @@ Same secret is used by foodtok Cloud Functions and verified on submit.
 
 After this initial setup, every push to GitHub triggers automatic redeployment on Vercel.
 
-### Partenariat (page unique `partenaire.html`)
+### Partenariat
 
-- **Bloc 1 — candidature entreprise** (sans compte) : restaurant ou société de livraison → `submitPartnerLead` → collection `partner_applications`
-- **Bloc 2 — créer votre compte** (restaurant ou livreur uniquement) : Firebase Auth + `setupPartnerAccount` → profil `pending`
-- Les anciennes URLs `partner.html`, `partner-restaurant.html`, `partner-livreur.html`, `partner-societe-livraison.html` redirigent vers `partenaire.html`
-- **Admin** : projet séparé `chop-tok-admin` — ne pas dupliquer sur afrobyte
+Navigation **Partenaire → Restaurant | Livraison** :
+
+| Page | Parcours |
+|------|----------|
+| `partenaire-restaurant.html` | Étape 1 candidature restaurant → Étape 2 compte (Auth + `setupPartnerAccount`, statut pending) |
+| `partenaire-livraison.html` | Toggle société (candidature seule, sans Auth) ou livreur (compte Auth pending) |
+| `partenaire.html` | Hub de choix + redirections depuis anciennes URLs Vercel (`/partner/restaurant`, etc.) |
+
+Leads publics → `submitPartnerLead` → `partner_applications`. Comptes → `setupPartnerAccount`.
+
+Les fichiers `partner*.html` redirigent vers les pages dédiées. `vercel.json` n'est pas modifié.
 
 Déploiement : push GitHub → le projet Vercel **afrobyte** existant redéploie automatiquement. Ne pas créer de second projet Vercel.
 

@@ -12,6 +12,18 @@
     });
   }
 
+  document.querySelectorAll('.nav-dropdown').forEach(function (item) {
+    const trigger = item.querySelector('.nav-dropdown-trigger');
+    if (!trigger) return;
+    trigger.addEventListener('click', function (e) {
+      if (window.matchMedia('(max-width: 768px)').matches) {
+        e.preventDefault();
+        const isOpen = item.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', String(isOpen));
+      }
+    });
+  });
+
   document.querySelectorAll('.faq-accordion').forEach(function (item) {
     const btn = item.querySelector('.faq-question');
     const panel = item.querySelector('.faq-answer');

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AfroBite — Partenaire livraison : société de livraison ou compte livreur.">
+    <link rel="icon" href="assets/logo-afrobite.png" type="image/png">
+    <title>AfroBite — Partenaire Livraison</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/partenaire.css">
+    <link rel="stylesheet" href="css/partner.css">
+    <link rel="stylesheet" href="css/partner-forms.css">
+</head>
+<body class="partenaire-page" data-page="partenaire-livraison" data-partner-page="partenaire-livraison">
+    <header class="site-header">
+        <nav class="site-nav">
+            <a href="index.html" class="logo-link" aria-label="AfroBite — Accueil">
+                <img src="assets/logo-afrobite.png" alt="AfroBite" class="logo-img" width="132" height="44">
+            </a>
+            <button type="button" class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false"><span></span></button>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li class="nav-dropdown">
+                    <a href="partenaire.html" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">Partenaire</a>
+                    <ul class="nav-dropdown-menu" role="menu">
+                        <li role="none"><a href="partenaire-restaurant.html" role="menuitem">Restaurant</a></li>
+                        <li role="none"><a href="partenaire-livraison.html" role="menuitem">Livraison</a></li>
+                    </ul>
+                </li>
+                <li><a href="about.html">À propos</a></li>
+                <li><a href="support.html">Aide &amp; Support</a></li>
+                <li><a href="privacy-policy.html">Confidentialité</a></li>
+                <li><a href="terms.html">Conditions</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="partenaire-section fade-in visible" style="padding-top: 3rem;">
+            <h1>Partenaire Livraison</h1>
+            <p class="section-subtitle">Société de livraison (candidature) ou compte livreur (inscription).</p>
+            <div class="partner-type-tabs" role="tablist">
+                <button type="button" class="partner-tab active" data-livraison-tab="societe" role="tab">Société de livraison</button>
+                <button type="button" class="partner-tab" data-livraison-tab="livreur" role="tab">Compte livreur</button>
+            </div>
+        </section>
+
+        <section class="partenaire-section fade-in visible" id="societe-candidature">
+            <h2>Candidature société</h2>
+            <form id="partner-lead-form-societe" class="partner-form" novalidate>
+                <div class="partner-form-grid">
+                    <label>Nom société *<input type="text" name="companyName" required /></label>
+                    <label>Responsable *<input type="text" name="ownerName" required /></label>
+                    <label>WhatsApp *<input type="tel" name="phone" placeholder="+22670123456" required /></label>
+                    <label>Email *<input type="email" name="email" required /></label>
+                    <label>Ville *<select name="city" required>
+                        <option value="Ouagadougou">Ouagadougou</option>
+                        <option value="Bobo-Dioulasso">Bobo-Dioulasso</option>
+                        <option value="Koudougou">Koudougou</option>
+                        <option value="Ouahigouya">Ouahigouya</option>
+                        <option value="Banfora">Banfora</option>
+                        <option value="Dédougou">Dédougou</option>
+                        <option value="Autre">Autre</option>
+                    </select></label>
+                    <label class="full">Zone couverte *<input type="text" name="coveredZone" placeholder="Quartiers, communes, villes desservies" required /></label>
+                    <label>Nombre de livreurs<input type="number" name="approximateDriverCount" min="1" placeholder="Ex. 10" /></label>
+                    <label class="full">Description<textarea name="note" rows="4" placeholder="Flotte, types de véhicules, expérience…"></textarea></label>
+                </div>
+                <button type="submit" class="partner-submit-btn" data-lead-submit>Envoyer la candidature</button>
+                <p class="partner-form-message" aria-live="polite" data-lead-message></p>
+            </form>
+            <div id="societe-success-block" class="partner-form societe-success-block" hidden>
+                <p class="partner-form-message success" role="status">
+                    Merci. Notre équipe vous contactera pour finaliser votre intégration.
+                </p>
+            </div>
+        </section>
+
+        <section class="partenaire-section fade-in visible" id="livreur-account-section" hidden>
+            <h2>Créer un compte livreur</h2>
+            <p class="section-subtitle">Statut <strong>pending</strong> — validation admin obligatoire avant accès à l'application.</p>
+            <div id="partner-app-livreur" class="partner-app-wrap"></div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <img src="assets/logo-afrobite.png" alt="" class="footer-logo" width="120" height="40">
+                <p class="footer-tagline">Rejoignez le réseau de livraison AfroBite.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Liens utiles</h3>
+                <ul>
+                    <li><a href="partenaire.html">Devenir partenaire</a></li>
+                    <li><a href="support.html">Aide &amp; Support</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p><a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2026 AfroBite. Tous droits réservés.</p></div>
+    </footer>
+
+    <script src="js/site.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+    <script src="js/partenaire.js"></script>
+</body>
+</html>

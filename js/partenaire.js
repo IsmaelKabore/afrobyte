@@ -1,6 +1,5 @@
 /**
- * AfroBite partenaire — partenaire.html uniquement
- * Candidature entreprise (sans auth) + comptes restaurant/livreur (avec auth)
+ * AfroBite partenaire — partenaire-restaurant.html & partenaire-livraison.html
  */
 (function () {
   const FIREBASE_CONFIG = {
@@ -159,20 +158,20 @@
     let mode = 'signup';
     const tabs = container.querySelectorAll('.tab');
     const confirm = container.querySelector('.confirm-only');
-    const errEl = document.getElementById('auth-error');
+    const errEl = container.querySelector('#auth-error');
 
     tabs.forEach((t) => {
       t.addEventListener('click', () => {
         mode = t.dataset.mode;
         tabs.forEach((x) => x.classList.toggle('active', x === t));
         confirm.hidden = mode !== 'signup';
-        document.getElementById('auth-password').autocomplete =
+        container.querySelector('#auth-password').autocomplete =
           mode === 'signup' ? 'new-password' : 'current-password';
       });
     });
 
-    document.getElementById('btn-google').onclick = async () => {
-      const btn = document.getElementById('btn-google');
+    container.querySelector('#btn-google').onclick = async () => {
+      const btn = container.querySelector('#btn-google');
       btn.disabled = true;
       btn.classList.add('is-loading');
       try {
@@ -186,8 +185,8 @@
       }
     };
 
-    document.getElementById('btn-apple').onclick = async () => {
-      const btn = document.getElementById('btn-apple');
+    container.querySelector('#btn-apple').onclick = async () => {
+      const btn = container.querySelector('#btn-apple');
       btn.disabled = true;
       btn.classList.add('is-loading');
       try {
@@ -202,13 +201,13 @@
       }
     };
 
-    document.getElementById('email-auth-form').onsubmit = async (e) => {
+    container.querySelector('#email-auth-form').onsubmit = async (e) => {
       e.preventDefault();
-      const authSubmit = document.getElementById('auth-submit');
+      const authSubmit = container.querySelector('#auth-submit');
       setButtonLoading(authSubmit, true, 'Continuer');
-      const email = document.getElementById('auth-email').value.trim();
-      const pass = document.getElementById('auth-password').value;
-      const pass2 = document.getElementById('auth-password2').value;
+      const email = container.querySelector('#auth-email').value.trim();
+      const pass = container.querySelector('#auth-password').value;
+      const pass2 = container.querySelector('#auth-password2').value;
       if (mode === 'signup' && pass !== pass2) {
         showErr(new Error('Les mots de passe ne correspondent pas.'));
         setButtonLoading(authSubmit, false, 'Continuer');
@@ -242,7 +241,7 @@
     const label = partnerType === 'delivery' ? 'livreur' : 'restaurant';
     const linkMsg =
       linkedCount > 0
-        ? ' Votre candidature entreprise a été associée à ce compte.'
+        ? ' Votre candidature a été associée à ce compte.'
         : '';
     root.innerHTML = `
       <div class="partner-card success-card">
@@ -251,141 +250,87 @@
         <p class="hint">Vous pourrez vous connecter à l'application mobile une fois approuvé.</p>
         <button type="button" class="link-btn" id="sign-out-account">Changer de compte</button>
       </div>`;
-    document.getElementById('sign-out-account').onclick = () =>
+    root.querySelector('#sign-out-account').onclick = () =>
       auth.signOut().then(() => location.reload());
   }
 
-  function initLeadForms() {
-    const leadTabs = document.querySelectorAll('[data-lead-tab]');
-    const leadPanels = document.querySelectorAll('[data-lead-panel]');
-    const societeForm = document.getElementById('partner-lead-form-societe');
-    const societeSuccess = document.getElementById('societe-success-block');
-    const driverSection = document.getElementById('create-driver-account');
-    if (!leadTabs.length) return;
+  function bindLeadForm(form, partnerType, options = {}) {
+    if (!form) return;
+    const message = form.querySelector('[data-lead-message]');
+    const submitBtn = form.querySelector('[data-lead-submit]');
+    const latInput = options.latInput || null;
+    const lngInput = options.lngInput || null;
 
-    let societeSubmitted = false;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
 
-    function setLeadTab(tabId) {
-      leadTabs.forEach((el) => el.classList.toggle('active', el.dataset.leadTab === tabId));
-      leadPanels.forEach((panel) => {
-        const panelId = panel.dataset.leadPanel;
-        if (tabId === 'restaurant') {
-          panel.hidden = panelId !== 'restaurant';
-        } else {
-          if (panelId === 'restaurant') {
-            panel.hidden = true;
-          } else if (panelId === 'societe') {
-            panel.hidden = societeSubmitted;
-          } else if (panelId === 'societe-success') {
-            panel.hidden = !societeSubmitted;
-          }
-        }
-      });
-      if (driverSection) {
-        driverSection.hidden = tabId === 'societe';
+      message.textContent = '';
+      message.className = 'partner-form-message';
+      submitBtn.disabled = true;
+      const prevLabel = submitBtn.textContent;
+      submitBtn.textContent = 'Envoi en cours…';
+
+      const fd = new FormData(form);
+      const phone = normalizePhone(fd.get('phone'));
+      if (!validPhone(phone)) {
+        message.classList.add('error');
+        message.textContent = 'WhatsApp invalide (format +226…).';
+        submitBtn.disabled = false;
+        submitBtn.textContent = prevLabel;
+        return;
       }
-    }
 
-    leadTabs.forEach((tab) => {
-      tab.addEventListener('click', () => setLeadTab(tab.dataset.leadTab));
-    });
+      const payload = {
+        partnerType,
+        ownerName: String(fd.get('ownerName') || '').trim(),
+        email: String(fd.get('email') || '').trim(),
+        phone,
+        city: String(fd.get('city') || '').trim(),
+        source: options.source || 'afrobyte_partenaire_page',
+        submittedAtClient: new Date().toISOString(),
+      };
 
-    const initialTab =
-      location.hash === '#societe-livraison' || location.hash === '#societe' ? 'societe' : 'restaurant';
-    setLeadTab(initialTab);
+      if (partnerType === 'restaurant') {
+        payload.restaurantName = String(fd.get('restaurantName') || '').trim();
+        payload.address = String(fd.get('address') || '').trim();
+        payload.description = String(fd.get('description') || '').trim();
+        payload.latitude = fd.get('latitude') || null;
+        payload.longitude = fd.get('longitude') || null;
+      } else {
+        payload.companyName = String(fd.get('companyName') || '').trim();
+        payload.coveredZone = String(fd.get('coveredZone') || '').trim();
+        payload.approximateDriverCount = fd.get('approximateDriverCount') || null;
+        payload.note = String(fd.get('note') || '').trim();
+      }
 
-    const addrInput = document.getElementById('lead-restaurant-address');
-    const latInput = document.getElementById('lead-restaurant-lat');
-    const lngInput = document.getElementById('lead-restaurant-lng');
-    if (addrInput && latInput && lngInput) {
-      attachMapboxAddressSearch(addrInput, ({ lat, lng }) => {
-        latInput.value = lat;
-        lngInput.value = lng;
-      });
-    }
-
-    function bindLeadForm(form, partnerType) {
-      if (!form) return;
-      const message = form.querySelector('[data-lead-message]');
-      const submitBtn = form.querySelector('[data-lead-submit]');
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!form.reportValidity()) return;
-
-        message.textContent = '';
-        message.className = 'partner-form-message';
-        submitBtn.disabled = true;
-        const prevLabel = submitBtn.textContent;
-        submitBtn.textContent = 'Envoi en cours…';
-
-        const fd = new FormData(form);
-        const phone = normalizePhone(fd.get('phone'));
-        if (!validPhone(phone)) {
-          message.classList.add('error');
-          message.textContent = 'WhatsApp invalide (format +226…).';
-          submitBtn.disabled = false;
-          submitBtn.textContent = prevLabel;
+      try {
+        const response = await fetch(LEAD_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(json.error || 'HTTP ' + response.status);
+        form.reset();
+        if (latInput) latInput.value = '';
+        if (lngInput) lngInput.value = '';
+        if (typeof options.onSuccess === 'function') {
+          options.onSuccess();
           return;
         }
-
-        const payload = {
-          partnerType,
-          ownerName: String(fd.get('ownerName') || '').trim(),
-          email: String(fd.get('email') || '').trim(),
-          phone,
-          city: String(fd.get('city') || '').trim(),
-          source: 'afrobyte_partenaire_page',
-          submittedAtClient: new Date().toISOString(),
-        };
-
-        if (partnerType === 'restaurant') {
-          payload.restaurantName = String(fd.get('restaurantName') || '').trim();
-          payload.address = String(fd.get('address') || '').trim();
-          payload.description = String(fd.get('description') || '').trim();
-          payload.latitude = fd.get('latitude') || null;
-          payload.longitude = fd.get('longitude') || null;
-        } else {
-          payload.companyName = String(fd.get('companyName') || '').trim();
-          payload.coveredZone = String(fd.get('coveredZone') || '').trim();
-          payload.approximateDriverCount = fd.get('approximateDriverCount') || null;
-          payload.note = String(fd.get('note') || '').trim();
-        }
-
-        try {
-          const response = await fetch(LEAD_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          const json = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(json.error || 'HTTP ' + response.status);
-          form.reset();
-          if (latInput) latInput.value = '';
-          if (lngInput) lngInput.value = '';
-          if (partnerType === 'delivery_company') {
-            societeSubmitted = true;
-            if (societeForm) societeForm.hidden = true;
-            if (societeSuccess) societeSuccess.hidden = false;
-            setLeadTab('societe');
-            return;
-          }
-          message.classList.add('success');
-          message.textContent =
-            'Merci. Notre équipe vous contactera sur WhatsApp pour la suite du partenariat.';
-        } catch (_) {
-          message.classList.add('error');
-          message.textContent =
-            'Échec de l\'envoi. Réessayez ou écrivez à afrobyteapp@gmail.com.';
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = prevLabel;
-        }
-      });
-    }
-
-    bindLeadForm(document.getElementById('partner-lead-form-restaurant'), 'restaurant');
-    bindLeadForm(document.getElementById('partner-lead-form-societe'), 'delivery_company');
+        message.classList.add('success');
+        message.textContent =
+          'Merci. Notre équipe vous contactera sur WhatsApp pour la suite du partenariat.';
+      } catch (_) {
+        message.classList.add('error');
+        message.textContent =
+          'Échec de l\'envoi. Réessayez ou écrivez à afrobyteapp@gmail.com.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = prevLabel;
+      }
+    });
   }
 
   async function finalizePartnerAccount(root, accountType, extra) {
@@ -460,16 +405,16 @@
           <button type="button" class="btn btn-primary" id="account-finalize">Créer mon compte</button>
         </div>`;
 
-      document.getElementById(`sign-out-top-${rootId}`).onclick = () =>
+      root.querySelector(`#sign-out-top-${rootId}`).onclick = () =>
         auth.signOut().then(() => location.reload());
 
-      document.getElementById('account-finalize').onclick = () => {
+      root.querySelector('#account-finalize').onclick = () => {
         const extra = {};
         if (accountType === 'livreur') {
-          extra.fullName = document.getElementById('account-full-name')?.value?.trim() || '';
-          const wa = normalizePhone(document.getElementById('account-whatsapp')?.value || '');
+          extra.fullName = root.querySelector('#account-full-name')?.value?.trim() || '';
+          const wa = normalizePhone(root.querySelector('#account-whatsapp')?.value || '');
           if (wa && validPhone(wa)) extra.whatsappNumber = wa;
-          const companyId = document.getElementById('account-company')?.value || '';
+          const companyId = root.querySelector('#account-company')?.value || '';
           if (companyId) {
             extra.companyId = companyId;
             extra.companyName = companies.find((c) => c.id === companyId)?.name || null;
@@ -488,27 +433,71 @@
     render();
   }
 
-  function scrollToHash() {
-    const hash = location.hash;
-    if (hash === '#create-driver-account' || hash === '#create-account') {
-      document.getElementById('create-driver-account')?.scrollIntoView({ behavior: 'smooth' });
-    } else if (
-      hash === '#partner-onboarding-form' ||
-      hash === '#societe-livraison' ||
-      hash === '#societe'
-    ) {
-      document.getElementById('partner-onboarding-form')?.scrollIntoView({ behavior: 'smooth' });
+  function initRestaurantPage() {
+    const latInput = document.getElementById('lead-restaurant-lat');
+    const lngInput = document.getElementById('lead-restaurant-lng');
+    const addrInput = document.getElementById('lead-restaurant-address');
+    if (addrInput && latInput && lngInput) {
+      attachMapboxAddressSearch(addrInput, ({ lat, lng }) => {
+        latInput.value = lat;
+        lngInput.value = lng;
+      });
+    }
+    bindLeadForm(document.getElementById('partner-lead-form-restaurant'), 'restaurant', {
+      source: 'afrobyte_partenaire_restaurant',
+      latInput,
+      lngInput,
+    });
+    initPartnerAccountBlock('partner-app-restaurant', 'restaurant');
+  }
+
+  function initLivraisonPage() {
+    const tabs = document.querySelectorAll('[data-livraison-tab]');
+    const societeForm = document.getElementById('partner-lead-form-societe');
+    const societeSuccess = document.getElementById('societe-success-block');
+    const livreurSection = document.getElementById('livreur-account-section');
+    let societeSubmitted = false;
+
+    function setLivraisonTab(tabId) {
+      tabs.forEach((el) => el.classList.toggle('active', el.dataset.livraisonTab === tabId));
+      if (tabId === 'societe') {
+        if (societeForm) societeForm.hidden = societeSubmitted;
+        if (societeSuccess) societeSuccess.hidden = !societeSubmitted;
+        if (livreurSection) livreurSection.hidden = true;
+      } else {
+        if (societeForm) societeForm.hidden = true;
+        if (societeSuccess) societeSuccess.hidden = true;
+        if (livreurSection) livreurSection.hidden = false;
+      }
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => setLivraisonTab(tab.dataset.livraisonTab));
+    });
+
+    const initialTab =
+      location.hash === '#livreur' || location.hash === '#create-driver-account'
+        ? 'livreur'
+        : 'societe';
+    setLivraisonTab(initialTab);
+
+    bindLeadForm(document.getElementById('partner-lead-form-societe'), 'delivery_company', {
+      source: 'afrobyte_partenaire_livraison_societe',
+      onSuccess: () => {
+        societeSubmitted = true;
+        if (societeForm) societeForm.hidden = true;
+        if (societeSuccess) societeSuccess.hidden = false;
+      },
+    });
+
+    initPartnerAccountBlock('partner-app-livreur', 'livreur');
+
+    if (location.hash === '#livreur' || location.hash === '#create-driver-account') {
+      document.getElementById('livreur-account-section')?.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
-  function initPartenairePage() {
-    initLeadForms();
-    initPartnerAccountBlock('partner-app-restaurant', 'restaurant');
-    initPartnerAccountBlock('partner-app-livreur', 'livreur');
-    scrollToHash();
-  }
-
-  if (document.body.dataset.partnerPage === 'partenaire') {
-    initPartenairePage();
-  }
+  const page = document.body.dataset.partnerPage;
+  if (page === 'partenaire-restaurant') initRestaurantPage();
+  else if (page === 'partenaire-livraison') initLivraisonPage();
 })();
