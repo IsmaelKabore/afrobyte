@@ -1,6 +1,6 @@
 /**
- * AfroBite partner onboarding — afrobite.app
- * Auth + forms → Cloud Functions (foodtok)
+ * AfroBite partenaire — partenaire.html uniquement
+ * Candidature entreprise (sans auth) + comptes restaurant/livreur (avec auth)
  */
 (function () {
   const FIREBASE_CONFIG = {
@@ -15,16 +15,7 @@
   const FUNCTIONS_BASE =
     'https://us-central1-foodsocialnetwork-74a07.cloudfunctions.net';
 
-  const CITIES = [
-    'Ouagadougou',
-    'Bobo-Dioulasso',
-    'Koudougou',
-    'Ouahigouya',
-    'Banfora',
-    'Dédougou',
-    'Autre',
-  ];
-
+  const LEAD_ENDPOINT = `${FUNCTIONS_BASE}/submitPartnerLead`;
   const PHONE_RE = /^\+[1-9]\d{7,14}$/;
 
   let firebaseApp;
@@ -127,123 +118,6 @@
         }
       }, 350);
     });
-  }
-
-  async function loadMapboxGl() {
-    if (window.mapboxgl) return window.mapboxgl;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css';
-    document.head.appendChild(link);
-    await new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = 'https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js';
-      s.onload = resolve;
-      s.onerror = reject;
-      document.head.appendChild(s);
-    });
-    return window.mapboxgl;
-  }
-
-  function attachRestaurantLocationPicker(addressInput, latInput, lngInput) {
-    const token = window.AFROBITE_MAPBOX_TOKEN;
-    if (!token || !addressInput?.parentElement) return;
-
-    const picker = document.createElement('div');
-    picker.className = 'location-picker';
-    const hint = document.createElement('p');
-    hint.className = 'hint';
-    hint.textContent =
-      'Recherchez une adresse, placez le repère sur la carte ou utilisez votre position GPS.';
-    const mapEl = document.createElement('div');
-    mapEl.className = 'mapbox-mini-map';
-    const gpsBtn = document.createElement('button');
-    gpsBtn.type = 'button';
-    gpsBtn.className = 'btn btn-secondary location-gps-btn';
-    gpsBtn.textContent = 'Utiliser ma position GPS';
-    picker.appendChild(hint);
-    picker.appendChild(mapEl);
-    picker.appendChild(gpsBtn);
-    addressInput.parentElement.appendChild(picker);
-
-    const setCoords = async (lat, lng) => {
-      latInput.value = String(lat);
-      lngInput.value = String(lng);
-      try {
-        const url =
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json` +
-          `?access_token=${encodeURIComponent(token)}&limit=1&language=fr`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.features?.[0]) addressInput.value = data.features[0].place_name;
-      } catch (_) {}
-    };
-
-    let map;
-    let marker;
-    loadMapboxGl().then((mapboxgl) => {
-      mapboxgl.accessToken = token;
-      const center = [-1.51966, 12.371427];
-      map = new mapboxgl.Map({
-        container: mapEl,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center,
-        zoom: 12,
-      });
-      marker = new mapboxgl.Marker({ draggable: true }).setLngLat(center).addTo(map);
-      const onMove = () => {
-        const { lng, lat } = marker.getLngLat();
-        setCoords(lat, lng);
-      };
-      marker.on('dragend', onMove);
-      map.on('click', (e) => {
-        marker.setLngLat(e.lngLat);
-        onMove();
-      });
-    });
-
-    gpsBtn.onclick = () => {
-      if (!navigator.geolocation) {
-        alert('La géolocalisation n\'est pas disponible sur cet appareil.');
-        return;
-      }
-      gpsBtn.disabled = true;
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          await setCoords(lat, lng);
-          if (marker && map) {
-            marker.setLngLat([lng, lat]);
-            map.flyTo({ center: [lng, lat], zoom: 15 });
-          }
-          gpsBtn.disabled = false;
-        },
-        () => {
-          alert('Impossible d\'obtenir votre position. Autorisez le GPS ou placez le repère sur la carte.');
-          gpsBtn.disabled = false;
-        },
-        { enableHighAccuracy: true, timeout: 15000 }
-      );
-    };
-  }
-
-  function bindWhatsAppToggle(checkboxId, wrapId, inputId, phoneInputId) {
-    const cb = document.getElementById(checkboxId);
-    const wrap = document.getElementById(wrapId);
-    const wa = document.getElementById(inputId);
-    const phone = document.getElementById(phoneInputId);
-    if (!cb || !wrap) return;
-    const sync = () => {
-      const same = cb.checked;
-      wrap.hidden = same;
-      if (same && phone && wa) wa.value = phone.value;
-    };
-    cb.addEventListener('change', sync);
-    if (phone) phone.addEventListener('input', () => {
-      if (cb.checked && wa) wa.value = phone.value;
-    });
-    sync();
   }
 
   function setButtonLoading(btn, loading, defaultLabel) {
@@ -364,15 +238,6 @@
     });
   }
 
-  function showConfirmation(root, message) {
-    root.innerHTML = `
-      <div class="partner-card success-card">
-        <h2>Demande envoyée</h2>
-        <p>${message}</p>
-        <a href="partenaire.html" class="btn btn-primary">Retour</a>
-      </div>`;
-  }
-
   function showAccountReady(root, partnerType, linkedCount) {
     const label = partnerType === 'delivery' ? 'livreur' : 'restaurant';
     const linkMsg =
@@ -390,14 +255,12 @@
       auth.signOut().then(() => location.reload());
   }
 
-  const LEAD_ENDPOINT =
-    'https://us-central1-foodsocialnetwork-74a07.cloudfunctions.net/submitPartnerLead';
-
   function initLeadForms() {
     const leadTabs = document.querySelectorAll('[data-lead-tab]');
     const leadPanels = document.querySelectorAll('[data-lead-panel]');
     const societeForm = document.getElementById('partner-lead-form-societe');
     const societeSuccess = document.getElementById('societe-success-block');
+    const driverSection = document.getElementById('create-driver-account');
     if (!leadTabs.length) return;
 
     let societeSubmitted = false;
@@ -418,14 +281,18 @@
           }
         }
       });
+      if (driverSection) {
+        driverSection.hidden = tabId === 'societe';
+      }
     }
 
     leadTabs.forEach((tab) => {
       tab.addEventListener('click', () => setLeadTab(tab.dataset.leadTab));
     });
-    setLeadTab(
-      location.hash === '#societe-livraison' || location.hash === '#societe' ? 'societe' : 'restaurant'
-    );
+
+    const initialTab =
+      location.hash === '#societe-livraison' || location.hash === '#societe' ? 'societe' : 'restaurant';
+    setLeadTab(initialTab);
 
     const addrInput = document.getElementById('lead-restaurant-address');
     const latInput = document.getElementById('lead-restaurant-lat');
@@ -496,7 +363,6 @@
           form.reset();
           if (latInput) latInput.value = '';
           if (lngInput) lngInput.value = '';
-          message.classList.add('success');
           if (partnerType === 'delivery_company') {
             societeSubmitted = true;
             if (societeForm) societeForm.hidden = true;
@@ -504,9 +370,10 @@
             setLeadTab('societe');
             return;
           }
+          message.classList.add('success');
           message.textContent =
             'Merci. Notre équipe vous contactera sur WhatsApp pour la suite du partenariat.';
-        } catch (ex) {
+        } catch (_) {
           message.classList.add('error');
           message.textContent =
             'Échec de l\'envoi. Réessayez ou écrivez à afrobyteapp@gmail.com.';
@@ -521,8 +388,8 @@
     bindLeadForm(document.getElementById('partner-lead-form-societe'), 'delivery_company');
   }
 
-  async function finalizePartnerAccount(root, accountTab, extra) {
-    const partnerType = accountTab === 'livreur' ? 'delivery' : 'restaurant';
+  async function finalizePartnerAccount(root, accountType, extra) {
+    const partnerType = accountType === 'livreur' ? 'delivery' : 'restaurant';
     const errEl = root.querySelector('#account-error');
     const btn = root.querySelector('#account-finalize');
     if (btn) setButtonLoading(btn, true, 'Créer mon compte');
@@ -621,22 +488,27 @@
     render();
   }
 
-  function initPartenairePage() {
-    initLeadForms();
-    initPartnerAccountBlock('partner-app-restaurant', 'restaurant');
-    initPartnerAccountBlock('partner-app-livreur', 'livreur');
-    if (location.hash === '#create-driver-account' || location.hash === '#create-account') {
+  function scrollToHash() {
+    const hash = location.hash;
+    if (hash === '#create-driver-account' || hash === '#create-account') {
       document.getElementById('create-driver-account')?.scrollIntoView({ behavior: 'smooth' });
-    } else if (location.hash === '#partner-onboarding-form' || location.hash === '#societe-livraison' || location.hash === '#societe') {
+    } else if (
+      hash === '#partner-onboarding-form' ||
+      hash === '#societe-livraison' ||
+      hash === '#societe'
+    ) {
       document.getElementById('partner-onboarding-form')?.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
-  const page = document.body.dataset.partnerPage;
-  if (page === 'partenaire') initPartenairePage();
-  else if (page === 'restaurant' || page === 'societe') {
-    location.replace('partenaire.html#partner-onboarding-form');
-  } else if (page === 'livreur') {
-    location.replace('partenaire.html#create-driver-account');
+  function initPartenairePage() {
+    initLeadForms();
+    initPartnerAccountBlock('partner-app-restaurant', 'restaurant');
+    initPartnerAccountBlock('partner-app-livreur', 'livreur');
+    scrollToHash();
+  }
+
+  if (document.body.dataset.partnerPage === 'partenaire') {
+    initPartenairePage();
   }
 })();

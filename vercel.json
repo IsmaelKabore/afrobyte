@@ -4,12 +4,15 @@
   "rewrites": [
     { "source": "/refund/:token", "destination": "/refund.html?token=:token" },
     { "source": "/partner", "destination": "/partenaire.html" },
-    { "source": "/partner/restaurant", "destination": "/partner-restaurant.html" },
-    { "source": "/partner/livreur", "destination": "/partner-livreur.html" },
-    { "source": "/partner/societe-livraison", "destination": "/partner-societe-livraison.html" }
+    { "source": "/partner/restaurant", "destination": "/partenaire.html" },
+    { "source": "/partner/livreur", "destination": "/partenaire.html" },
+    { "source": "/partner/societe-livraison", "destination": "/partenaire.html" }
   ],
   "redirects": [
-    { "source": "/partner.html", "destination": "/partenaire.html", "permanent": true }
+    { "source": "/partner.html", "destination": "/partenaire.html", "permanent": true },
+    { "source": "/partner-restaurant.html", "destination": "/partenaire.html", "permanent": true },
+    { "source": "/partner-livreur.html", "destination": "/partenaire.html", "permanent": true },
+    { "source": "/partner-societe-livraison.html", "destination": "/partenaire.html", "permanent": true }
   ],
   "headers": [
     {
