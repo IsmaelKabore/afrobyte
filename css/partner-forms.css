@@ -18,6 +18,24 @@
 @media (max-width: 760px) {
     .partner-form-grid { grid-template-columns: 1fr; }
 }
+.livraison-toggle-wrap { max-width: 520px; margin: 0 auto 1.5rem; }
+.livraison-toggle {
+    display: flex; border-radius: 999px; padding: 4px;
+    background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(212, 160, 23, 0.35);
+    gap: 4px;
+}
+.livraison-toggle .partner-tab {
+    flex: 1; margin: 0; border: none; border-radius: 999px;
+    background: transparent; color: rgba(255, 255, 255, 0.75);
+}
+.livraison-toggle .partner-tab.active {
+    background: #d4a017; color: #1a1208; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+.livraison-panel[hidden] { display: none !important; }
+.livreur-profile-intro {
+    max-width: 640px; margin: 0 auto 1rem; text-align: center;
+    font-size: 0.9rem; color: rgba(255, 255, 255, 0.65);
+}
 .partner-type-tabs { display: flex; gap: 10px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
 .partner-tab {
     padding: 10px 22px; border-radius: 999px; border: 1px solid #d9c9ac;

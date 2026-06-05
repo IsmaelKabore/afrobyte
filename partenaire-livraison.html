@@ -38,11 +38,7 @@
     <main>
         <section class="partenaire-section fade-in visible" style="padding-top: 3rem;">
             <h1>Partenaire Livraison</h1>
-            <p class="section-subtitle">Société de livraison (candidature) ou compte livreur (inscription).</p>
-            <div class="partner-type-tabs" role="tablist">
-                <button type="button" class="partner-tab active" data-livraison-tab="societe" role="tab">Société de livraison</button>
-                <button type="button" class="partner-tab" data-livraison-tab="livreur" role="tab">Compte livreur</button>
-            </div>
+            <p class="section-subtitle">Choisissez votre parcours : candidature société ou inscription livreur.</p>
         </section>
 
         <section class="partenaire-section fade-in" id="how-it-works" data-demo-kind="delivery">
@@ -72,41 +68,81 @@
             </div>
         </section>
 
-        <section class="partenaire-section fade-in visible" id="societe-candidature">
-            <h2>Candidature société</h2>
-            <form id="partner-lead-form-societe" class="partner-form" novalidate>
-                <div class="partner-form-grid">
-                    <label>Nom société *<input type="text" name="companyName" required /></label>
-                    <label>Responsable *<input type="text" name="ownerName" required /></label>
-                    <label>WhatsApp *<input type="tel" name="phone" placeholder="+22670123456" required /></label>
-                    <label>Email *<input type="email" name="email" required /></label>
-                    <label>Ville *<select name="city" required>
-                        <option value="Ouagadougou">Ouagadougou</option>
-                        <option value="Bobo-Dioulasso">Bobo-Dioulasso</option>
-                        <option value="Koudougou">Koudougou</option>
-                        <option value="Ouahigouya">Ouahigouya</option>
-                        <option value="Banfora">Banfora</option>
-                        <option value="Dédougou">Dédougou</option>
-                        <option value="Autre">Autre</option>
-                    </select></label>
-                    <label class="full">Zone couverte *<input type="text" name="coveredZone" placeholder="Quartiers, communes, villes desservies" required /></label>
-                    <label>Nombre de livreurs<input type="number" name="approximateDriverCount" min="1" placeholder="Ex. 10" /></label>
-                    <label class="full">Description<textarea name="note" rows="4" placeholder="Flotte, types de véhicules, expérience…"></textarea></label>
-                </div>
-                <button type="submit" class="partner-submit-btn" data-lead-submit>Envoyer la candidature</button>
-                <p class="partner-form-message" aria-live="polite" data-lead-message></p>
-            </form>
-            <div id="societe-success-block" class="partner-form societe-success-block" hidden>
-                <p class="partner-form-message success" role="status">
-                    Merci. Notre équipe vous contactera pour finaliser votre intégration.
-                </p>
-            </div>
-        </section>
+        <section class="partenaire-section fade-in visible" id="inscription-livraison">
+            <h2>Inscription</h2>
 
-        <section class="partenaire-section fade-in visible" id="livreur-account-section" hidden>
-            <h2>Créer un compte livreur</h2>
-            <p class="section-subtitle">Statut <strong>pending</strong> — validation admin obligatoire avant accès à l'application.</p>
-            <div id="partner-app-livreur" class="partner-app-wrap"></div>
+            <div class="livraison-toggle-wrap">
+                <div class="livraison-toggle partner-type-tabs" role="tablist" aria-label="Type d'inscription livraison">
+                    <button type="button" class="partner-tab active" data-livraison-tab="societe" role="tab" aria-selected="true">
+                        Société de livraison
+                    </button>
+                    <button type="button" class="partner-tab" data-livraison-tab="livreur" role="tab" aria-selected="false">
+                        Compte livreur
+                    </button>
+                </div>
+            </div>
+
+            <div class="livraison-panel" data-livraison-panel="societe" id="societe-panel">
+                <h3 class="subsection-title">Candidature société</h3>
+                <p class="section-subtitle">Sans compte en ligne — nous vous contactons pour finaliser le partenariat.</p>
+                <form id="partner-lead-form-societe" class="partner-form" novalidate>
+                    <div class="partner-form-grid">
+                        <label>Nom société *<input type="text" name="companyName" required /></label>
+                        <label>Responsable *<input type="text" name="ownerName" required /></label>
+                        <label>WhatsApp *<input type="tel" name="phone" placeholder="+22670123456" required /></label>
+                        <label>Email *<input type="email" name="email" required /></label>
+                        <label>Ville *<select name="city" required>
+                            <option value="Ouagadougou">Ouagadougou</option>
+                            <option value="Bobo-Dioulasso">Bobo-Dioulasso</option>
+                            <option value="Koudougou">Koudougou</option>
+                            <option value="Ouahigouya">Ouahigouya</option>
+                            <option value="Banfora">Banfora</option>
+                            <option value="Dédougou">Dédougou</option>
+                            <option value="Autre">Autre</option>
+                        </select></label>
+                        <label class="full">Zone couverte *<input type="text" name="coveredZone" placeholder="Quartiers, communes, villes desservies" required /></label>
+                        <label>Nombre de livreurs<input type="number" name="approximateDriverCount" min="1" placeholder="Ex. 10" /></label>
+                        <label class="full">Description<textarea name="note" rows="4" placeholder="Flotte, types de véhicules, expérience…"></textarea></label>
+                    </div>
+                    <button type="submit" class="partner-submit-btn" data-lead-submit>Envoyer la candidature</button>
+                    <p class="partner-form-message" aria-live="polite" data-lead-message></p>
+                </form>
+                <div id="societe-success-block" class="partner-form societe-success-block" hidden>
+                    <p class="partner-form-message success" role="status">
+                        Merci. Notre équipe vous contactera pour finaliser votre intégration.
+                    </p>
+                </div>
+            </div>
+
+            <div class="livraison-panel" data-livraison-panel="livreur" id="livreur-panel" hidden>
+                <h3 class="subsection-title">Compte livreur</h3>
+                <p class="livreur-profile-intro">
+                    Réservé aux livreurs travaillant avec une <strong>société de livraison déjà enregistrée</strong> chez AfroBite.
+                    Indiquez votre identité et votre société, puis créez votre compte (statut <strong>pending</strong>).
+                </p>
+
+                <div id="livreur-profile-fields" class="partner-form">
+                    <div class="partner-form-grid">
+                        <label>Prénom *<input type="text" id="driver-first-name" name="firstName" required autocomplete="given-name" placeholder="Ex. Ibrahim" /></label>
+                        <label>Nom *<input type="text" id="driver-last-name" name="lastName" required autocomplete="family-name" placeholder="Ex. Ouédraogo" /></label>
+                        <label>WhatsApp *<input type="tel" id="driver-whatsapp-prefill" placeholder="+22670123456" required /></label>
+                        <label class="full">Société de livraison *
+                            <select id="driver-company-prefill" required aria-describedby="company-hint">
+                                <option value="">Chargement des sociétés…</option>
+                            </select>
+                            <span id="company-hint" class="partner-form-message" style="min-height:0;margin-top:6px;font-size:12px;color:rgba(255,255,255,0.55);">
+                                Choisissez la société avec laquelle vous travaillez.
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="partner-inline-separator" aria-hidden="true"><hr /></div>
+                <p class="section-subtitle" style="text-align:center;margin-bottom:1rem;">
+                    Connectez-vous ou créez un compte pour finaliser l'inscription livreur.
+                </p>
+                <div id="partner-app-livreur" class="partner-app-wrap"></div>
+            </div>
         </section>
     </main>
 

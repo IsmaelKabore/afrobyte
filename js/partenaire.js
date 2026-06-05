@@ -357,6 +357,42 @@
     }
   }
 
+  function getLivreurProfileExtra(companies) {
+    const first = document.getElementById('driver-first-name')?.value?.trim() || '';
+    const last = document.getElementById('driver-last-name')?.value?.trim() || '';
+    const companyId = document.getElementById('driver-company-prefill')?.value?.trim() || '';
+    const wa = normalizePhone(document.getElementById('driver-whatsapp-prefill')?.value || '');
+    const errEl = document.getElementById('livreur-profile-error');
+    if (!first || !last) {
+      if (errEl) {
+        errEl.hidden = false;
+        errEl.textContent = 'Prénom et nom sont obligatoires.';
+      }
+      return null;
+    }
+    if (!validPhone(wa)) {
+      if (errEl) {
+        errEl.hidden = false;
+        errEl.textContent = 'WhatsApp invalide (format +226…).';
+      }
+      return null;
+    }
+    if (!companyId) {
+      if (errEl) {
+        errEl.hidden = false;
+        errEl.textContent = 'Sélectionnez la société de livraison avec laquelle vous travaillez.';
+      }
+      return null;
+    }
+    if (errEl) errEl.hidden = true;
+    return {
+      fullName: `${first} ${last}`.trim(),
+      whatsappNumber: wa,
+      companyId,
+      companyName: companies.find((c) => c.id === companyId)?.name || null,
+    };
+  }
+
   function initPartnerAccountBlock(rootId, accountType) {
     const root = document.getElementById(rootId);
     if (!root) return;
@@ -364,6 +400,8 @@
     initFirebase();
     let companies = [];
     let accountReady = false;
+    const useExternalLivreurFields =
+      accountType === 'livreur' && !!document.getElementById('livreur-profile-fields');
 
     const loadCompanies = async () => {
       if (accountType !== 'livreur') return;
@@ -384,25 +422,47 @@
       }
 
       if (accountType === 'livreur' && !companies.length) await loadCompanies();
+
+      const populateCompanyPrefillSelect = () => {
+        const sel = document.getElementById('driver-company-prefill');
+        if (!sel || sel.options.length > 1) return;
+        if (!companies.length) {
+          sel.innerHTML =
+            '<option value="">Aucune société active — contactez afrobyteapp@gmail.com</option>';
+          return;
+        }
+        sel.innerHTML =
+          '<option value="">— Choisissez votre société —</option>' +
+          companies.map((c) => `<option value="${c.id}">${c.name}</option>`).join('');
+      };
+      if (useExternalLivreurFields) populateCompanyPrefillSelect();
+
       const companyOptions = companies.length
         ? companies.map((c) => `<option value="${c.id}">${c.name}</option>`).join('')
         : '<option value="">— Société à confirmer par l\'admin —</option>';
 
-      root.innerHTML = `
-        <div class="partner-card">
-          <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
-            <button type="button" id="sign-out-top-${rootId}" class="link-btn">Changer</button></p>
-          ${accountType === 'livreur' ? `
+      const livreurFieldsBlock =
+        accountType === 'livreur' && !useExternalLivreurFields
+          ? `
             <label>Nom complet (optionnel)<input id="account-full-name" placeholder="Prénom et nom" /></label>
             <label>WhatsApp (optionnel)<input id="account-whatsapp" type="tel" placeholder="+22670123456" /></label>
             <label>Société de livraison (optionnel)
               <select id="account-company">${companyOptions}</select>
             </label>
-          ` : `
-            <p class="hint">Votre compte restaurant sera créé avec le statut <strong>en attente</strong>. Nous l'associerons à votre candidature si l'email correspond.</p>
-          `}
+          `
+          : accountType === 'livreur'
+            ? `<p class="hint">Vérifiez prénom, nom et société ci-dessus, puis validez la création du compte livreur.</p>`
+            : `<p class="hint">Votre compte restaurant sera créé avec le statut <strong>en attente</strong>. Nous l'associerons à votre candidature si l'email correspond.</p>`;
+
+      root.innerHTML = `
+        <div class="partner-card">
+          <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
+            <button type="button" id="sign-out-top-${rootId}" class="link-btn">Changer</button></p>
+          ${livreurFieldsBlock}
           <p id="account-error" class="error" hidden></p>
-          <button type="button" class="btn btn-primary" id="account-finalize">Créer mon compte</button>
+          <button type="button" class="btn btn-primary" id="account-finalize">${
+            accountType === 'livreur' ? 'Créer mon compte livreur' : 'Créer mon compte'
+          }</button>
         </div>`;
 
       root.querySelector(`#sign-out-top-${rootId}`).onclick = () =>
@@ -411,13 +471,19 @@
       root.querySelector('#account-finalize').onclick = () => {
         const extra = {};
         if (accountType === 'livreur') {
-          extra.fullName = root.querySelector('#account-full-name')?.value?.trim() || '';
-          const wa = normalizePhone(root.querySelector('#account-whatsapp')?.value || '');
-          if (wa && validPhone(wa)) extra.whatsappNumber = wa;
-          const companyId = root.querySelector('#account-company')?.value || '';
-          if (companyId) {
-            extra.companyId = companyId;
-            extra.companyName = companies.find((c) => c.id === companyId)?.name || null;
+          if (useExternalLivreurFields) {
+            const profile = getLivreurProfileExtra(companies);
+            if (!profile) return;
+            Object.assign(extra, profile);
+          } else {
+            extra.fullName = root.querySelector('#account-full-name')?.value?.trim() || '';
+            const wa = normalizePhone(root.querySelector('#account-whatsapp')?.value || '');
+            if (wa && validPhone(wa)) extra.whatsappNumber = wa;
+            const companyId = root.querySelector('#account-company')?.value || '';
+            if (companyId) {
+              extra.companyId = companyId;
+              extra.companyName = companies.find((c) => c.id === companyId)?.name || null;
+            }
           }
         }
         finalizePartnerAccount(root, accountType, extra).then(() => {
@@ -451,24 +517,27 @@
     initPartnerAccountBlock('partner-app-restaurant', 'restaurant');
   }
 
-  function initLivraisonPage() {
+  async function initLivraisonPage() {
     const tabs = document.querySelectorAll('[data-livraison-tab]');
+    const panels = document.querySelectorAll('[data-livraison-panel]');
     const societeForm = document.getElementById('partner-lead-form-societe');
     const societeSuccess = document.getElementById('societe-success-block');
-    const livreurSection = document.getElementById('livreur-account-section');
     let societeSubmitted = false;
 
     function setLivraisonTab(tabId) {
-      tabs.forEach((el) => el.classList.toggle('active', el.dataset.livraisonTab === tabId));
-      if (tabId === 'societe') {
-        if (societeForm) societeForm.hidden = societeSubmitted;
-        if (societeSuccess) societeSuccess.hidden = !societeSubmitted;
-        if (livreurSection) livreurSection.hidden = true;
-      } else {
-        if (societeForm) societeForm.hidden = true;
-        if (societeSuccess) societeSuccess.hidden = true;
-        if (livreurSection) livreurSection.hidden = false;
-      }
+      tabs.forEach((el) => {
+        const active = el.dataset.livraisonTab === tabId;
+        el.classList.toggle('active', active);
+        el.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      panels.forEach((panel) => {
+        const isSociete = panel.dataset.livraisonPanel === 'societe';
+        panel.hidden = tabId === 'societe' ? !isSociete : isSociete;
+        if (isSociete && tabId === 'societe') {
+          if (societeSuccess) societeSuccess.hidden = !societeSubmitted;
+          if (societeForm) societeForm.hidden = societeSubmitted;
+        }
+      });
     }
 
     tabs.forEach((tab) => {
@@ -485,15 +554,43 @@
       source: 'afrobyte_partenaire_livraison_societe',
       onSuccess: () => {
         societeSubmitted = true;
-        if (societeForm) societeForm.hidden = true;
-        if (societeSuccess) societeSuccess.hidden = false;
+        setLivraisonTab('societe');
       },
     });
+
+    initFirebase();
+    try {
+      const res = await callFunction('listActiveDeliveryCompanies', {}, { requireUser: false });
+      const companies = res.companies || [];
+      const sel = document.getElementById('driver-company-prefill');
+      if (sel) {
+        if (!companies.length) {
+          sel.innerHTML =
+            '<option value="">Aucune société active — écrivez à afrobyteapp@gmail.com</option>';
+        } else {
+          sel.innerHTML =
+            '<option value="">— Choisissez votre société —</option>' +
+            companies.map((c) => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+      }
+    } catch (_) {
+      const sel = document.getElementById('driver-company-prefill');
+      if (sel) sel.innerHTML = '<option value="">Impossible de charger les sociétés</option>';
+    }
+
+    const profileFields = document.getElementById('livreur-profile-fields');
+    if (profileFields && !document.getElementById('livreur-profile-error')) {
+      const err = document.createElement('p');
+      err.id = 'livreur-profile-error';
+      err.className = 'partner-form-message error';
+      err.hidden = true;
+      profileFields.appendChild(err);
+    }
 
     initPartnerAccountBlock('partner-app-livreur', 'livreur');
 
     if (location.hash === '#livreur' || location.hash === '#create-driver-account') {
-      document.getElementById('livreur-account-section')?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('inscription-livraison')?.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
