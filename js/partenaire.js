@@ -333,10 +333,14 @@
     });
   }
 
-  async function finalizePartnerAccount(root, accountType, extra) {
+  async function finalizePartnerAccount(root, accountType, extra, options = {}) {
     const partnerType = accountType === 'livreur' ? 'delivery' : 'restaurant';
-    const errEl = root.querySelector('#account-error');
-    const btn = root.querySelector('#account-finalize');
+    const errEl =
+      root.querySelector('#account-error') ||
+      (options.errorElId ? document.getElementById(options.errorElId) : null);
+    const btn =
+      root.querySelector('#account-finalize') ||
+      (options.btnId ? document.getElementById(options.btnId) : null);
     if (btn) setButtonLoading(btn, true, 'Créer mon compte');
     try {
       const res = await callFunction('setupPartnerAccount', {
@@ -360,7 +364,7 @@
   function getLivreurProfileExtra(companies) {
     const first = document.getElementById('driver-first-name')?.value?.trim() || '';
     const last = document.getElementById('driver-last-name')?.value?.trim() || '';
-    const companyId = document.getElementById('driver-company-prefill')?.value?.trim() || '';
+    const companyName = document.getElementById('driver-company-name')?.value?.trim() || '';
     const wa = normalizePhone(document.getElementById('driver-whatsapp-prefill')?.value || '');
     const errEl = document.getElementById('livreur-profile-error');
     if (!first || !last) {
@@ -377,20 +381,28 @@
       }
       return null;
     }
-    if (!companyId) {
+    if (!companyName) {
       if (errEl) {
         errEl.hidden = false;
-        errEl.textContent = 'Sélectionnez la société de livraison avec laquelle vous travaillez.';
+        errEl.textContent = 'Indiquez la société de livraison avec laquelle vous travaillez.';
       }
       return null;
     }
     if (errEl) errEl.hidden = true;
+    const matched = companies.find(
+      (c) => c.name && c.name.trim().toLowerCase() === companyName.toLowerCase()
+    );
     return {
       fullName: `${first} ${last}`.trim(),
       whatsappNumber: wa,
-      companyId,
-      companyName: companies.find((c) => c.id === companyId)?.name || null,
+      companyName,
+      companyId: matched?.id || null,
     };
+  }
+
+  function setLivreurProfileVisible(visible) {
+    const block = document.getElementById('livreur-profile-fields');
+    if (block) block.hidden = !visible;
   }
 
   function initPartnerAccountBlock(rootId, accountType) {
@@ -417,30 +429,19 @@
       if (accountReady) return;
       const user = auth.currentUser;
       if (!user) {
+        if (useExternalLivreurFields) setLivreurProfileVisible(false);
         renderAuth(root, accountType === 'livreur' ? 'delivery' : 'restaurant', () => render());
         return;
       }
 
       if (accountType === 'livreur' && !companies.length) await loadCompanies();
-
-      const populateCompanyPrefillSelect = () => {
-        const sel = document.getElementById('driver-company-prefill');
-        if (!sel || sel.options.length > 1) return;
-        if (!companies.length) {
-          sel.innerHTML =
-            '<option value="">Aucune société active — contactez afrobyteapp@gmail.com</option>';
-          return;
-        }
-        sel.innerHTML =
-          '<option value="">— Choisissez votre société —</option>' +
-          companies.map((c) => `<option value="${c.id}">${c.name}</option>`).join('');
-      };
-      if (useExternalLivreurFields) populateCompanyPrefillSelect();
+      if (useExternalLivreurFields) setLivreurProfileVisible(!!user);
 
       const companyOptions = companies.length
         ? companies.map((c) => `<option value="${c.id}">${c.name}</option>`).join('')
         : '<option value="">— Société à confirmer par l\'admin —</option>';
 
+      const livreurExternal = accountType === 'livreur' && useExternalLivreurFields;
       const livreurFieldsBlock =
         accountType === 'livreur' && !useExternalLivreurFields
           ? `
@@ -451,7 +452,7 @@
             </label>
           `
           : accountType === 'livreur'
-            ? `<p class="hint">Vérifiez prénom, nom et société ci-dessus, puis validez la création du compte livreur.</p>`
+            ? `<p class="hint">Complétez votre profil ci-dessous puis validez l'inscription.</p>`
             : `<p class="hint">Votre compte restaurant sera créé avec le statut <strong>en attente</strong>. Nous l'associerons à votre candidature si l'email correspond.</p>`;
 
       root.innerHTML = `
@@ -459,16 +460,20 @@
           <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
             <button type="button" id="sign-out-top-${rootId}" class="link-btn">Changer</button></p>
           ${livreurFieldsBlock}
-          <p id="account-error" class="error" hidden></p>
+          ${
+            livreurExternal
+              ? ''
+              : `<p id="account-error" class="error" hidden></p>
           <button type="button" class="btn btn-primary" id="account-finalize">${
             accountType === 'livreur' ? 'Créer mon compte livreur' : 'Créer mon compte'
-          }</button>
+          }</button>`
+          }
         </div>`;
 
       root.querySelector(`#sign-out-top-${rootId}`).onclick = () =>
         auth.signOut().then(() => location.reload());
 
-      root.querySelector('#account-finalize').onclick = () => {
+      const runFinalize = () => {
         const extra = {};
         if (accountType === 'livreur') {
           if (useExternalLivreurFields) {
@@ -486,14 +491,24 @@
             }
           }
         }
-        finalizePartnerAccount(root, accountType, extra).then(() => {
+        const finalizeOpts = livreurExternal
+          ? { errorElId: 'account-error-livreur', btnId: 'livreur-finalize-btn' }
+          : {};
+        finalizePartnerAccount(root, accountType, extra, finalizeOpts).then(() => {
           accountReady = true;
+          if (livreurExternal) setLivreurProfileVisible(false);
         });
       };
+
+      const finalizeBtn = livreurExternal
+        ? document.getElementById('livreur-finalize-btn')
+        : root.querySelector('#account-finalize');
+      if (finalizeBtn) finalizeBtn.onclick = runFinalize;
     };
 
     auth.onAuthStateChanged(() => {
       accountReady = false;
+      if (useExternalLivreurFields) setLivreurProfileVisible(!!auth.currentUser);
       render();
     });
     render();
@@ -541,7 +556,12 @@
     }
 
     tabs.forEach((tab) => {
-      tab.addEventListener('click', () => setLivraisonTab(tab.dataset.livraisonTab));
+      tab.addEventListener('click', () => {
+        const tabId = tab.dataset.livraisonTab;
+        setLivraisonTab(tabId);
+        if (tabId === 'livreur') location.hash = 'livreur';
+        else location.hash = 'societe';
+      });
     });
 
     const initialTab =
@@ -562,20 +582,12 @@
     try {
       const res = await callFunction('listActiveDeliveryCompanies', {}, { requireUser: false });
       const companies = res.companies || [];
-      const sel = document.getElementById('driver-company-prefill');
-      if (sel) {
-        if (!companies.length) {
-          sel.innerHTML =
-            '<option value="">Aucune société active — écrivez à afrobyteapp@gmail.com</option>';
-        } else {
-          sel.innerHTML =
-            '<option value="">— Choisissez votre société —</option>' +
-            companies.map((c) => `<option value="${c.id}">${c.name}</option>`).join('');
-        }
+      const datalist = document.getElementById('driver-company-suggestions');
+      if (datalist && companies.length) {
+        datalist.innerHTML = companies.map((c) => `<option value="${c.name}"></option>`).join('');
       }
     } catch (_) {
-      const sel = document.getElementById('driver-company-prefill');
-      if (sel) sel.innerHTML = '<option value="">Impossible de charger les sociétés</option>';
+      /* suggestions optionnelles — inscription possible sans liste */
     }
 
     const profileFields = document.getElementById('livreur-profile-fields');

@@ -117,31 +117,32 @@
             <div class="livraison-panel" data-livraison-panel="livreur" id="livreur-panel" hidden>
                 <h3 class="subsection-title">Compte livreur</h3>
                 <p class="livreur-profile-intro">
-                    Réservé aux livreurs travaillant avec une <strong>société de livraison déjà enregistrée</strong> chez AfroBite.
-                    Indiquez votre identité et votre société, puis créez votre compte (statut <strong>pending</strong>).
+                    Créez votre compte livreur en quelques étapes. Aucune candidature société n'est requise —
+                    indiquez simplement avec quelle société vous travaillez (statut <strong>pending</strong>).
                 </p>
 
-                <div id="livreur-profile-fields" class="partner-form">
+                <div id="partner-app-livreur" class="partner-app-wrap"></div>
+
+                <div id="livreur-profile-fields" class="partner-form" hidden>
+                    <div class="partner-inline-separator" aria-hidden="true"><hr /></div>
+                    <p class="section-subtitle" style="text-align:center;margin-bottom:1rem;">
+                        Complétez votre profil livreur pour finaliser l'inscription.
+                    </p>
                     <div class="partner-form-grid">
                         <label>Prénom *<input type="text" id="driver-first-name" name="firstName" required autocomplete="given-name" placeholder="Ex. Ibrahim" /></label>
                         <label>Nom *<input type="text" id="driver-last-name" name="lastName" required autocomplete="family-name" placeholder="Ex. Ouédraogo" /></label>
                         <label>WhatsApp *<input type="tel" id="driver-whatsapp-prefill" placeholder="+22670123456" required /></label>
                         <label class="full">Société de livraison *
-                            <select id="driver-company-prefill" required aria-describedby="company-hint">
-                                <option value="">Chargement des sociétés…</option>
-                            </select>
+                            <input type="text" id="driver-company-name" list="driver-company-suggestions" required autocomplete="organization" placeholder="Ex. Express Ouaga" aria-describedby="company-hint" />
+                            <datalist id="driver-company-suggestions"></datalist>
                             <span id="company-hint" class="partner-form-message" style="min-height:0;margin-top:6px;font-size:12px;color:rgba(255,255,255,0.55);">
-                                Choisissez la société avec laquelle vous travaillez.
+                                Nom de la société avec laquelle vous travaillez (pas besoin qu'elle soit déjà partenaire).
                             </span>
                         </label>
                     </div>
+                    <p id="account-error-livreur" class="partner-form-message error" hidden></p>
+                    <button type="button" class="partner-submit-btn" id="livreur-finalize-btn">Créer mon compte livreur</button>
                 </div>
-
-                <div class="partner-inline-separator" aria-hidden="true"><hr /></div>
-                <p class="section-subtitle" style="text-align:center;margin-bottom:1rem;">
-                    Connectez-vous ou créez un compte pour finaliser l'inscription livreur.
-                </p>
-                <div id="partner-app-livreur" class="partner-app-wrap"></div>
             </div>
         </section>
     </main>
