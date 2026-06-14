@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["REPLACE_ME_WITH_APPLE_TEAM_ID.com.ismael.afrobyte"],
+        "components": [
+          {
+            "/": "/video/*",
+            "comment": "Lien video partage depuis l'app AfroBite"
+          }
+        ]
+      }
+    ]
+  }
+}

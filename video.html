@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta property="og:title" content="Découvrez cette vidéo sur AfroBite">
+    <meta property="og:description" content="Plats faits maison à proximité — livraison rapide au Burkina Faso.">
+    <meta property="og:image" content="/assets/logo-afrobite.png">
+    <meta property="og:type" content="video.other">
+    <link rel="icon" href="/assets/logo-afrobite.png" type="image/png">
+    <title>Ouverture d'AfroBite…</title>
+    <style>
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{
+        font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+        background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+        color:#fff;min-height:100vh;
+        display:flex;flex-direction:column;align-items:center;justify-content:center;
+        padding:24px;text-align:center;
+      }
+      img.logo{width:120px;height:auto;margin-bottom:32px}
+      h1{font-size:26px;font-weight:800;margin-bottom:12px}
+      p{font-size:15px;opacity:.85;line-height:1.5;margin-bottom:24px;max-width:380px}
+      .spinner{
+        width:48px;height:48px;margin:24px auto;
+        border:4px solid rgba(255,255,255,.18);border-top-color:#f5a623;
+        border-radius:50%;animation:spin 1s linear infinite;
+      }
+      @keyframes spin{to{transform:rotate(360deg)}}
+      .actions{display:flex;flex-direction:column;gap:12px;margin-top:32px;width:100%;max-width:300px}
+      .btn{
+        display:inline-block;padding:14px 22px;border-radius:14px;
+        font-weight:700;font-size:15px;text-decoration:none;
+        transition:transform .15s ease,box-shadow .15s ease;
+      }
+      .btn:active{transform:scale(.97)}
+      .btn-primary{background:#f5a623;color:#1a1a2e;box-shadow:0 6px 20px rgba(245,166,35,.45)}
+      .btn-secondary{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
+      .small{font-size:13px;opacity:.7;margin-top:24px}
+    </style>
+</head>
+<body>
+    <img src="/assets/logo-afrobite.png" alt="AfroBite" class="logo">
+    <h1>Ouverture d'AfroBite…</h1>
+    <p id="msg">Si l'application ne s'ouvre pas dans quelques secondes, téléchargez-la depuis votre store.</p>
+    <div class="spinner" id="spinner"></div>
+    <div class="actions" id="actions" style="display:none">
+      <a class="btn btn-primary" id="storeBtn" href="/">Télécharger AfroBite</a>
+      <a class="btn btn-secondary" href="/">Retour à l'accueil</a>
+    </div>
+    <p class="small">Vous n'avez pas l'application ?<br>Téléchargez-la gratuitement pour commander chez vos restaurants préférés.</p>
+    <script>
+      // Extrait l'ID vidéo du dernier segment de l'URL
+      // (route Vercel : /video/:id → /video.html?id=:id ; on lit les deux).
+      function getVideoId() {
+        var params = new URLSearchParams(window.location.search);
+        var fromQuery = params.get('id');
+        if (fromQuery) return fromQuery;
+        var parts = window.location.pathname.split('/').filter(Boolean);
+        return parts.length >= 2 && parts[0] === 'video' ? parts[1] : null;
+      }
+      var videoId = getVideoId();
+      var ua = navigator.userAgent || '';
+      var isAndroid = /android/i.test(ua);
+      var isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+      // 1) Si Android avec App Links configures + app installee, le browser
+      //    n'arrivera jamais ici (Android ouvrira directement l'app).
+      // 2) Si Universal Links iOS configures + app installee, idem.
+      // 3) Sinon on tombe sur cette page : on tente le scheme custom
+      //    afrobite://video/{id} (qui marche sans App Links, juste avec
+      //    l'intent-filter scheme custom configure dans l'app).
+
+      if (videoId) {
+        // Tentative immediate d'ouvrir l'app via le scheme custom.
+        window.location.href = 'afrobite://video/' + encodeURIComponent(videoId);
+      }
+
+      // Apres 1,5s sans redirection effective, on propose les stores.
+      setTimeout(function() {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('actions').style.display = 'flex';
+        var btn = document.getElementById('storeBtn');
+        if (isAndroid) {
+          btn.href = 'https://play.google.com/store/apps/details?id=apps.artcom.foodtok';
+          btn.textContent = 'Télécharger sur Google Play';
+        } else if (isIOS) {
+          // TODO: mettre la vraie URL App Store une fois l'app publiee
+          btn.href = 'https://apps.apple.com/app/afrobite/idREPLACE_ME';
+          btn.textContent = 'Télécharger sur App Store';
+        } else {
+          btn.href = '/';
+          btn.textContent = 'En savoir plus sur AfroBite';
+        }
+      }, 1500);
+    </script>
+</body>
+</html>

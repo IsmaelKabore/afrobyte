@@ -3,6 +3,7 @@
   "trailingSlash": false,
   "rewrites": [
     { "source": "/refund/:token", "destination": "/refund.html?token=:token" },
+    { "source": "/video/:id", "destination": "/video.html?id=:id" },
     { "source": "/partner", "destination": "/partenaire.html" },
     { "source": "/partner/restaurant", "destination": "/partenaire.html" },
     { "source": "/partner/livreur", "destination": "/partenaire.html" },
@@ -20,6 +21,20 @@
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/.well-known/assetlinks.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" },
+        { "key": "Cache-Control", "value": "public, max-age=300" }
+      ]
+    },
+    {
+      "source": "/.well-known/apple-app-site-association",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" },
+        { "key": "Cache-Control", "value": "public, max-age=300" }
       ]
     }
   ]
