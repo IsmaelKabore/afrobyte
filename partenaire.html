@@ -14,16 +14,16 @@
       var p = location.pathname.toLowerCase();
       var h = location.hash.toLowerCase();
       if (p.indexOf('/partner/restaurant') !== -1 || p.indexOf('partner-restaurant') !== -1) {
-        location.replace('partenaire-restaurant.html');
+        location.replace('/partenaire-restaurant.html');
         return;
       }
       if (p.indexOf('/partner/livreur') !== -1 || p.indexOf('partner-livreur') !== -1 ||
           h === '#livreur' || h === '#create-driver-account') {
-        location.replace('partenaire-livraison.html' + (h || '#livreur'));
+        location.replace('/partenaire-livraison.html' + (h || '#livreur'));
         return;
       }
       if (p.indexOf('societe') !== -1 || h === '#societe' || h === '#societe-livraison') {
-        location.replace('partenaire-livraison.html#societe');
+        location.replace('/partenaire-livraison.html#societe');
       }
     })();
     </script>

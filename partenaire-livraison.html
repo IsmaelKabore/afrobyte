@@ -132,11 +132,11 @@
                         <label>Prénom *<input type="text" id="driver-first-name" name="firstName" required autocomplete="given-name" placeholder="Ex. Ibrahim" /></label>
                         <label>Nom *<input type="text" id="driver-last-name" name="lastName" required autocomplete="family-name" placeholder="Ex. Ouédraogo" /></label>
                         <label>WhatsApp *<input type="tel" id="driver-whatsapp-prefill" placeholder="+22670123456" required /></label>
-                        <label class="full">Société de livraison *
-                            <input type="text" id="driver-company-name" list="driver-company-suggestions" required autocomplete="organization" placeholder="Ex. Express Ouaga" aria-describedby="company-hint" />
+                        <label class="full">Société de livraison (optionnel)
+                            <input type="text" id="driver-company-name" list="driver-company-suggestions" autocomplete="organization" placeholder="Ex. Express Ouaga" aria-describedby="company-hint" />
                             <datalist id="driver-company-suggestions"></datalist>
                             <span id="company-hint" class="partner-form-message" style="min-height:0;margin-top:6px;font-size:12px;color:rgba(255,255,255,0.55);">
-                                Nom de la société avec laquelle vous travaillez (pas besoin qu'elle soit déjà partenaire).
+                                Si vous travaillez déjà avec une structure, indiquez son nom. Sinon laissez vide.
                             </span>
                         </label>
                     </div>

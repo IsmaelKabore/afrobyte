@@ -3,17 +3,17 @@
   "trailingSlash": false,
   "rewrites": [
     { "source": "/refund/:token", "destination": "/refund.html?token=:token" },
-    { "source": "/video/:id", "destination": "/video.html?id=:id" },
-    { "source": "/partner", "destination": "/partenaire.html" },
-    { "source": "/partner/restaurant", "destination": "/partenaire.html" },
-    { "source": "/partner/livreur", "destination": "/partenaire.html" },
-    { "source": "/partner/societe-livraison", "destination": "/partenaire.html" }
+    { "source": "/video/:id", "destination": "/video.html?id=:id" }
   ],
   "redirects": [
+    { "source": "/partner", "destination": "/partenaire-restaurant.html", "permanent": false },
+    { "source": "/partner/restaurant", "destination": "/partenaire-restaurant.html", "permanent": false },
+    { "source": "/partner/livreur", "destination": "/partenaire-livraison.html#livreur", "permanent": false },
+    { "source": "/partner/societe-livraison", "destination": "/partenaire-livraison.html#societe", "permanent": false },
     { "source": "/partner.html", "destination": "/partenaire.html", "permanent": true },
-    { "source": "/partner-restaurant.html", "destination": "/partenaire.html", "permanent": true },
-    { "source": "/partner-livreur.html", "destination": "/partenaire.html", "permanent": true },
-    { "source": "/partner-societe-livraison.html", "destination": "/partenaire.html", "permanent": true }
+    { "source": "/partner-restaurant.html", "destination": "/partenaire-restaurant.html", "permanent": true },
+    { "source": "/partner-livreur.html", "destination": "/partenaire-livraison.html#livreur", "permanent": true },
+    { "source": "/partner-societe-livraison.html", "destination": "/partenaire-livraison.html#societe", "permanent": true }
   ],
   "headers": [
     {

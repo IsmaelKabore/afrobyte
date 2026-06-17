@@ -65,13 +65,12 @@
 
   function mapAuthError(code) {
     const m = {
-      'auth/email-already-in-use': 'Cet email est déjà utilisé. Connectez-vous.',
+      'auth/email-already-in-use': 'Cet email est déjà utilisé. Utilisez un autre email ou contactez AfroBite.',
       'auth/invalid-email': 'Email invalide.',
       'auth/weak-password': 'Mot de passe trop faible (min. 6 caractères).',
-      'auth/wrong-password': 'Email ou mot de passe incorrect.',
       'auth/popup-closed-by-user': 'Connexion annulée.',
     };
-    return m[code] || 'Erreur de connexion.';
+    return m[code] || 'Erreur de création de compte.';
   }
 
   function attachMapboxAddressSearch(inputEl, onPick) {
@@ -130,45 +129,28 @@
     const typeLabel = partnerType === 'delivery' ? 'livreur' : 'restaurant';
     container.innerHTML = `
       <div class="partner-card partner-auth">
-        <p class="hint">Inscrivez-vous ou connectez-vous pour créer votre compte ${typeLabel}. L'équipe AfroBite validera votre accès à l'application.</p>
+        <p class="hint">Créez ici votre compte ${typeLabel}. Une fois validé par AfroBite, vous vous connecterez directement dans l'application mobile avec ces mêmes identifiants.</p>
         <div class="auth-buttons">
           <button type="button" class="btn btn-google" id="btn-google">
             <img src="assets/logo_google.png" alt="" width="20" height="20" />
-            Continuer avec Google
+            Créer avec Google
           </button>
           <button type="button" class="btn btn-apple" id="btn-apple">
             <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 20.28c-.98.95-2.05 1.88-3.71 1.88-1.56 0-2.05-.93-3.82-.93-1.77 0-2.32.9-3.78.98-1.51.08-2.66-1.33-3.66-2.28C1.79 16.17 1 12.45 2.43 9.05c.72-1.66 2-2.73 3.4-2.73 1.41 0 2.3.93 3.47.93 1.15 0 1.85-.93 3.5-.93 1.25 0 2.57.68 3.3 1.75-2.9 1.6-2.43 5.77.48 7.21-.6 1.55-1.38 3.1-2.53 4.04zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
-            Continuer avec Apple
+            Créer avec Apple
           </button>
         </div>
         <div class="divider">ou email</div>
-        <div class="tabs">
-          <button type="button" class="tab active" data-mode="signup">Créer un compte</button>
-          <button type="button" class="tab" data-mode="signin">Se connecter</button>
-        </div>
         <form id="email-auth-form">
           <label>Email<input type="email" id="auth-email" required autocomplete="email" /></label>
           <label>Mot de passe<input type="password" id="auth-password" required minlength="6" autocomplete="new-password" /></label>
-          <label class="confirm-only">Confirmer le mot de passe<input type="password" id="auth-password2" minlength="6" autocomplete="new-password" /></label>
+          <label>Confirmer le mot de passe<input type="password" id="auth-password2" minlength="6" autocomplete="new-password" required /></label>
           <p id="auth-error" class="error" hidden></p>
-          <button type="submit" class="btn btn-primary" id="auth-submit">Continuer</button>
+          <button type="submit" class="btn btn-primary" id="auth-submit">Créer mon compte</button>
         </form>
       </div>`;
 
-    let mode = 'signup';
-    const tabs = container.querySelectorAll('.tab');
-    const confirm = container.querySelector('.confirm-only');
     const errEl = container.querySelector('#auth-error');
-
-    tabs.forEach((t) => {
-      t.addEventListener('click', () => {
-        mode = t.dataset.mode;
-        tabs.forEach((x) => x.classList.toggle('active', x === t));
-        confirm.hidden = mode !== 'signup';
-        container.querySelector('#auth-password').autocomplete =
-          mode === 'signup' ? 'new-password' : 'current-password';
-      });
-    });
 
     container.querySelector('#btn-google').onclick = async () => {
       const btn = container.querySelector('#btn-google');
@@ -204,26 +186,22 @@
     container.querySelector('#email-auth-form').onsubmit = async (e) => {
       e.preventDefault();
       const authSubmit = container.querySelector('#auth-submit');
-      setButtonLoading(authSubmit, true, 'Continuer');
+      setButtonLoading(authSubmit, true, 'Créer mon compte');
       const email = container.querySelector('#auth-email').value.trim();
       const pass = container.querySelector('#auth-password').value;
       const pass2 = container.querySelector('#auth-password2').value;
-      if (mode === 'signup' && pass !== pass2) {
+      if (pass !== pass2) {
         showErr(new Error('Les mots de passe ne correspondent pas.'));
-        setButtonLoading(authSubmit, false, 'Continuer');
+        setButtonLoading(authSubmit, false, 'Créer mon compte');
         return;
       }
       try {
-        if (mode === 'signup') {
-          await auth.createUserWithEmailAndPassword(email, pass);
-        } else {
-          await auth.signInWithEmailAndPassword(email, pass);
-        }
+        await auth.createUserWithEmailAndPassword(email, pass);
         onAuthed();
       } catch (ex) {
         showErr(ex);
       } finally {
-        setButtonLoading(authSubmit, false, 'Continuer');
+        setButtonLoading(authSubmit, false, 'Créer mon compte');
       }
     };
 
@@ -247,7 +225,7 @@
       <div class="partner-card success-card">
         <h2>Compte ${label} créé</h2>
         <p>Statut : <strong>en attente de validation</strong>. AfroBite vous contactera sur WhatsApp.${linkMsg}</p>
-        <p class="hint">Vous pourrez vous connecter à l'application mobile une fois approuvé.</p>
+        <p class="hint">Une fois votre compte approuvé et activé par AfroBite, connectez-vous à l'application mobile avec ces mêmes identifiants (email et mot de passe, ou Google/Apple).</p>
         <button type="button" class="link-btn" id="sign-out-account">Changer de compte</button>
       </div>`;
     root.querySelector('#sign-out-account').onclick = () =>
@@ -381,13 +359,6 @@
       }
       return null;
     }
-    if (!companyName) {
-      if (errEl) {
-        errEl.hidden = false;
-        errEl.textContent = 'Indiquez la société de livraison avec laquelle vous travaillez.';
-      }
-      return null;
-    }
     if (errEl) errEl.hidden = true;
     const matched = companies.find(
       (c) => c.name && c.name.trim().toLowerCase() === companyName.toLowerCase()
@@ -395,7 +366,7 @@
     return {
       fullName: `${first} ${last}`.trim(),
       whatsappNumber: wa,
-      companyName,
+      companyName: companyName || null,
       companyId: matched?.id || null,
     };
   }
@@ -528,6 +499,18 @@
       source: 'afrobyte_partenaire_restaurant',
       latInput,
       lngInput,
+      onSuccess: () => {
+        const accountSection = document.getElementById('compte-restaurant');
+        if (accountSection) {
+          accountSection.hidden = false;
+          accountSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        const message = document.querySelector('#partner-lead-form-restaurant [data-lead-message]');
+        if (message) {
+          message.className = 'partner-form-message success';
+          message.textContent = 'Candidature reçue. Vous pouvez maintenant créer le compte restaurant.';
+        }
+      },
     });
     initPartnerAccountBlock('partner-app-restaurant', 'restaurant');
   }
@@ -602,7 +585,10 @@
     initPartnerAccountBlock('partner-app-livreur', 'livreur');
 
     if (location.hash === '#livreur' || location.hash === '#create-driver-account') {
-      document.getElementById('inscription-livraison')?.scrollIntoView({ behavior: 'smooth' });
+      const target = document.getElementById('inscription-livraison');
+      if (target && typeof target.scrollIntoView === 'function') {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   }
 
