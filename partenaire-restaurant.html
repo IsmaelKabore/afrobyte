@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/partenaire.css">
     <link rel="stylesheet" href="css/partner.css">
     <link rel="stylesheet" href="css/partner-forms.css">
+    <link rel="stylesheet" href="css/partenaire-light.css">
 </head>
 <body class="partenaire-page" data-page="partenaire-restaurant" data-partner-page="partenaire-restaurant">
     <header class="site-header">
@@ -38,7 +39,7 @@
     <main>
         <section class="partenaire-section fade-in visible" style="padding-top: 3rem;">
             <h1>Partenaire Restaurant</h1>
-            <p class="section-subtitle">Candidature puis création de compte — validation AfroBite obligatoire.</p>
+            <p class="section-subtitle">Vos informations + votre compte, en une seule étape. AfroBite valide, puis vous vous connectez à l'application.</p>
         </section>
 
         <section class="partenaire-section fade-in" id="how-it-works" data-demo-kind="restaurant">
@@ -69,14 +70,14 @@
         </section>
 
         <section class="partenaire-section fade-in visible" id="candidature-restaurant">
-            <p class="step-badge-label">Étape 1</p>
-            <h2>Informations restaurant</h2>
-            <form id="partner-lead-form-restaurant" class="partner-form" novalidate>
+            <h2>Devenir restaurant partenaire</h2>
+            <p class="section-subtitle">Un seul formulaire : vos informations et vos identifiants de connexion.</p>
+            <form id="restaurant-signup-form" class="partner-form" novalidate>
+                <p class="form-group-title"><span class="form-group-emoji">🍽</span> Votre restaurant</p>
                 <div class="partner-form-grid">
                     <label>Nom restaurant *<input type="text" name="restaurantName" required /></label>
                     <label>Responsable *<input type="text" name="ownerName" required /></label>
                     <label>WhatsApp *<input type="tel" name="phone" placeholder="+22670123456" required /></label>
-                    <label>Email *<input type="email" name="email" required /></label>
                     <label>Ville *<select name="city" required>
                         <option value="Ouagadougou">Ouagadougou</option>
                         <option value="Bobo-Dioulasso">Bobo-Dioulasso</option>
@@ -93,17 +94,43 @@
                     </label>
                     <label class="full">Description<textarea name="description" rows="4" placeholder="Cuisine, capacité, horaires…"></textarea></label>
                 </div>
-                <button type="submit" class="partner-submit-btn" data-lead-submit>Envoyer la candidature</button>
-                <p class="partner-form-message" aria-live="polite" data-lead-message></p>
-            </form>
-        </section>
 
-        <section class="partenaire-section fade-in visible" id="compte-restaurant" hidden>
-            <div class="partner-inline-separator" aria-hidden="true"><hr /></div>
-            <p class="step-badge-label">Étape 2</p>
-            <h2>Créer un compte restaurant</h2>
-            <p class="section-subtitle">Votre compte sera créé en statut <strong>pending</strong> — jamais activé automatiquement.</p>
-            <div id="partner-app-restaurant" class="partner-app-wrap"></div>
+                <p class="form-group-title"><span class="form-group-emoji">🔐</span> Votre compte AfroBite</p>
+                <p class="form-group-hint">Une fois votre candidature validée, vous vous connecterez à l'application restaurant avec ce compte.</p>
+                <div class="app-auth-card">
+                    <p class="app-auth-brand">AFROBITE</p>
+                    <p class="app-auth-sub">App Restaurant</p>
+                    <div class="auth-provider-row">
+                        <button type="button" class="auth-provider-btn auth-google" data-auth-google>
+                            <img src="assets/logo_google.png" alt="" width="18" height="18" />
+                            Continuer avec Google
+                        </button>
+                        <button type="button" class="auth-provider-btn auth-apple" data-auth-apple>
+                            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 20.28c-.98.95-2.05 1.88-3.71 1.88-1.56 0-2.05-.93-3.82-.93-1.77 0-2.32.9-3.78.98-1.51.08-2.66-1.33-3.66-2.28C1.79 16.17 1 12.45 2.43 9.05c.72-1.66 2-2.73 3.4-2.73 1.41 0 2.3.93 3.47.93 1.15 0 1.85-.93 3.5-.93 1.25 0 2.57.68 3.3 1.75-2.9 1.6-2.43 5.77.48 7.21-.6 1.55-1.38 3.1-2.53 4.04zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                            Continuer avec Apple
+                        </button>
+                    </div>
+                    <div class="app-auth-divider"><span>ou par email</span></div>
+                    <label class="app-field">Email
+                        <span class="app-input"><span class="app-input-icon">✉️</span><input type="email" name="email" required autocomplete="email" placeholder="vous@exemple.bf" /></span>
+                    </label>
+                    <label class="app-field">Mot de passe
+                        <span class="app-input"><span class="app-input-icon">🔒</span><input type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="Min. 6 caractères" /></span>
+                    </label>
+                    <label class="app-field">Confirmer le mot de passe
+                        <span class="app-input"><span class="app-input-icon">🔒</span><input type="password" name="password2" required minlength="6" autocomplete="new-password" placeholder="Retapez le mot de passe" /></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="partner-submit-btn" data-signup-submit>Créer mon compte et envoyer ma candidature</button>
+                <p class="partner-form-message" aria-live="polite" data-signup-message></p>
+            </form>
+            <div id="restaurant-success" class="partner-success-card" hidden>
+                <div class="partner-success-icon" aria-hidden="true">✓</div>
+                <h3>Candidature envoyée, compte créé !</h3>
+                <p>Votre compte restaurant est <strong>en attente de validation</strong>. Notre équipe vous contactera sur WhatsApp.</p>
+                <p class="hint">Dès que votre compte est approuvé, connectez-vous à l'application AfroBite restaurant avec votre email et votre mot de passe.</p>
+            </div>
         </section>
     </main>
 

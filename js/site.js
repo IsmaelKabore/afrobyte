@@ -1,7 +1,37 @@
 /**
- * AfroBite site — navigation mobile, FAQ accordéon, formulaire support → email.
+ * AfroBite site — navigation mobile, FAQ accordéon, formulaire support → email,
+ * thème clair/sombre partagé (clé localStorage commune avec l'accueil).
  */
 (function () {
+  // ── Thème clair / sombre ──────────────────────────────────────────────────
+  const THEME_KEY = 'afrobite-theme';
+  function applyTheme(theme, btn) {
+    document.documentElement.dataset.theme = theme;
+    if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+  const savedTheme =
+    localStorage.getItem(THEME_KEY) ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(savedTheme, null);
+
+  // Bouton injecté dans le header de toutes les pages (partenaire compris —
+  // leur variante claire vit dans css/partenaire-light.css).
+  const siteNav = document.querySelector('.site-nav');
+  if (siteNav) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'theme-btn';
+    btn.setAttribute('aria-label', 'Basculer entre thème clair et sombre');
+    applyTheme(document.documentElement.dataset.theme, btn);
+    btn.addEventListener('click', function () {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(THEME_KEY, next);
+      applyTheme(next, btn);
+    });
+    const navToggleBtn = siteNav.querySelector('.nav-toggle');
+    siteNav.insertBefore(btn, navToggleBtn || null);
+  }
+
   const navToggle = document.querySelector('.nav-toggle');
   const navLinks = document.querySelector('.nav-links');
   if (navToggle && navLinks) {

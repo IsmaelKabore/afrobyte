@@ -1,5 +1,10 @@
 /**
  * AfroBite partenaire — partenaire-restaurant.html & partenaire-livraison.html
+ *
+ * Parcours volontairement SANS connexion sur le site : chaque formulaire
+ * crée le compte Firebase ET envoie les informations en une seule soumission.
+ * Le partenaire se connecte ensuite uniquement dans l'application mobile,
+ * une fois validé par AfroBite.
  */
 (function () {
   const FIREBASE_CONFIG = {
@@ -65,12 +70,36 @@
 
   function mapAuthError(code) {
     const m = {
-      'auth/email-already-in-use': 'Cet email est déjà utilisé. Utilisez un autre email ou contactez AfroBite.',
+      'auth/email-already-in-use':
+        'Cet email a déjà un compte AfroBite avec un autre mot de passe. Utilisez un autre email ou écrivez à afrobyteapp@gmail.com.',
       'auth/invalid-email': 'Email invalide.',
       'auth/weak-password': 'Mot de passe trop faible (min. 6 caractères).',
       'auth/popup-closed-by-user': 'Connexion annulée.',
+      'auth/popup-blocked': 'Popup bloquée par le navigateur — autorisez les popups puis réessayez.',
     };
     return m[code] || 'Erreur de création de compte.';
+  }
+
+  async function signInWithProvider(kind) {
+    const provider =
+      kind === 'google'
+        ? new firebase.auth.GoogleAuthProvider()
+        : new firebase.auth.OAuthProvider('apple.com');
+    const cred = await auth.signInWithPopup(provider);
+    return cred.user;
+  }
+
+  /** Valide un sous-ensemble de champs (parcours Google/Apple : les champs
+   *  email/mot de passe du formulaire ne sont pas utilisés). */
+  function validateFields(form, names) {
+    for (const name of names) {
+      const el = form.querySelector(`[name="${name}"]`);
+      if (el && !el.checkValidity()) {
+        el.reportValidity();
+        return false;
+      }
+    }
+    return true;
   }
 
   function attachMapboxAddressSearch(inputEl, onPick) {
@@ -125,137 +154,67 @@
     btn.textContent = loading ? 'Envoi en cours…' : defaultLabel;
   }
 
-  function renderAuth(container, partnerType, onAuthed) {
-    const typeLabel = partnerType === 'delivery' ? 'livreur' : 'restaurant';
-    container.innerHTML = `
-      <div class="partner-card partner-auth">
-        <p class="hint">Créez ici votre compte ${typeLabel}. Une fois validé par AfroBite, vous vous connecterez directement dans l'application mobile avec ces mêmes identifiants.</p>
-        <div class="auth-buttons">
-          <button type="button" class="btn btn-google" id="btn-google">
-            <img src="assets/logo_google.png" alt="" width="20" height="20" />
-            Créer avec Google
-          </button>
-          <button type="button" class="btn btn-apple" id="btn-apple">
-            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 20.28c-.98.95-2.05 1.88-3.71 1.88-1.56 0-2.05-.93-3.82-.93-1.77 0-2.32.9-3.78.98-1.51.08-2.66-1.33-3.66-2.28C1.79 16.17 1 12.45 2.43 9.05c.72-1.66 2-2.73 3.4-2.73 1.41 0 2.3.93 3.47.93 1.15 0 1.85-.93 3.5-.93 1.25 0 2.57.68 3.3 1.75-2.9 1.6-2.43 5.77.48 7.21-.6 1.55-1.38 3.1-2.53 4.04zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
-            Créer avec Apple
-          </button>
-        </div>
-        <div class="divider">ou email</div>
-        <form id="email-auth-form">
-          <label>Email<input type="email" id="auth-email" required autocomplete="email" /></label>
-          <label>Mot de passe<input type="password" id="auth-password" required minlength="6" autocomplete="new-password" /></label>
-          <label>Confirmer le mot de passe<input type="password" id="auth-password2" minlength="6" autocomplete="new-password" required /></label>
-          <p id="auth-error" class="error" hidden></p>
-          <button type="submit" class="btn btn-primary" id="auth-submit">Créer mon compte</button>
-        </form>
-      </div>`;
+  function setMessage(el, kind, text) {
+    if (!el) return;
+    el.className = 'partner-form-message' + (kind ? ' ' + kind : '');
+    el.textContent = text || '';
+  }
 
-    const errEl = container.querySelector('#auth-error');
-
-    container.querySelector('#btn-google').onclick = async () => {
-      const btn = container.querySelector('#btn-google');
-      btn.disabled = true;
-      btn.classList.add('is-loading');
-      try {
-        await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-        onAuthed();
-      } catch (e) {
-        showErr(e);
-      } finally {
-        btn.disabled = false;
-        btn.classList.remove('is-loading');
-      }
-    };
-
-    container.querySelector('#btn-apple').onclick = async () => {
-      const btn = container.querySelector('#btn-apple');
-      btn.disabled = true;
-      btn.classList.add('is-loading');
-      try {
-        const p = new firebase.auth.OAuthProvider('apple.com');
-        await auth.signInWithPopup(p);
-        onAuthed();
-      } catch (e) {
-        showErr(e);
-      } finally {
-        btn.disabled = false;
-        btn.classList.remove('is-loading');
-      }
-    };
-
-    container.querySelector('#email-auth-form').onsubmit = async (e) => {
-      e.preventDefault();
-      const authSubmit = container.querySelector('#auth-submit');
-      setButtonLoading(authSubmit, true, 'Créer mon compte');
-      const email = container.querySelector('#auth-email').value.trim();
-      const pass = container.querySelector('#auth-password').value;
-      const pass2 = container.querySelector('#auth-password2').value;
-      if (pass !== pass2) {
-        showErr(new Error('Les mots de passe ne correspondent pas.'));
-        setButtonLoading(authSubmit, false, 'Créer mon compte');
-        return;
-      }
-      try {
-        await auth.createUserWithEmailAndPassword(email, pass);
-        onAuthed();
-      } catch (ex) {
-        showErr(ex);
-      } finally {
-        setButtonLoading(authSubmit, false, 'Créer mon compte');
-      }
-    };
-
-    function showErr(e) {
-      errEl.hidden = false;
-      errEl.textContent = e.code ? mapAuthError(e.code) : e.message;
+  /**
+   * Crée le compte Firebase (ou le réutilise si un précédent essai a déjà
+   * créé/connecté ce même email — permet de réessayer après un échec réseau).
+   */
+  async function ensureAccount(email, password) {
+    const current = auth.currentUser;
+    if (current && (current.email || '').toLowerCase() === email.toLowerCase()) {
+      return current;
     }
-
-    auth.onAuthStateChanged((u) => {
-      if (u) onAuthed();
-    });
+    if (current) await auth.signOut();
+    try {
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      return cred.user;
+    } catch (e) {
+      if (e.code === 'auth/email-already-in-use') {
+        // L'email existe déjà : on tente la connexion avec le mot de passe
+        // fourni (cas « je réessaie après une erreur ») avant d'abandonner.
+        try {
+          const cred = await auth.signInWithEmailAndPassword(email, password);
+          return cred.user;
+        } catch (_) {
+          throw e;
+        }
+      }
+      throw e;
+    }
   }
 
-  function showAccountReady(root, partnerType, linkedCount) {
-    const label = partnerType === 'delivery' ? 'livreur' : 'restaurant';
-    const linkMsg =
-      linkedCount > 0
-        ? ' Votre candidature a été associée à ce compte.'
-        : '';
-    root.innerHTML = `
-      <div class="partner-card success-card">
-        <h2>Compte ${label} créé</h2>
-        <p>Statut : <strong>en attente de validation</strong>. AfroBite vous contactera sur WhatsApp.${linkMsg}</p>
-        <p class="hint">Une fois votre compte approuvé et activé par AfroBite, connectez-vous à l'application mobile avec ces mêmes identifiants (email et mot de passe, ou Google/Apple).</p>
-        <button type="button" class="link-btn" id="sign-out-account">Changer de compte</button>
-      </div>`;
-    root.querySelector('#sign-out-account').onclick = () =>
-      auth.signOut().then(() => location.reload());
+  function showSuccess(form, successEl) {
+    if (form) form.hidden = true;
+    if (successEl) {
+      successEl.hidden = false;
+      successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
+  // ── Société de livraison : candidature simple, sans compte ─────────────────
   function bindLeadForm(form, partnerType, options = {}) {
     if (!form) return;
     const message = form.querySelector('[data-lead-message]');
     const submitBtn = form.querySelector('[data-lead-submit]');
-    const latInput = options.latInput || null;
-    const lngInput = options.lngInput || null;
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!form.reportValidity()) return;
 
-      message.textContent = '';
-      message.className = 'partner-form-message';
-      submitBtn.disabled = true;
+      setMessage(message, '', '');
       const prevLabel = submitBtn.textContent;
-      submitBtn.textContent = 'Envoi en cours…';
+      setButtonLoading(submitBtn, true, prevLabel);
 
       const fd = new FormData(form);
       const phone = normalizePhone(fd.get('phone'));
       if (!validPhone(phone)) {
-        message.classList.add('error');
-        message.textContent = 'WhatsApp invalide (format +226…).';
-        submitBtn.disabled = false;
-        submitBtn.textContent = prevLabel;
+        setMessage(message, 'error', 'WhatsApp invalide (format +226…).');
+        setButtonLoading(submitBtn, false, prevLabel);
         return;
       }
 
@@ -267,20 +226,11 @@
         city: String(fd.get('city') || '').trim(),
         source: options.source || 'afrobyte_partenaire_page',
         submittedAtClient: new Date().toISOString(),
+        companyName: String(fd.get('companyName') || '').trim(),
+        coveredZone: String(fd.get('coveredZone') || '').trim(),
+        approximateDriverCount: fd.get('approximateDriverCount') || null,
+        note: String(fd.get('note') || '').trim(),
       };
-
-      if (partnerType === 'restaurant') {
-        payload.restaurantName = String(fd.get('restaurantName') || '').trim();
-        payload.address = String(fd.get('address') || '').trim();
-        payload.description = String(fd.get('description') || '').trim();
-        payload.latitude = fd.get('latitude') || null;
-        payload.longitude = fd.get('longitude') || null;
-      } else {
-        payload.companyName = String(fd.get('companyName') || '').trim();
-        payload.coveredZone = String(fd.get('coveredZone') || '').trim();
-        payload.approximateDriverCount = fd.get('approximateDriverCount') || null;
-        payload.note = String(fd.get('note') || '').trim();
-      }
 
       try {
         const response = await fetch(LEAD_ENDPOINT, {
@@ -291,201 +241,23 @@
         const json = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(json.error || 'HTTP ' + response.status);
         form.reset();
-        if (latInput) latInput.value = '';
-        if (lngInput) lngInput.value = '';
-        if (typeof options.onSuccess === 'function') {
-          options.onSuccess();
-          return;
-        }
-        message.classList.add('success');
-        message.textContent =
-          'Merci. Notre équipe vous contactera sur WhatsApp pour la suite du partenariat.';
+        if (typeof options.onSuccess === 'function') options.onSuccess();
       } catch (_) {
-        message.classList.add('error');
-        message.textContent =
-          'Échec de l\'envoi. Réessayez ou écrivez à afrobyteapp@gmail.com.';
+        setMessage(
+          message,
+          'error',
+          "Échec de l'envoi. Réessayez ou écrivez à afrobyteapp@gmail.com."
+        );
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = prevLabel;
+        setButtonLoading(submitBtn, false, prevLabel);
       }
     });
   }
 
-  async function finalizePartnerAccount(root, accountType, extra, options = {}) {
-    const partnerType = accountType === 'livreur' ? 'delivery' : 'restaurant';
-    const errEl =
-      root.querySelector('#account-error') ||
-      (options.errorElId ? document.getElementById(options.errorElId) : null);
-    const btn =
-      root.querySelector('#account-finalize') ||
-      (options.btnId ? document.getElementById(options.btnId) : null);
-    if (btn) setButtonLoading(btn, true, 'Créer mon compte');
-    try {
-      const res = await callFunction('setupPartnerAccount', {
-        partnerType,
-        email: auth.currentUser?.email || extra?.email || '',
-        whatsappNumber: extra?.whatsappNumber || null,
-        companyId: extra?.companyId || null,
-        companyName: extra?.companyName || null,
-        fullName: extra?.fullName || null,
-      });
-      showAccountReady(root, partnerType, (res.linkedApplicationIds || []).length);
-    } catch (ex) {
-      if (errEl) {
-        errEl.hidden = false;
-        errEl.textContent = ex.message;
-      }
-      if (btn) setButtonLoading(btn, false, 'Créer mon compte');
-    }
-  }
-
-  function getLivreurProfileExtra(companies) {
-    const first = document.getElementById('driver-first-name')?.value?.trim() || '';
-    const last = document.getElementById('driver-last-name')?.value?.trim() || '';
-    const companyName = document.getElementById('driver-company-name')?.value?.trim() || '';
-    const wa = normalizePhone(document.getElementById('driver-whatsapp-prefill')?.value || '');
-    const errEl = document.getElementById('livreur-profile-error');
-    if (!first || !last) {
-      if (errEl) {
-        errEl.hidden = false;
-        errEl.textContent = 'Prénom et nom sont obligatoires.';
-      }
-      return null;
-    }
-    if (!validPhone(wa)) {
-      if (errEl) {
-        errEl.hidden = false;
-        errEl.textContent = 'WhatsApp invalide (format +226…).';
-      }
-      return null;
-    }
-    if (errEl) errEl.hidden = true;
-    const matched = companies.find(
-      (c) => c.name && c.name.trim().toLowerCase() === companyName.toLowerCase()
-    );
-    return {
-      fullName: `${first} ${last}`.trim(),
-      whatsappNumber: wa,
-      companyName: companyName || null,
-      companyId: matched?.id || null,
-    };
-  }
-
-  function setLivreurProfileVisible(visible) {
-    const block = document.getElementById('livreur-profile-fields');
-    if (block) block.hidden = !visible;
-  }
-
-  function initPartnerAccountBlock(rootId, accountType) {
-    const root = document.getElementById(rootId);
-    if (!root) return;
-
-    initFirebase();
-    let companies = [];
-    let accountReady = false;
-    const useExternalLivreurFields =
-      accountType === 'livreur' && !!document.getElementById('livreur-profile-fields');
-
-    const loadCompanies = async () => {
-      if (accountType !== 'livreur') return;
-      try {
-        const res = await callFunction('listActiveDeliveryCompanies', {}, { requireUser: false });
-        companies = res.companies || [];
-      } catch (_) {
-        companies = [];
-      }
-    };
-
-    const render = async () => {
-      if (accountReady) return;
-      const user = auth.currentUser;
-      if (!user) {
-        if (useExternalLivreurFields) setLivreurProfileVisible(false);
-        renderAuth(root, accountType === 'livreur' ? 'delivery' : 'restaurant', () => render());
-        return;
-      }
-
-      if (accountType === 'livreur' && !companies.length) await loadCompanies();
-      if (useExternalLivreurFields) setLivreurProfileVisible(!!user);
-
-      const companyOptions = companies.length
-        ? companies.map((c) => `<option value="${c.id}">${c.name}</option>`).join('')
-        : '<option value="">— Société à confirmer par l\'admin —</option>';
-
-      const livreurExternal = accountType === 'livreur' && useExternalLivreurFields;
-      const livreurFieldsBlock =
-        accountType === 'livreur' && !useExternalLivreurFields
-          ? `
-            <label>Nom complet (optionnel)<input id="account-full-name" placeholder="Prénom et nom" /></label>
-            <label>WhatsApp (optionnel)<input id="account-whatsapp" type="tel" placeholder="+22670123456" /></label>
-            <label>Société de livraison (optionnel)
-              <select id="account-company">${companyOptions}</select>
-            </label>
-          `
-          : accountType === 'livreur'
-            ? `<p class="hint">Complétez votre profil ci-dessous puis validez l'inscription.</p>`
-            : `<p class="hint">Votre compte restaurant sera créé avec le statut <strong>en attente</strong>. Nous l'associerons à votre candidature si l'email correspond.</p>`;
-
-      root.innerHTML = `
-        <div class="partner-card">
-          <p class="signed-in">Connecté : <strong>${user.email || user.uid}</strong>
-            <button type="button" id="sign-out-top-${rootId}" class="link-btn">Changer</button></p>
-          ${livreurFieldsBlock}
-          ${
-            livreurExternal
-              ? ''
-              : `<p id="account-error" class="error" hidden></p>
-          <button type="button" class="btn btn-primary" id="account-finalize">${
-            accountType === 'livreur' ? 'Créer mon compte livreur' : 'Créer mon compte'
-          }</button>`
-          }
-        </div>`;
-
-      root.querySelector(`#sign-out-top-${rootId}`).onclick = () =>
-        auth.signOut().then(() => location.reload());
-
-      const runFinalize = () => {
-        const extra = {};
-        if (accountType === 'livreur') {
-          if (useExternalLivreurFields) {
-            const profile = getLivreurProfileExtra(companies);
-            if (!profile) return;
-            Object.assign(extra, profile);
-          } else {
-            extra.fullName = root.querySelector('#account-full-name')?.value?.trim() || '';
-            const wa = normalizePhone(root.querySelector('#account-whatsapp')?.value || '');
-            if (wa && validPhone(wa)) extra.whatsappNumber = wa;
-            const companyId = root.querySelector('#account-company')?.value || '';
-            if (companyId) {
-              extra.companyId = companyId;
-              extra.companyName = companies.find((c) => c.id === companyId)?.name || null;
-            }
-          }
-        }
-        const finalizeOpts = livreurExternal
-          ? { errorElId: 'account-error-livreur', btnId: 'livreur-finalize-btn' }
-          : {};
-        finalizePartnerAccount(root, accountType, extra, finalizeOpts).then(() => {
-          accountReady = true;
-          if (livreurExternal) setLivreurProfileVisible(false);
-        });
-      };
-
-      const finalizeBtn = livreurExternal
-        ? document.getElementById('livreur-finalize-btn')
-        : root.querySelector('#account-finalize');
-      if (finalizeBtn) finalizeBtn.onclick = runFinalize;
-    };
-
-    auth.onAuthStateChanged(() => {
-      accountReady = false;
-      if (useExternalLivreurFields) setLivreurProfileVisible(!!auth.currentUser);
-      render();
-    });
-    render();
-  }
-
+  // ── Restaurant : infos + compte en UNE soumission ──────────────────────────
   function initRestaurantPage() {
+    initFirebase();
+
     const latInput = document.getElementById('lead-restaurant-lat');
     const lngInput = document.getElementById('lead-restaurant-lng');
     const addrInput = document.getElementById('lead-restaurant-address');
@@ -495,97 +267,143 @@
         lngInput.value = lng;
       });
     }
-    bindLeadForm(document.getElementById('partner-lead-form-restaurant'), 'restaurant', {
-      source: 'afrobyte_partenaire_restaurant',
-      latInput,
-      lngInput,
-      onSuccess: () => {
-        const accountSection = document.getElementById('compte-restaurant');
-        if (accountSection) {
-          accountSection.hidden = false;
-          accountSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        const message = document.querySelector('#partner-lead-form-restaurant [data-lead-message]');
-        if (message) {
-          message.className = 'partner-form-message success';
-          message.textContent = 'Candidature reçue. Vous pouvez maintenant créer le compte restaurant.';
-        }
-      },
+
+    const form = document.getElementById('restaurant-signup-form');
+    if (!form) return;
+    const message = form.querySelector('[data-signup-message]');
+    const submitBtn = form.querySelector('[data-signup-submit]');
+    const successEl = document.getElementById('restaurant-success');
+    const INFO_FIELDS = ['restaurantName', 'ownerName', 'phone', 'city', 'address'];
+
+    // Candidature + liaison du compte — commun aux parcours email et Google/Apple.
+    async function finalizeRestaurant(fd, email, phone) {
+      const leadPayload = {
+        partnerType: 'restaurant',
+        restaurantName: String(fd.get('restaurantName') || '').trim(),
+        ownerName: String(fd.get('ownerName') || '').trim(),
+        email,
+        phone,
+        city: String(fd.get('city') || '').trim(),
+        address: String(fd.get('address') || '').trim(),
+        description: String(fd.get('description') || '').trim(),
+        latitude: fd.get('latitude') || null,
+        longitude: fd.get('longitude') || null,
+        source: 'afrobyte_partenaire_restaurant',
+        submittedAtClient: new Date().toISOString(),
+      };
+      const response = await fetch(LEAD_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(leadPayload),
+      });
+      const json = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(json.error || 'HTTP ' + response.status);
+
+      await callFunction('setupPartnerAccount', {
+        partnerType: 'restaurant',
+        email,
+        whatsappNumber: phone,
+        fullName: leadPayload.ownerName || null,
+      });
+      showSuccess(form, successEl);
+    }
+
+    function signupError(ex) {
+      setMessage(
+        message,
+        'error',
+        ex.code
+          ? mapAuthError(ex.code)
+          : (ex.message || 'Erreur — réessayez.') +
+              (auth.currentUser
+                ? ' Votre compte a bien été créé : cliquez à nouveau pour renvoyer la candidature.'
+                : '')
+      );
+    }
+
+    // Parcours email + mot de passe.
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const fd = new FormData(form);
+      const phone = normalizePhone(fd.get('phone'));
+      const email = String(fd.get('email') || '').trim();
+      const password = String(fd.get('password') || '');
+      const password2 = String(fd.get('password2') || '');
+
+      if (!validPhone(phone)) {
+        setMessage(message, 'error', 'WhatsApp invalide (format +226…).');
+        return;
+      }
+      if (password !== password2) {
+        setMessage(message, 'error', 'Les mots de passe ne correspondent pas.');
+        return;
+      }
+
+      setMessage(message, '', '');
+      const prevLabel = submitBtn.textContent;
+      setButtonLoading(submitBtn, true, prevLabel);
+      try {
+        await ensureAccount(email, password);
+        await finalizeRestaurant(fd, email, phone);
+      } catch (ex) {
+        signupError(ex);
+      } finally {
+        setButtonLoading(submitBtn, false, prevLabel);
+      }
     });
-    initPartnerAccountBlock('partner-app-restaurant', 'restaurant');
+
+    // Parcours Google / Apple : infos validées, compte créé via popup.
+    function bindProvider(selector, kind) {
+      const btn = form.querySelector(selector);
+      if (!btn) return;
+      btn.addEventListener('click', async () => {
+        if (!validateFields(form, INFO_FIELDS)) return;
+        const fd = new FormData(form);
+        const phone = normalizePhone(fd.get('phone'));
+        if (!validPhone(phone)) {
+          setMessage(message, 'error', 'WhatsApp invalide (format +226…).');
+          return;
+        }
+        setMessage(message, '', '');
+        btn.disabled = true;
+        try {
+          const user = await signInWithProvider(kind);
+          await finalizeRestaurant(fd, user.email || '', phone);
+        } catch (ex) {
+          signupError(ex);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    }
+    bindProvider('[data-auth-google]', 'google');
+    bindProvider('[data-auth-apple]', 'apple');
   }
 
+  // ── Livraison : candidature société uniquement ─────────────────────────────
+  // L'inscription livreur se fait désormais directement dans l'application
+  // mobile AfroBite Livraison (exigence Apple Guideline 4 — création de
+  // compte in-app). Le site ne conserve que la candidature société.
   async function initLivraisonPage() {
-    const tabs = document.querySelectorAll('[data-livraison-tab]');
-    const panels = document.querySelectorAll('[data-livraison-panel]');
+    initFirebase();
+
     const societeForm = document.getElementById('partner-lead-form-societe');
     const societeSuccess = document.getElementById('societe-success-block');
-    let societeSubmitted = false;
 
-    function setLivraisonTab(tabId) {
-      tabs.forEach((el) => {
-        const active = el.dataset.livraisonTab === tabId;
-        el.classList.toggle('active', active);
-        el.setAttribute('aria-selected', active ? 'true' : 'false');
-      });
-      panels.forEach((panel) => {
-        const isSociete = panel.dataset.livraisonPanel === 'societe';
-        panel.hidden = tabId === 'societe' ? !isSociete : isSociete;
-        if (isSociete && tabId === 'societe') {
-          if (societeSuccess) societeSuccess.hidden = !societeSubmitted;
-          if (societeForm) societeForm.hidden = societeSubmitted;
-        }
-      });
-    }
-
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const tabId = tab.dataset.livraisonTab;
-        setLivraisonTab(tabId);
-        if (tabId === 'livreur') location.hash = 'livreur';
-        else location.hash = 'societe';
-      });
-    });
-
-    const initialTab =
-      location.hash === '#livreur' || location.hash === '#create-driver-account'
-        ? 'livreur'
-        : 'societe';
-    setLivraisonTab(initialTab);
-
-    bindLeadForm(document.getElementById('partner-lead-form-societe'), 'delivery_company', {
+    bindLeadForm(societeForm, 'delivery_company', {
       source: 'afrobyte_partenaire_livraison_societe',
       onSuccess: () => {
-        societeSubmitted = true;
-        setLivraisonTab('societe');
+        if (societeSuccess) societeSuccess.hidden = false;
+        if (societeForm) societeForm.hidden = true;
       },
     });
 
-    initFirebase();
-    try {
-      const res = await callFunction('listActiveDeliveryCompanies', {}, { requireUser: false });
-      const companies = res.companies || [];
-      const datalist = document.getElementById('driver-company-suggestions');
-      if (datalist && companies.length) {
-        datalist.innerHTML = companies.map((c) => `<option value="${c.name}"></option>`).join('');
-      }
-    } catch (_) {
-      /* suggestions optionnelles — inscription possible sans liste */
-    }
-
-    const profileFields = document.getElementById('livreur-profile-fields');
-    if (profileFields && !document.getElementById('livreur-profile-error')) {
-      const err = document.createElement('p');
-      err.id = 'livreur-profile-error';
-      err.className = 'partner-form-message error';
-      err.hidden = true;
-      profileFields.appendChild(err);
-    }
-
-    initPartnerAccountBlock('partner-app-livreur', 'livreur');
-
+    // Anciens liens (#livreur / #create-driver-account) : on scrolle vers la
+    // carte qui renvoie vers l'application mobile.
     if (location.hash === '#livreur' || location.hash === '#create-driver-account') {
-      const target = document.getElementById('inscription-livraison');
+      const target = document.getElementById('livreur-app-notice');
       if (target && typeof target.scrollIntoView === 'function') {
         target.scrollIntoView({ behavior: 'smooth' });
       }

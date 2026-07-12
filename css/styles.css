@@ -1026,3 +1026,71 @@ footer {
 .refund-confirmation-body p:last-child {
     margin-bottom: 0;
 }
+
+/* ── Thème sombre global (toggle 🌙/☀️, clé localStorage `afrobite-theme`) ── */
+html[data-theme="dark"] {
+    --bg: #0d0c0a;
+    --bg-warm: #14120e;
+    --card: #171512;
+    --text: #f2ede3;
+    --text-muted: #b8b0a1;
+    --text-soft: #8d8577;
+    --border: #2a2620;
+    --gold-glow: rgba(212, 160, 23, 0.12);
+    --gold-border: rgba(212, 160, 23, 0.4);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+html[data-theme="dark"] body { background: var(--bg); color: var(--text); }
+html[data-theme="dark"] .legal-meta { color: var(--gold-light); }
+html[data-theme="dark"] .legal-toc a:hover { color: var(--gold-light); }
+
+/* Bouton bascule thème (injecté par site.js dans le header) */
+.theme-btn {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: transparent;
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s ease, background 0.25s ease;
+    flex-shrink: 0;
+}
+.theme-btn:hover { transform: rotate(20deg) scale(1.08); background: rgba(212, 160, 23, 0.2); }
+
+/* ── Pages légales : sommaire en carte, ancres et scroll confortables ── */
+.legal-toc {
+    /* neutralise la règle globale `nav { display:flex }` (pensée pour le header) */
+    display: block;
+    max-width: none;
+    min-height: 0;
+    box-shadow: var(--shadow-sm);
+}
+.legal-toc li { margin-bottom: 0.4rem; }
+.legal-toc a {
+    display: inline-block;
+    padding: 0.1rem 0;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+.legal-toc a:hover { transform: translateX(3px); }
+.content-section h2[id] { scroll-margin-top: 90px; }
+.content-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.content-section h2::before {
+    content: '';
+    width: 8px;
+    height: 24px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--gold-light), var(--gold-dark));
+    flex-shrink: 0;
+}
+.legal-toc h2::before { display: none; }
+html { scroll-behavior: smooth; }
