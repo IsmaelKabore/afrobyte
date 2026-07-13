@@ -254,133 +254,10 @@
     });
   }
 
-  // ── Restaurant : infos + compte en UNE soumission ──────────────────────────
-  function initRestaurantPage() {
-    initFirebase();
-
-    const latInput = document.getElementById('lead-restaurant-lat');
-    const lngInput = document.getElementById('lead-restaurant-lng');
-    const addrInput = document.getElementById('lead-restaurant-address');
-    if (addrInput && latInput && lngInput) {
-      attachMapboxAddressSearch(addrInput, ({ lat, lng }) => {
-        latInput.value = lat;
-        lngInput.value = lng;
-      });
-    }
-
-    const form = document.getElementById('restaurant-signup-form');
-    if (!form) return;
-    const message = form.querySelector('[data-signup-message]');
-    const submitBtn = form.querySelector('[data-signup-submit]');
-    const successEl = document.getElementById('restaurant-success');
-    const INFO_FIELDS = ['restaurantName', 'ownerName', 'phone', 'city', 'address'];
-
-    // Candidature + liaison du compte — commun aux parcours email et Google/Apple.
-    async function finalizeRestaurant(fd, email, phone) {
-      const leadPayload = {
-        partnerType: 'restaurant',
-        restaurantName: String(fd.get('restaurantName') || '').trim(),
-        ownerName: String(fd.get('ownerName') || '').trim(),
-        email,
-        phone,
-        city: String(fd.get('city') || '').trim(),
-        address: String(fd.get('address') || '').trim(),
-        description: String(fd.get('description') || '').trim(),
-        latitude: fd.get('latitude') || null,
-        longitude: fd.get('longitude') || null,
-        source: 'afrobyte_partenaire_restaurant',
-        submittedAtClient: new Date().toISOString(),
-      };
-      const response = await fetch(LEAD_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(leadPayload),
-      });
-      const json = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(json.error || 'HTTP ' + response.status);
-
-      await callFunction('setupPartnerAccount', {
-        partnerType: 'restaurant',
-        email,
-        whatsappNumber: phone,
-        fullName: leadPayload.ownerName || null,
-      });
-      showSuccess(form, successEl);
-    }
-
-    function signupError(ex) {
-      setMessage(
-        message,
-        'error',
-        ex.code
-          ? mapAuthError(ex.code)
-          : (ex.message || 'Erreur — réessayez.') +
-              (auth.currentUser
-                ? ' Votre compte a bien été créé : cliquez à nouveau pour renvoyer la candidature.'
-                : '')
-      );
-    }
-
-    // Parcours email + mot de passe.
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!form.reportValidity()) return;
-
-      const fd = new FormData(form);
-      const phone = normalizePhone(fd.get('phone'));
-      const email = String(fd.get('email') || '').trim();
-      const password = String(fd.get('password') || '');
-      const password2 = String(fd.get('password2') || '');
-
-      if (!validPhone(phone)) {
-        setMessage(message, 'error', 'WhatsApp invalide (format +226…).');
-        return;
-      }
-      if (password !== password2) {
-        setMessage(message, 'error', 'Les mots de passe ne correspondent pas.');
-        return;
-      }
-
-      setMessage(message, '', '');
-      const prevLabel = submitBtn.textContent;
-      setButtonLoading(submitBtn, true, prevLabel);
-      try {
-        await ensureAccount(email, password);
-        await finalizeRestaurant(fd, email, phone);
-      } catch (ex) {
-        signupError(ex);
-      } finally {
-        setButtonLoading(submitBtn, false, prevLabel);
-      }
-    });
-
-    // Parcours Google / Apple : infos validées, compte créé via popup.
-    function bindProvider(selector, kind) {
-      const btn = form.querySelector(selector);
-      if (!btn) return;
-      btn.addEventListener('click', async () => {
-        if (!validateFields(form, INFO_FIELDS)) return;
-        const fd = new FormData(form);
-        const phone = normalizePhone(fd.get('phone'));
-        if (!validPhone(phone)) {
-          setMessage(message, 'error', 'WhatsApp invalide (format +226…).');
-          return;
-        }
-        setMessage(message, '', '');
-        btn.disabled = true;
-        try {
-          const user = await signInWithProvider(kind);
-          await finalizeRestaurant(fd, user.email || '', phone);
-        } catch (ex) {
-          signupError(ex);
-        } finally {
-          btn.disabled = false;
-        }
-      });
-    }
-    bindProvider('[data-auth-google]', 'google');
-    bindProvider('[data-auth-apple]', 'apple');
-  }
+  // ── Restaurant ──────────────────────────────────────────────────────────────
+  // L'inscription restaurant se fait désormais directement dans l'application
+  // mobile AfroBite Restaurant (parcours in-app validé par Apple). La page
+  // partenaire-restaurant.html ne charge plus ce script.
 
   // ── Livraison : candidature société uniquement ─────────────────────────────
   // L'inscription livreur se fait désormais directement dans l'application
@@ -411,6 +288,5 @@
   }
 
   const page = document.body.dataset.partnerPage;
-  if (page === 'partenaire-restaurant') initRestaurantPage();
-  else if (page === 'partenaire-livraison') initLivraisonPage();
+  if (page === 'partenaire-livraison') initLivraisonPage();
 })();
