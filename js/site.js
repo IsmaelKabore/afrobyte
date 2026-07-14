@@ -28,8 +28,14 @@
       localStorage.setItem(THEME_KEY, next);
       applyTheme(next, btn);
     });
-    const navToggleBtn = siteNav.querySelector('.nav-toggle');
-    siteNav.insertBefore(btn, navToggleBtn || null);
+    // Dans la barre d'actions à droite (header unifié), sinon avant le burger.
+    const navRight = siteNav.querySelector('.nav-right');
+    if (navRight) {
+      navRight.insertBefore(btn, navRight.firstChild);
+    } else {
+      const navToggleBtn = siteNav.querySelector('.nav-toggle');
+      siteNav.insertBefore(btn, navToggleBtn || null);
+    }
   }
 
   const navToggle = document.querySelector('.nav-toggle');

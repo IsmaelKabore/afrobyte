@@ -13,6 +13,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
+<link rel="stylesheet" href="css/site-shell.css">
+
 <style>
 /* ============ DESIGN TOKENS ============ */
 :root{
@@ -577,16 +579,17 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
 
 <!-- ============ NAV ============ -->
 <nav class="nav" id="nav">
-  <a href="#" class="logo">
+  <a href="index.html" class="logo">
     <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M7 13c1.5 2 3 3 5 3s3.5-1 5-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg>
     AfroBite
   </a>
   <ul>
-    <li><a href="#discover">Découvrir</a></li>
-    <li><a href="#order">Commander</a></li>
-    <li><a href="#track">Suivre</a></li>
-    <li><a href="#restaurants">Restaurants</a></li>
+    <li><a href="index.html">Accueil</a></li>
     <li><a href="partenaire.html">Partenaire</a></li>
+    <li><a href="about.html">À propos</a></li>
+    <li><a href="support.html">Support</a></li>
+    <li><a href="privacy-policy.html">Confidentialité</a></li>
+    <li><a href="terms.html">Conditions</a></li>
   </ul>
   <div class="nav-right">
     <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Basculer entre thème clair et sombre">🌙</button>
@@ -1022,42 +1025,66 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
     <div class="eyebrow">Disponible maintenant</div>
     <h2>Le futur du repas <em>tient dans ta poche.</em></h2>
     <p>Télécharge AfroBite et profite de ta première livraison offerte. Ou inscris ton restaurant et commence à recevoir des commandes dès aujourd'hui.</p>
-    <div class="actions">
-      <a href="#" class="btn btn-gold">Télécharger pour iOS <span>↗</span></a>
-      <a href="#" class="btn btn-ghost" style="border-color:rgba(255,255,255,.3);color:#fff">Télécharger pour Android <span>↗</span></a>
-      <a href="partenaire-restaurant.html" class="btn btn-ghost" style="border-color:rgba(255,255,255,.3);color:#fff">Inscrire mon restaurant</a>
+    <div class="actions store-badges" style="justify-content:center">
+      <a href="#" class="store-badge" data-store="client-ios"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 20.28c-.98.95-2.05 1.88-3.71 1.88-1.56 0-2.05-.93-3.82-.93-1.77 0-2.32.9-3.78.98-1.51.08-2.66-1.33-3.66-2.28C1.79 16.17 1 12.45 2.43 9.05c.72-1.66 2-2.73 3.4-2.73 1.41 0 2.3.93 3.47.93 1.15 0 1.85-.93 3.5-.93 1.25 0 2.57.68 3.3 1.75-2.9 1.6-2.43 5.77.48 7.21-.6 1.55-1.38 3.1-2.53 4.04zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg><span><small>Télécharger sur</small><strong>App Store</strong></span></a>
+      <a href="#" class="store-badge" data-store="client-android"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 2.7v18.6c0 .6.65.98 1.17.68l16.3-9.3a.78.78 0 0 0 0-1.36L5.17 2.02A.78.78 0 0 0 4 2.7z" opacity=".95"/></svg><span><small>Disponible sur</small><strong>Google Play</strong></span></a>
+      <a href="partenaire.html" class="btn btn-ghost" style="border-color:rgba(255,255,255,.3);color:#fff">Devenir partenaire</a>
     </div>
   </div>
 </section>
 
 <!-- ============ FOOTER ============ -->
-<footer>
-  <div class="container">
-    <div>
-      <div class="brand">
-        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M7 13c1.5 2 3 3 5 3s3.5-1 5-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg>
-        AfroBite
-      </div>
-      <div class="tag">L'app de livraison conçue pour la génération du feed. Scrolle. Choisis. Mange.</div>
-    </div>
-    <div>
-      <h6>Produit</h6>
-      <ul><li><a href="#cta">App iOS</a></li><li><a href="#cta">App Android</a></li><li><a href="partenaire.html">Espace partenaire</a></li><li><a href="partenaire-restaurant.html">Inscrire mon restaurant</a></li></ul>
-    </div>
-    <div>
-      <h6>Entreprise</h6>
-      <ul><li><a href="about.html">À propos</a></li><li><a href="support.html">Aide &amp; Support</a></li><li><a href="mailto:afrobyteapp@gmail.com">Contact</a></li></ul>
-    </div>
-    <div>
-      <h6>Mentions légales</h6>
-      <ul><li><a href="privacy-policy.html">Confidentialité</a></li><li><a href="terms.html">Conditions</a></li><li><a href="privacy-policy.html#cookies">Cookies</a></li></ul>
-    </div>
-  </div>
-  <div class="container bottom">
-    <div>© 2026 CORRIDOR.</div>
-    <div>CONÇU AVEC INTENTION · OUAGADOUGOU · BF</div>
-  </div>
-</footer>
+<footer class="shell-footer">
+        <div class="sf-inner">
+            <div class="sf-grid">
+                <div>
+                    <div class="sf-brand">
+                        <span class="sf-logo"><img src="assets/logo-afrobite.png" alt="AfroBite" width="52" height="52"></span>
+                        <span class="sf-name">AfroBite</span>
+                    </div>
+                    <p class="sf-tag">L'app de livraison conçue pour la génération du feed. Scrolle. Choisis. Mange.</p>
+                    <div class="store-badges">
+                        <a href="#" class="store-badge" data-store="client-ios"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 20.28c-.98.95-2.05 1.88-3.71 1.88-1.56 0-2.05-.93-3.82-.93-1.77 0-2.32.9-3.78.98-1.51.08-2.66-1.33-3.66-2.28C1.79 16.17 1 12.45 2.43 9.05c.72-1.66 2-2.73 3.4-2.73 1.41 0 2.3.93 3.47.93 1.15 0 1.85-.93 3.5-.93 1.25 0 2.57.68 3.3 1.75-2.9 1.6-2.43 5.77.48 7.21-.6 1.55-1.38 3.1-2.53 4.04zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg><span><small>Télécharger sur</small><strong>App Store</strong></span></a>
+                        <a href="#" class="store-badge" data-store="client-android"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 2.7v18.6c0 .6.65.98 1.17.68l16.3-9.3a.78.78 0 0 0 0-1.36L5.17 2.02A.78.78 0 0 0 4 2.7z" opacity=".95"/></svg><span><small>Disponible sur</small><strong>Google Play</strong></span></a>
+                    </div>
+                </div>
+                <div class="sf-col">
+                    <h6>Applications</h6>
+                    <ul>
+                        <li><a href="#" data-store="client-ios">AfroBite — iOS</a></li>
+                        <li><a href="#" data-store="client-android">AfroBite — Android</a></li>
+                        <li><a href="#" data-store="restaurant-ios">Restaurant — iOS</a></li>
+                        <li><a href="#" data-store="restaurant-android">Restaurant — Android</a></li>
+                        <li><a href="#" data-store="delivery-ios">Livraison — iOS</a></li>
+                        <li><a href="#" data-store="delivery-android">Livraison — Android</a></li>
+                    </ul>
+                </div>
+                <div class="sf-col">
+                    <h6>Entreprise</h6>
+                    <ul>
+                        <li><a href="about.html">À propos</a></li>
+                        <li><a href="partenaire.html">Devenir partenaire</a></li>
+                        <li><a href="support.html">Aide &amp; Support</a></li>
+                        <li><a href="mailto:afrobyteapp@gmail.com">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="sf-col">
+                    <h6>Mentions légales</h6>
+                    <ul>
+                        <li><a href="privacy-policy.html">Confidentialité</a></li>
+                        <li><a href="terms.html">Conditions d'utilisation</a></li>
+                        <li><a href="refund.html">Remboursements</a></li>
+                        <li><a href="mentions-legales.html">Mentions légales</a></li>
+                        <li><a href="privacy-policy.html#cookies">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="sf-bottom">
+                <div>© 2026 AFROBITE, UN SERVICE DE CORRIDOR SARL</div>
+                <div>OUAGADOUGOU · BURKINA FASO</div>
+            </div>
+        </div>
+    </footer>
 
 <script>
 /* ============ THÈME CLAIR / SOMBRE ============ */
@@ -1449,5 +1476,6 @@ if (heroFeed) {
 }
 </script>
 
+<script src="js/store-links.js"></script>
 </body>
 </html>

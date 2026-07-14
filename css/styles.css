@@ -988,7 +988,7 @@ footer {
     height: 64px;
     margin: 0 auto 1.25rem;
     border-radius: 50%;
-    background: #16a34a;
+    background: var(--gold-dark, #8a6420);
     color: #fff;
     font-size: 2rem;
     font-weight: 700;

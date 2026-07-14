@@ -148,12 +148,15 @@ body.partenaire-page {
 }
 
 .phone-screen {
+    /* Calé sur la fenêtre transparente réelle de iphone.png (1650x3178 :
+       écran x 169-1488, y 306-3022) pour que le contenu ne déborde pas
+       sous les bordures du cadre. */
     position: absolute;
-    top: 6.5%;
-    left: 7.5%;
-    width: 85%;
-    height: 88%;
-    border-radius: 42px;
+    top: 9.6%;
+    left: 10.2%;
+    width: 80.1%;
+    height: 85.6%;
+    border-radius: 36px;
     overflow: hidden;
     background: #000;
     z-index: 2;
