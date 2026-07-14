@@ -468,3 +468,9 @@ html[data-theme="dark"] .site-header { background: rgba(13, 12, 10, 0.72); }
     box-shadow: 0 8px 24px rgba(212, 162, 74, 0.35);
 }
 .partner-success-card { border-color: var(--line); }
+
+/* Burger ouvert -> croix */
+.nav-toggle[aria-expanded="true"] span { transform: rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span::before { transform: rotate(90deg); top: 0; }
+.nav-toggle[aria-expanded="true"] span::after { opacity: 0; }
+.nav-toggle span::before, .nav-toggle span::after { transition: transform 0.3s var(--ease), opacity 0.3s; }

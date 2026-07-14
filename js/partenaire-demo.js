@@ -6,7 +6,8 @@
     restaurant: {
       iframeSrc: 'restaurant-demo/?embed=1&minimal=1',
       steps: [
-        { label: 'Connexion restaurant', sub: 'Email et mot de passe AfroBite' },
+        { label: 'Créer un compte (1/2)', sub: 'Votre établissement et vos identifiants' },
+        { label: 'Créer un compte (2/2)', sub: 'Localisation et catégories de cuisine' },
         { label: 'Validation en cours', sub: 'Compte pending — activation par AfroBite' },
         { label: 'Onglet « Mes plats »', sub: 'Gérez votre menu' },
         { label: 'Ajouter un plat', sub: 'Bouton + sur Mes plats' },
@@ -21,7 +22,7 @@
     delivery: {
       iframeSrc: 'delivery-demo/?embed=1&minimal=1',
       steps: [
-        { label: 'Connexion livreur', sub: 'Compte créé sur afrobite.app' },
+        { label: 'Créer un compte livreur', sub: 'Directement dans l\'app — 1 minute' },
         { label: 'Validation en cours', sub: 'Pending — approbation admin requise' },
         { label: 'Carte — Passer en ligne', sub: 'Activez pour recevoir des offres' },
         { label: 'Nouvelle offre', sub: 'Course proposée sur la carte' },

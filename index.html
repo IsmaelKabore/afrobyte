@@ -90,7 +90,7 @@ body::before{
 }
 .nav.dark{background:rgba(10,10,10,.72);color:#fff;border-bottom-color:var(--line-dark)}
 .nav .logo{font-family:var(--f-display);font-weight:500;font-size:22px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
-.nav .logo svg{width:22px;height:22px}
+.nav .logo .logo-mark{width:30px;height:30px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1.5px rgba(212,162,74,.5)}
 .nav ul{list-style:none;display:flex;gap:36px;font-size:14px;font-weight:500}
 .nav ul a{opacity:.7;transition:opacity .3s}
 .nav ul a:hover{opacity:1}
@@ -101,7 +101,23 @@ body::before{
 }
 .nav.dark .cta{background:var(--gold);color:#000}
 .nav .cta:hover{transform:scale(1.04)}
-@media(max-width:720px){.nav ul{display:none}}
+.nav-burger{display:none;width:40px;height:40px;border:1px solid var(--line);border-radius:50%;background:transparent;cursor:pointer;position:relative;flex:none;margin-left:6px}
+.nav-burger span,.nav-burger span::before,.nav-burger span::after{content:"";position:absolute;left:11px;width:16px;height:2px;border-radius:2px;background:var(--ink);transition:transform .3s var(--ease),opacity .3s}
+.nav-burger span{top:19px}
+.nav-burger span::before{top:-5px;left:0}
+.nav-burger span::after{top:5px;left:0}
+.nav-burger[aria-expanded="true"] span{transform:rotate(45deg)}
+.nav-burger[aria-expanded="true"] span::before{transform:rotate(90deg);top:0}
+.nav-burger[aria-expanded="true"] span::after{opacity:0}
+@media(max-width:860px){
+  .nav{padding:14px 20px}
+  .nav ul{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:var(--paper);border-bottom:1px solid var(--line);padding:8px 0 14px}
+  .nav ul.open{display:flex}
+  .nav ul a{display:block;padding:12px 24px;font-size:16px;opacity:.85}
+  .nav .cta{display:none}
+  .nav-burger{display:block}
+  html[data-theme="dark"] .nav ul{background:#0d0c0a}
+}
 
 /* ============ HERO ============ */
 .hero{
@@ -155,11 +171,6 @@ body::before{
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 
 /* Floating hero phone */
-.hero-phone{
-  margin-top:60px;width:min(320px, 72vw);aspect-ratio:9/18;position:relative;
-  opacity:0;animation:fadeUp 1.4s 1.1s var(--ease) forwards, floaty 6s 2.5s ease-in-out infinite;
-}
-@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 
 /* ============ PHONE (reusable) ============ */
 .phone{
@@ -573,6 +584,35 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
 
 /* Animated food scenes removed — videos are used instead */
 
+/* ============ MOBILE ============ */
+@media(max-width:860px){
+  .hero{padding:110px 20px 70px}
+  .hero h1{font-size:clamp(46px,16vw,90px)}
+  .hero .sub{font-size:16px}
+  .marquee-track{font-size:28px;gap:34px}
+  .marquee-track span{gap:34px}
+  .discovery .sticky-stage{grid-template-columns:1fr;gap:16px;padding:76px 22px 20px;align-items:start;align-content:start}
+  .discovery .copy p{font-size:14.5px;margin-bottom:10px}
+  .discovery .copy h2{font-size:clamp(26px,8vw,38px);margin:12px 0 14px}
+  .discovery .phone{width:min(215px,58vw)}
+  .discovery .phone-wrap{align-items:flex-start}
+  .order-flow .intro{margin-bottom:40px;padding:0 22px}
+  .h-scroll-track{gap:22px;padding:0 6vw}
+  .step-card{width:min(330px,84vw);padding:26px;gap:16px}
+  .step-card .num-big{font-size:52px}
+  .step-card h3{font-size:24px}
+  .tracking .grid{grid-template-columns:1fr;gap:44px}
+  .tracking .copy p{font-size:16px}
+  .restaurant{padding:100px 0}
+  .why{padding:100px 0}
+  .why .head{margin-bottom:50px}
+  .pillar{min-height:0;padding:34px 24px}
+  .cta-final{padding:130px 0 80px}
+  .cta-final h2{font-size:clamp(40px,11vw,70px)}
+  .container{padding:0 22px}
+  .hero .scroll-hint{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -580,7 +620,7 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
 <!-- ============ NAV ============ -->
 <nav class="nav" id="nav">
   <a href="index.html" class="logo">
-    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M7 13c1.5 2 3 3 5 3s3.5-1 5-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg>
+    <img src="assets/logo-afrobite.png" alt="" class="logo-mark" width="30" height="30">
     AfroBite
   </a>
   <ul>
@@ -593,6 +633,7 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
   </ul>
   <div class="nav-right">
     <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Basculer entre thème clair et sombre">🌙</button>
+    <button type="button" class="nav-burger" id="nav-burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span></button>
     <a href="#cta" class="cta">Télécharger l'app <span>→</span></a>
   </div>
 </nav>
@@ -609,36 +650,6 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
   <div class="actions">
     <a href="#cta" class="btn btn-dark">Télécharger <span>↗</span></a>
     <a href="#discover" class="btn btn-ghost">Voir comment ça marche</a>
-  </div>
-
-  <div class="hero-phone">
-    <div class="phone">
-      <div class="screen">
-        <div class="status-bar"><span>9:41</span><span>•••</span></div>
-        <div class="feed">
-          <div class="feed-track" id="hero-feed">
-            <div class="feed-item">
-              <div class="dish-visual">
-                <img class="poster" alt="" src="videos/riz-gras.jpg" style="opacity:1" />
-              </div>
-              <div class="actions-side">
-                <div class="action-ico heart">♥</div>
-                <div class="action-ico">💬</div>
-                <div class="action-ico">↗</div>
-              </div>
-              <div class="info">
-                <h4>Riz Gras & Brochettes</h4>
-                <div class="meta">Chez Simon<span class="dot"></span>4.8 ★<span class="dot"></span>18 min</div>
-                <div class="price-row">
-                  <div class="price">1 000 F</div>
-                  <div class="add-btn">Ajouter +</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <div class="scroll-hint">
@@ -675,14 +686,14 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
 
               <div class="feed-item" data-index="0">
                 <div class="dish-visual" style="background:radial-gradient(ellipse at 50% 60%, #d4601a 0%, #8a2e10 45%, #2a0e04 100%)">
-                  <video muted autoplay loop playsinline preload="auto">
+                  <video muted autoplay loop playsinline preload="auto" poster="videos/riz-gras.jpg">
                     <source src="videos/riz-gras.mp4" type="video/mp4" />
                   </video>
                 </div>
                 <div class="actions-side">
-                  <div class="action-ico heart">♥</div>
-                  <div class="action-ico">💬</div>
-                  <div class="action-ico">↗</div>
+                  <div class="action-ico heart"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg></div>
                 </div>
                 <div class="info">
                   <h4>Riz Gras</h4>
@@ -695,15 +706,15 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
               </div>
 
               <div class="feed-item" data-index="1">
-                <div class="dish-visual" style="background:radial-gradient(ellipse at 50% 70%, #4a7030 0%, #1e3810 50%, #050a04 100%)">
-                  <video muted autoplay loop playsinline preload="auto">
+                <div class="dish-visual" style="background:radial-gradient(ellipse at 50% 70%, #8a4a1a 0%, #45230c 50%, #0a0504 100%)">
+                  <video muted autoplay loop playsinline preload="auto" poster="videos/brochettes-boeuf.jpg">
                     <source src="videos/brochettes-boeuf.mp4" type="video/mp4" />
                   </video>
                 </div>
                 <div class="actions-side">
-                  <div class="action-ico heart">♥</div>
-                  <div class="action-ico">💬</div>
-                  <div class="action-ico">↗</div>
+                  <div class="action-ico heart"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg></div>
                 </div>
                 <div class="info">
                   <h4>Brochettes de Bœuf</h4>
@@ -717,14 +728,14 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
 
               <div class="feed-item" data-index="2">
                 <div class="dish-visual" style="background:radial-gradient(ellipse at 50% 60%, #c48a2a 0%, #6a3e10 45%, #1a0a04 100%)">
-                  <video muted autoplay loop playsinline preload="auto">
+                  <video muted autoplay loop playsinline preload="auto" poster="videos/galettes-mil.jpg">
                     <source src="videos/galettes-mil.mp4" type="video/mp4" />
                   </video>
                 </div>
                 <div class="actions-side">
-                  <div class="action-ico heart">♥</div>
-                  <div class="action-ico">💬</div>
-                  <div class="action-ico">↗</div>
+                  <div class="action-ico heart"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg></div>
                 </div>
                 <div class="info">
                   <h4>Galettes de Mil</h4>
@@ -738,14 +749,14 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
 
               <div class="feed-item" data-index="3">
                 <div class="dish-visual" style="background:radial-gradient(ellipse at 50% 80%, #c43a1a 0%, #7a1a08 50%, #1a0404 100%)">
-                  <video muted autoplay loop playsinline preload="auto">
+                  <video muted autoplay loop playsinline preload="auto" poster="videos/bissap-glace.jpg">
                     <source src="videos/bissap-glace.mp4" type="video/mp4" />
                   </video>
                 </div>
                 <div class="actions-side">
-                  <div class="action-ico heart">♥</div>
-                  <div class="action-ico">💬</div>
-                  <div class="action-ico">↗</div>
+                  <div class="action-ico heart"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                  <div class="action-ico"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg></div>
                 </div>
                 <div class="info">
                   <h4>Bissap Glacé</h4>
@@ -789,10 +800,10 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
           <p>Clique sur une vidéo. Ajoute au panier. C'est tout. Chaque plat est vérifié frais, prix affiché — aucune surprise.</p>
           <div class="visual">
             <div class="pick-vis">
-              <div class="pick-item selected"><div class="swatch" style="background:radial-gradient(ellipse,#d4601a,#8a2e10)"></div><div class="name">Riz Gras</div><div class="p">2 500 F</div></div>
-              <div class="pick-item"><div class="swatch" style="background:radial-gradient(ellipse,#c43a1a,#7a1a08)"></div><div class="name">Brochettes</div><div class="p">2 000 F</div></div>
-              <div class="pick-item"><div class="swatch" style="background:radial-gradient(ellipse,#c48a2a,#6a3e10)"></div><div class="name">Galettes</div><div class="p">1 500 F</div></div>
-              <div class="pick-item"><div class="swatch" style="background:radial-gradient(ellipse,#7a2a8a,#3a1045)"></div><div class="name">Bissap</div><div class="p">1 000 F</div></div>
+              <div class="pick-item selected"><div class="swatch" style="background:url(videos/riz-gras.jpg) center/cover"></div><div class="name">Riz Gras</div><div class="p">2 500 F</div></div>
+              <div class="pick-item"><div class="swatch" style="background:url(videos/brochettes-boeuf.jpg) center/cover"></div><div class="name">Brochettes</div><div class="p">2 000 F</div></div>
+              <div class="pick-item"><div class="swatch" style="background:url(videos/galettes-mil.jpg) center/cover"></div><div class="name">Galettes</div><div class="p">1 500 F</div></div>
+              <div class="pick-item"><div class="swatch" style="background:url(videos/bissap-glace.jpg) center/cover"></div><div class="name">Bissap</div><div class="p">1 000 F</div></div>
             </div>
           </div>
         </div>
@@ -817,7 +828,7 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
                 <path d="M50 180 L150 140 L250 200 L350 150" stroke="rgba(255,255,255,.1)" stroke-width="1" fill="none"/>
               </svg>
               <div class="loc-pulse"></div>
-              <div class="loc-address">📍 Avenue Kwame N'Krumah · Ouagadougou</div>
+              <div class="loc-address"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="13" r="3"/></svg>Avenue Kwame N'Krumah · Ouagadougou</div>
             </div>
           </div>
         </div>
@@ -1426,54 +1437,26 @@ function updateTracking() {
     s.classList.toggle('active', i === activeStage);
   });
 }
+/* Menu mobile */
+const navBurger = document.getElementById('nav-burger');
+const navList = document.querySelector('.nav ul');
+if (navBurger && navList) {
+  navBurger.addEventListener('click', () => {
+    const open = navBurger.getAttribute('aria-expanded') === 'true';
+    navBurger.setAttribute('aria-expanded', String(!open));
+    navList.classList.toggle('open', !open);
+  });
+  navList.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      navBurger.setAttribute('aria-expanded', 'false');
+      navList.classList.remove('open');
+    })
+  );
+}
+
 window.addEventListener('scroll', () => requestAnimationFrame(updateTracking), { passive: true });
 updateTracking();
 
-/* ============ HERO phone — rotate dish cards (real photos) ============ */
-const heroFeed = document.getElementById('hero-feed');
-const heroDishes = [
-  { img: 'videos/riz-gras.jpg', name: 'Riz Gras', rest: 'Chez Tantie Aminata', rating: '4.9', time: '22', price: '2 500 F' },
-  { img: 'videos/brochettes-boeuf.jpg', name: 'Brochettes de Bœuf', rest: 'Chez Simon', rating: '4.8', time: '18', price: '2 000 F' },
-  { img: 'videos/galettes-mil.jpg', name: 'Galettes de Mil', rest: 'Chez Tantie Salimata', rating: '4.7', time: '15', price: '1 500 F' },
-  { img: 'videos/bissap-glace.jpg', name: 'Bissap Glacé', rest: 'Kiosque Wend-Kuuni', rating: '4.9', time: '12', price: '1 000 F' },
-];
-let heroIdx = 0;
-if (heroFeed) {
-  setInterval(() => {
-    heroIdx = (heroIdx + 1) % heroDishes.length;
-    const d = heroDishes[heroIdx];
-    heroFeed.style.transition = 'transform .6s cubic-bezier(.22,.61,.36,1), opacity .4s';
-    heroFeed.style.opacity = '0';
-    heroFeed.style.transform = 'translateY(-20px)';
-    setTimeout(() => {
-      heroFeed.innerHTML = `
-        <div class="feed-item">
-          <div class="dish-visual">
-            <img class="poster" alt="" src="${d.img}" style="opacity:1" />
-          </div>
-          <div class="actions-side">
-            <div class="action-ico heart">♥</div>
-            <div class="action-ico">💬</div>
-            <div class="action-ico">↗</div>
-          </div>
-          <div class="info">
-            <h4>${d.name}</h4>
-            <div class="meta">${d.rest}<span class="dot"></span>${d.rating} ★<span class="dot"></span>${d.time} min</div>
-            <div class="price-row">
-              <div class="price">${d.price}</div>
-              <div class="add-btn">Ajouter +</div>
-            </div>
-          </div>
-        </div>`;
-      heroFeed.style.transform = 'translateY(20px)';
-      heroFeed.style.opacity = '0';
-      requestAnimationFrame(() => {
-        heroFeed.style.transform = 'translateY(0)';
-        heroFeed.style.opacity = '1';
-      });
-    }, 400);
-  }, 3500);
-}
 </script>
 
 <script src="js/store-links.js"></script>
