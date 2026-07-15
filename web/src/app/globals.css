@@ -269,10 +269,9 @@ body::before {
 }
 .hero .actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
 .hero .scroll-hint {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+  /* En flux (plus en absolute) : garantit un écart net avec les boutons,
+     sur tous les écrans, et reste visible en mobile. */
+  margin-top: 56px;
   font-family: var(--f-mono);
   font-size: 11px;
   letter-spacing: 0.2em;
@@ -300,7 +299,7 @@ body::before {
   .hero { padding: 110px 20px 70px; }
   .hero h1 { font-size: clamp(46px, 16vw, 90px); }
   .hero p.sub { font-size: 16px; }
-  .hero .scroll-hint { display: none; }
+  .hero .scroll-hint { margin-top: 40px; }
 }
 
 /* ============ MARQUEE ============ */
@@ -614,6 +613,17 @@ h2.display em { font-style: italic; color: var(--gold); }
 @media (max-width: 860px) {
   .cta-final { padding: 130px 0 80px; }
   .cta-final h2 { font-size: clamp(40px, 11vw, 70px); }
+}
+@media (max-width: 560px) {
+  /* Les 3 boutons (2 badges + partenaire) empilés et centrés, largeur uniforme */
+  .cta-final .actions { flex-direction: column; align-items: center; gap: 12px; }
+  .cta-final .actions .store-badges { flex-direction: column; align-items: center; width: 100%; }
+  .cta-final .actions .store-badge,
+  .cta-final .actions .btn {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
 }
 
 /* ============ PHONE (réutilisable) ============ */

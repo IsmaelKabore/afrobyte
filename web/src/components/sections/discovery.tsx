@@ -26,6 +26,14 @@ export function Discovery() {
   const trackY = useTransform(scrollYProgress, [0, 1], ["0%", `-${(TOTAL - 1) * 25}%`]);
   const bgY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
 
+  // Le téléphone « vit » au scroll : il flotte vers le haut au milieu du
+  // parcours puis redescend, gonfle légèrement, et pivote en profondeur.
+  // (Intention reprise du GSAP du site d'origine, portée en Framer Motion.)
+  const phoneY = useTransform(scrollYProgress, [0, 0.5, 1], [0, -24, 0]);
+  const phoneScale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.06, 1]);
+  const phoneRotateY = useTransform(scrollYProgress, [0, 1], [-8, -4]);
+  const phoneRotateX = useTransform(scrollYProgress, [0, 1], [4, 2]);
+
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     const i = Math.min(TOTAL - 1, Math.max(0, Math.round(v * (TOTAL - 1))));
     if (i === active) return;
@@ -64,7 +72,17 @@ export function Discovery() {
         </div>
 
         <div className="phone-wrap">
-          <div className="phone" id="phone-discovery">
+          <motion.div
+            className="phone"
+            id="phone-discovery"
+            style={{
+              y: phoneY,
+              scale: phoneScale,
+              rotateY: phoneRotateY,
+              rotateX: phoneRotateX,
+              transformPerspective: 1500,
+            }}
+          >
             <div className="screen">
               <div className="status-bar">
                 <span>9:41</span>
@@ -124,7 +142,7 @@ export function Discovery() {
                 </motion.div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         <div className="scroll-pager" aria-hidden>
