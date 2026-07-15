@@ -90,7 +90,7 @@ body::before{
 }
 .nav.dark{background:rgba(10,10,10,.72);color:#fff;border-bottom-color:var(--line-dark)}
 .nav .logo{font-family:var(--f-display);font-weight:500;font-size:22px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
-.nav .logo .logo-mark{width:30px;height:30px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1.5px rgba(212,162,74,.5)}
+.nav .logo .logo-mark{width:52px;height:52px;object-fit:contain}
 .nav ul{list-style:none;display:flex;gap:36px;font-size:14px;font-weight:500}
 .nav ul a{opacity:.7;transition:opacity .3s}
 .nav ul a:hover{opacity:1}
@@ -363,9 +363,9 @@ h2.display em{font-style:italic;color:var(--gold)}
 
 .h-scroll-container{position:relative}
 .h-scroll-sticky{height:100vh;display:flex;align-items:center;overflow:hidden;will-change:transform}
-.h-scroll-track{display:flex;gap:48px;padding:0 10vw;will-change:transform}
+.h-scroll-track{display:flex;align-items:center;gap:48px;padding:0 10vw;will-change:transform}
 .step-card{
-  flex-shrink:0;width:min(460px, 75vw);background:#fff;border-radius:var(--radius);
+  flex-shrink:0;width:min(460px, 75vw);max-height:min(620px, 80vh);background:#fff;border-radius:var(--radius);
   padding:40px;border:1px solid var(--line);
   display:flex;flex-direction:column;gap:28px;
   box-shadow:0 30px 80px -40px rgba(0,0,0,.2);
@@ -384,7 +384,7 @@ h2.display em{font-style:italic;color:var(--gold)}
 .step-card p{color:var(--muted);font-size:15px;line-height:1.55}
 .step-card .visual{
   background:var(--ink);border-radius:20px;padding:20px;color:#fff;
-  flex:1;min-height:220px;display:flex;flex-direction:column;justify-content:center;gap:12px;
+  flex:1;min-height:180px;max-height:300px;display:flex;flex-direction:column;justify-content:center;gap:12px;
   position:relative;overflow:hidden;
 }
 
@@ -428,9 +428,11 @@ h2.display em{font-style:italic;color:var(--gold)}
 
 /* ============ TRACKING (Dynamic Island style) ============ */
 .tracking{
-  background:linear-gradient(180deg, var(--ink) 0%, #1a1612 100%);color:#fff;padding:180px 0;overflow:hidden;
-  position:relative;
+  background:linear-gradient(180deg, var(--ink) 0%, #1a1612 100%);color:#fff;padding:0;
+  position:relative;height:340vh;
 }
+.tracking .container{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden}
+.tracking .grid{width:100%}
 .tracking::before{
   content:"";position:absolute;inset:0;
   background:radial-gradient(circle at 70% 40%, rgba(212,162,74,.15), transparent 50%);
@@ -611,6 +613,29 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
   .cta-final h2{font-size:clamp(40px,11vw,70px)}
   .container{padding:0 22px}
   .hero .scroll-hint{display:none}
+  /* Feed du téléphone Découverte : textes à l'échelle du petit écran */
+  .discovery .phone{width:min(240px,62vw)}
+  .feed-item h4{font-size:19px;margin-bottom:4px}
+  .feed-item .meta{font-size:10px;gap:8px;margin-bottom:8px}
+  .feed-item .price{font-size:16px}
+  .feed-item .add-btn{padding:7px 12px;font-size:11px}
+  .feed-item .actions-side{right:10px;bottom:88px;gap:12px}
+  .feed-item .action-ico{width:30px;height:30px}
+  .feed-item .action-ico svg{width:12px;height:12px}
+  /* Suivi en direct : tout visible dans l'écran épinglé */
+  .tracking{height:300vh}
+  .tracking .container{padding-top:64px;align-items:flex-start}
+  .tracking .grid{gap:18px}
+  .tracking .copy h2{font-size:clamp(24px,7vw,32px);margin:8px 0 12px}
+  .tracking .copy p{display:none}
+  .tracking .stages{gap:8px}
+  .tracking .stage{font-size:12px;gap:10px}
+  .tracking .stage .label{font-size:9px}
+  .tracking .stage .marker{width:26px;height:26px;font-size:10px}
+  .tracking .phone{width:min(185px,50vw);transform:none}
+  .d-island{min-width:150px;padding:6px 10px;gap:6px}
+  .d-island .time{font-size:13px}
+  .d-island .bike-ico{width:22px;height:22px;font-size:11px}
 }
 
 </style>
@@ -619,9 +644,8 @@ footer .bottom{border-top:1px solid var(--line-dark);margin-top:60px;padding-top
 
 <!-- ============ NAV ============ -->
 <nav class="nav" id="nav">
-  <a href="index.html" class="logo">
-    <img src="assets/logo-afrobite.png" alt="" class="logo-mark" width="30" height="30">
-    AfroBite
+  <a href="index.html" class="logo" aria-label="AfroBite — Accueil">
+    <img src="assets/logo-afrobite-mark.png" alt="AfroBite" class="logo-mark" width="52" height="52">
   </a>
   <ul>
     <li><a href="index.html">Accueil</a></li>
@@ -1420,7 +1444,8 @@ function updateTracking() {
   const rect = trackingSection.getBoundingClientRect();
   const inView = rect.top < window.innerHeight && rect.bottom > 0;
   if (!inView) return;
-  const progress = Math.max(0, Math.min(1, 1 - (rect.top / window.innerHeight)));
+  const total = Math.max(1, trackingSection.offsetHeight - window.innerHeight);
+  const progress = Math.max(0, Math.min(1, -rect.top / total));
   const segIdx = Math.min(routePoints.length - 2, Math.floor(progress * (routePoints.length - 1)));
   const segProgress = (progress * (routePoints.length - 1)) - segIdx;
   const a = routePoints[segIdx], b = routePoints[segIdx + 1];

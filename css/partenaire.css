@@ -174,8 +174,8 @@ body.partenaire-page {
     padding: 0 1.5rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #fff;
-    background: rgba(0, 0, 0, 0.35);
+    color: #1A1A1A;
+    background: transparent;
     z-index: 5;
 }
 
@@ -202,7 +202,7 @@ body.partenaire-page {
 .status-battery {
     width: 18px;
     height: 8px;
-    border: 1.5px solid #fff;
+    border: 1.5px solid #1A1A1A;
     border-radius: 2px;
     position: relative;
 }
@@ -214,7 +214,7 @@ body.partenaire-page {
     left: 1px;
     bottom: 1px;
     width: 70%;
-    background: #fff;
+    background: #1A1A1A;
     border-radius: 1px;
 }
 

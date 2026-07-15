@@ -36,8 +36,7 @@
     <header class="site-header">
         <nav class="site-nav">
             <a href="index.html" class="logo-link" aria-label="AfroBite — Accueil">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M7 13c1.5 2 3 3 5 3s3.5-1 5-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg>
-                <span>AfroBite</span>
+                <img src="assets/logo-afrobite-mark.png" alt="AfroBite" class="logo-mark" width="52" height="52">
             </a>
             <button type="button" class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false"><span></span></button>
             <ul class="nav-links">
@@ -61,6 +60,69 @@
             <p>Restaurants, livreurs, sociétés de livraison — chacun son parcours, une seule communauté.</p>
         </section>
 
+        <section class="partenaire-section fade-in visible" id="apps-demo" style="padding: 3rem 1.5rem 1rem;">
+            <h2 style="text-align:center;">Découvrez les applications</h2>
+            <p class="section-subtitle" style="text-align:center;">Choisissez votre parcours — la démo vous montre chaque étape, de l'inscription aux premières commandes.</p>
+            <div class="demo-switch" role="tablist" aria-label="Choisir la démo">
+                <button type="button" class="demo-switch-btn active" data-demo-target="restaurant" role="tab" aria-selected="true">Restaurant</button>
+                <button type="button" class="demo-switch-btn" data-demo-target="delivery" role="tab" aria-selected="false">Livreur</button>
+            </div>
+
+            <div class="demo-block" data-demo-block="restaurant">
+                <div class="partenaire-section" data-demo-kind="restaurant" style="padding:1.5rem 0 0;">
+                    <div class="demo-step-indicator">
+                        <div class="step-badge demo-step-badge">1</div>
+                        <div class="step-text">
+                            <div class="step-title demo-step-title"></div>
+                            <div class="step-sub demo-step-sub"></div>
+                        </div>
+                    </div>
+                    <div class="how-it-works-device">
+                        <div class="phone-screen">
+                            <div class="phone-status-bar" aria-hidden="true"><span class="status-time">9:41</span><span class="status-right"><span class="status-battery"></span></span></div>
+                            <iframe class="demo-iframe" title="Démo app restaurant" loading="lazy"></iframe>
+                        </div>
+                        <img src="iphone.png" alt="" class="phone-frame-img" aria-hidden="true">
+                    </div>
+                    <div class="demo-controls">
+                        <div class="demo-btn-row">
+                            <button type="button" class="demo-btn demo-prev" aria-label="Étape précédente">←</button>
+                            <button type="button" class="demo-btn demo-play" aria-label="Pause / Lecture">⏸</button>
+                            <button type="button" class="demo-btn demo-next" aria-label="Étape suivante">→</button>
+                        </div>
+                        <div class="demo-dots"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-block" data-demo-block="delivery" hidden>
+                <div class="partenaire-section" data-demo-kind="delivery" style="padding:1.5rem 0 0;">
+                    <div class="demo-step-indicator">
+                        <div class="step-badge demo-step-badge">1</div>
+                        <div class="step-text">
+                            <div class="step-title demo-step-title"></div>
+                            <div class="step-sub demo-step-sub"></div>
+                        </div>
+                    </div>
+                    <div class="how-it-works-device">
+                        <div class="phone-screen">
+                            <div class="phone-status-bar" aria-hidden="true"><span class="status-time">9:41</span><span class="status-right"><span class="status-battery"></span></span></div>
+                            <iframe class="demo-iframe" title="Démo app livraison" loading="lazy"></iframe>
+                        </div>
+                        <img src="iphone.png" alt="" class="phone-frame-img" aria-hidden="true">
+                    </div>
+                    <div class="demo-controls">
+                        <div class="demo-btn-row">
+                            <button type="button" class="demo-btn demo-prev" aria-label="Étape précédente">←</button>
+                            <button type="button" class="demo-btn demo-play" aria-label="Pause / Lecture">⏸</button>
+                            <button type="button" class="demo-btn demo-next" aria-label="Étape suivante">→</button>
+                        </div>
+                        <div class="demo-dots"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="partenaire-section fade-in visible" style="padding: 3.5rem 1.5rem 5rem;">
             <div class="partner-panels">
 
@@ -76,7 +138,7 @@
                     <div class="panel-actions">
                         <a href="#" class="store-badge" data-store="restaurant-ios"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 20.28c-.98.95-2.05 1.88-3.71 1.88-1.56 0-2.05-.93-3.82-.93-1.77 0-2.32.9-3.78.98-1.51.08-2.66-1.33-3.66-2.28C1.79 16.17 1 12.45 2.43 9.05c.72-1.66 2-2.73 3.4-2.73 1.41 0 2.3.93 3.47.93 1.15 0 1.85-.93 3.5-.93 1.25 0 2.57.68 3.3 1.75-2.9 1.6-2.43 5.77.48 7.21-.6 1.55-1.38 3.1-2.53 4.04zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg><span><small>Restaurant sur</small><strong>App Store</strong></span></a>
                         <a href="#" class="store-badge" data-store="restaurant-android"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 2.7v18.6c0 .6.65.98 1.17.68l16.3-9.3a.78.78 0 0 0 0-1.36L5.17 2.02A.78.78 0 0 0 4 2.7z"/></svg><span><small>Restaurant sur</small><strong>Google Play</strong></span></a>
-                        <a href="partenaire-restaurant.html" class="panel-link">Voir la démo de l'app →</a>
+                        <a href="#apps-demo" class="panel-link" data-open-demo="restaurant">Voir la démo de l'app →</a>
                     </div>
                 </article>
 
@@ -92,7 +154,7 @@
                     <div class="panel-actions">
                         <a href="#" class="store-badge" data-store="delivery-ios"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 20.28c-.98.95-2.05 1.88-3.71 1.88-1.56 0-2.05-.93-3.82-.93-1.77 0-2.32.9-3.78.98-1.51.08-2.66-1.33-3.66-2.28C1.79 16.17 1 12.45 2.43 9.05c.72-1.66 2-2.73 3.4-2.73 1.41 0 2.3.93 3.47.93 1.15 0 1.85-.93 3.5-.93 1.25 0 2.57.68 3.3 1.75-2.9 1.6-2.43 5.77.48 7.21-.6 1.55-1.38 3.1-2.53 4.04zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg><span><small>Livraison sur</small><strong>App Store</strong></span></a>
                         <a href="#" class="store-badge" data-store="delivery-android"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 2.7v18.6c0 .6.65.98 1.17.68l16.3-9.3a.78.78 0 0 0 0-1.36L5.17 2.02A.78.78 0 0 0 4 2.7z"/></svg><span><small>Livraison sur</small><strong>Google Play</strong></span></a>
-                        <a href="partenaire-livraison.html" class="panel-link">Voir la démo de l'app →</a>
+                        <a href="#apps-demo" class="panel-link" data-open-demo="delivery">Voir la démo de l'app →</a>
                     </div>
                 </article>
 
@@ -167,5 +229,26 @@
     </footer>
     <script src="js/site.js"></script>
     <script src="js/store-links.js"></script>
+    <script src="js/partenaire-demo.js"></script>
+    <script>
+    (function () {
+      var btns = document.querySelectorAll('.demo-switch-btn');
+      var blocks = document.querySelectorAll('.demo-block');
+      function select(kind) {
+        btns.forEach(function (b) {
+          var on = b.dataset.demoTarget === kind;
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-selected', String(on));
+        });
+        blocks.forEach(function (bl) { bl.hidden = bl.dataset.demoBlock !== kind; });
+      }
+      btns.forEach(function (b) {
+        b.addEventListener('click', function () { select(b.dataset.demoTarget); });
+      });
+      document.querySelectorAll('[data-open-demo]').forEach(function (a) {
+        a.addEventListener('click', function () { select(a.dataset.openDemo); });
+      });
+    })();
+    </script>
 </body>
 </html>

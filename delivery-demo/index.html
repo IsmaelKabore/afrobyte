@@ -6,7 +6,7 @@
 <title>AfroBite — Démo App Livraison</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;color:#fff}
+html,body{width:100%;height:100%;overflow:hidden;background:#F5F0E6;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;color:#fff}
 body.has-nav-header #root{height:calc(100% - 56px)}
 body:not(.has-nav-header) #root{height:100%}
 #root{width:100%;overflow:hidden;display:block}
@@ -86,10 +86,10 @@ function TypedField({label,value,icon,delay=0,speed=40}){
   useEffect(()=>{const t=setTimeout(()=>setShow(true),Math.max(0,delay-200));return()=>clearTimeout(t)},[delay]);
   return(
     <div style={{marginBottom:6,opacity:show?1:0,transition:"opacity 0.3s ease"}}>
-      <div style={{color:"rgba(255,255,255,0.4)",fontSize:9,marginBottom:2,fontWeight:500}}>{label}</div>
-      <div style={{background:"rgba(255,255,255,0.06)",borderRadius:6,padding:"5px 8px",display:"flex",alignItems:"center",gap:4,minHeight:22}}>
-        {icon&&<Ic name={icon} size={11} color="rgba(255,255,255,0.45)"/>}
-        <span style={{color:typed?"rgba(255,255,255,0.75)":"rgba(255,255,255,0.15)",fontSize:10}}>
+      <div style={{color:"rgba(26,26,26,0.5)",fontSize:9,marginBottom:2,fontWeight:500}}>{label}</div>
+      <div style={{background:"#fff",border:"1px solid rgba(0,0,0,0.08)",borderRadius:6,padding:"5px 8px",display:"flex",alignItems:"center",gap:4,minHeight:22}}>
+        {icon&&<Ic name={icon} size={11} color="rgba(26,26,26,0.5)"/>}
+        <span style={{color:typed?"rgba(26,26,26,0.8)":"rgba(26,26,26,0.25)",fontSize:10}}>
           {typed}
           {typed.length<value.length&&<span style={{opacity:0.5,animation:"blink 0.8s step-end infinite"}}>|</span>}
         </span>
@@ -138,11 +138,11 @@ function Ic({name,size=16,color="currentColor",style:s}){
 
 function TabBar({tabs,activeIndex,highlightIndex,highlightLabel}){
   return(
-    <div style={{position:"absolute",left:0,right:0,bottom:0,height:48,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"flex-start",justifyContent:"space-around",paddingTop:6,borderTop:"1px solid rgba(255,255,255,0.06)",zIndex:30}}>
+    <div style={{position:"absolute",left:0,right:0,bottom:0,height:48,background:"rgba(255,255,255,0.97)",display:"flex",alignItems:"flex-start",justifyContent:"space-around",paddingTop:6,borderTop:"1px solid rgba(0,0,0,0.08)",zIndex:30}}>
       {tabs.map((tab,i)=>(
         <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,position:"relative",minWidth:44}}>
-          <Ic name={tab.icon} size={17} color={i===activeIndex?O:"rgba(255,255,255,0.35)"}/>
-          <span style={{fontSize:8,fontWeight:i===activeIndex?700:400,color:i===activeIndex?O:"rgba(255,255,255,0.35)"}}>{tab.label}</span>
+          <Ic name={tab.icon} size={17} color={i===activeIndex?O:"rgba(26,26,26,0.45)"}/>
+          <span style={{fontSize:8,fontWeight:i===activeIndex?700:400,color:i===activeIndex?O:"rgba(26,26,26,0.45)"}}>{tab.label}</span>
           {i===highlightIndex&&<>
             <HiBox style={{top:-4,left:-8,width:60,height:44,borderRadius:10}}/>
             <TapLabel label={highlightLabel||`Tapez « ${tab.label} »`} style={{bottom:50,left:"50%",transform:"translateX(-50%)"}}/>
@@ -162,16 +162,16 @@ const DT=[
 
 function MapBg({route,courier,resto,client}){
   return(
-  <div style={{position:"absolute",top:0,left:0,right:0,bottom:48,background:"linear-gradient(165deg,#16130d 0%,#1d1810 35%,#0a0908 100%)",overflow:"hidden"}}>
+  <div style={{position:"absolute",top:0,left:0,right:0,bottom:48,background:"linear-gradient(165deg,#EFE9DC 0%,#F3EEE2 40%,#E7E0D2 100%)",overflow:"hidden"}}>
     <svg width="100%" height="100%" viewBox="0 0 240 420" preserveAspectRatio="xMidYMid slice" style={{position:"absolute",inset:0}}>
       {/* Rues */}
-      <path d="M0 90 H240 M0 190 H240 M0 300 H240" stroke="rgba(255,255,255,0.07)" strokeWidth="10" fill="none"/>
-      <path d="M60 0 V420 M150 0 V420" stroke="rgba(255,255,255,0.07)" strokeWidth="10" fill="none"/>
-      <path d="M0 90 H240 M0 190 H240 M0 300 H240 M60 0 V420 M150 0 V420" stroke="rgba(255,255,255,0.14)" strokeWidth="1" strokeDasharray="6 8" fill="none"/>
+      <path d="M0 90 H240 M0 190 H240 M0 300 H240" stroke="rgba(255,255,255,0.95)" strokeWidth="10" fill="none"/>
+      <path d="M60 0 V420 M150 0 V420" stroke="rgba(255,255,255,0.95)" strokeWidth="10" fill="none"/>
+      <path d="M0 90 H240 M0 190 H240 M0 300 H240 M60 0 V420 M150 0 V420" stroke="rgba(0,0,0,0.15)" strokeWidth="1" strokeDasharray="6 8" fill="none"/>
       {/* Pâtés de maisons */}
-      <rect x="72" y="102" width="66" height="76" rx="5" fill="rgba(212,160,23,0.05)"/>
-      <rect x="162" y="202" width="66" height="86" rx="5" fill="rgba(255,255,255,0.03)"/>
-      <rect x="8" y="202" width="40" height="86" rx="5" fill="rgba(255,255,255,0.03)"/>
+      <rect x="72" y="102" width="66" height="76" rx="5" fill="rgba(212,160,23,0.12)"/>
+      <rect x="162" y="202" width="66" height="86" rx="5" fill="rgba(0,0,0,0.06)"/>
+      <rect x="8" y="202" width="40" height="86" rx="5" fill="rgba(0,0,0,0.06)"/>
       <rect x="72" y="312" width="66" height="70" rx="5" fill="rgba(212,160,23,0.04)"/>
       {/* Itinéraire */}
       {route==="toResto"&&<path d="M28 275 Q80 240 130 190 T195 108" stroke="#E8B839" strokeWidth="3" strokeLinecap="round" strokeDasharray="8 7" fill="none" style={{animation:"dashMove 1.2s linear infinite"}}/>}
@@ -205,7 +205,7 @@ function S1(){return(
   <div style={{flex:1,padding:14}}>
     <div style={{textAlign:"center",marginBottom:16,marginTop:8}}>
       <div style={{color:O,fontSize:20,fontWeight:800,letterSpacing:-0.5}}>AFROBITE</div>
-      <div style={{color:"rgba(255,255,255,0.35)",fontSize:10,marginTop:3}}>App Livraison</div>
+      <div style={{color:"rgba(26,26,26,0.45)",fontSize:10,marginTop:3}}>App Livraison</div>
     </div>
     <TypedField label="Prénom *" value="Ibrahim" icon="user" delay={300} speed={45}/>
     <TypedField label="Nom *" value="Ouédraogo" icon="user" delay={1100} speed={45}/>
@@ -213,7 +213,7 @@ function S1(){return(
     <TypedField label="Email *" value="ibrahim@mail.bf" icon="mail" delay={3100} speed={45}/>
     <TypedField label="Mot de passe *" value="••••••••" icon="lock" delay={4100} speed={60}/>
     <div style={{marginTop:8,background:DO,borderRadius:8,padding:"10px",textAlign:"center",position:"relative",opacity:0,animation:"fadeIn 0.4s ease 5200ms forwards"}}>
-      <span style={{color:"#fff",fontSize:12,fontWeight:700}}>Créer mon compte</span>
+      <span style={{color:"#1A1A1A",fontSize:12,fontWeight:700}}>Créer mon compte</span>
       <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
       <TapLabel label="Inscription dans l'app" style={{top:-24,left:"50%",transform:"translateX(-50%)"}}/>
     </div>
@@ -223,8 +223,8 @@ function S1(){return(
 function S2(){return(
   <div style={{flex:1,padding:20,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center"}}>
     <Ic name="clock" size={36} color="#E8B839"/>
-    <div style={{color:"#fff",fontSize:14,fontWeight:700,marginTop:12}}>Compte en attente</div>
-    <div style={{color:"rgba(255,255,255,0.45)",fontSize:10,marginTop:6,lineHeight:1.5}}>
+    <div style={{color:"#1A1A1A",fontSize:14,fontWeight:700,marginTop:12}}>Compte en attente</div>
+    <div style={{color:"rgba(26,26,26,0.5)",fontSize:10,marginTop:6,lineHeight:1.5}}>
       Compte créé ! AfroBite valide votre dossier.<br/>Vous serez notifié sur WhatsApp.
     </div>
     <div style={{marginTop:14,background:"rgba(212,160,23,0.12)",border:`1px solid ${O}`,borderRadius:8,padding:"8px 14px"}}>
@@ -237,12 +237,12 @@ function S3(){return(
   <div style={{flex:1,position:"relative",paddingBottom:48}}>
     <MapBg resto/>
     <div style={{position:"absolute",top:10,left:10,right:10,zIndex:5}}>
-      <div style={{background:"rgba(0,0,0,0.75)",borderRadius:10,padding:"8px 10px",fontSize:10,color:"#fff"}}>
+      <div style={{background:"rgba(255,255,255,0.95)",boxShadow:"0 4px 14px rgba(0,0,0,0.1)",borderRadius:10,padding:"8px 10px",fontSize:10,color:"#1A1A1A"}}>
         Vous êtes hors ligne — Activez pour recevoir des livraisons
       </div>
     </div>
     <div style={{position:"absolute",top:52,right:12,zIndex:10}}>
-      <div style={{width:52,height:28,borderRadius:14,background:"rgba(255,255,255,0.15)",position:"relative"}}>
+      <div style={{width:52,height:28,borderRadius:14,background:"rgba(0,0,0,0.15)",position:"relative"}}>
         <div style={{position:"absolute",left:2,top:2,width:24,height:24,borderRadius:12,background:"#666"}}/>
         <HiBox style={{top:-2,right:-2,width:56,height:32,borderRadius:16}}/>
         <TapLabel label="En ligne" style={{top:-22,right:0}}/>
@@ -256,12 +256,12 @@ function S4(){return(
   <div style={{flex:1,position:"relative",paddingBottom:48}}>
     <MapBg resto client/>
     <div style={{position:"absolute",top:10,left:10,zIndex:5}}>
-      <span style={{background:"#B8860B",color:"#fff",fontSize:9,fontWeight:700,padding:"4px 10px",borderRadius:12}}>En ligne</span>
+      <span style={{background:"#B8860B",color:"#1A1A1A",fontSize:9,fontWeight:700,padding:"4px 10px",borderRadius:12}}>En ligne</span>
     </div>
     <div style={{position:"absolute",left:8,right:8,bottom:56,zIndex:20}}>
-      <div style={{background:"rgba(20,20,20,0.95)",borderRadius:14,padding:12,border:`1px solid ${O}`,position:"relative"}}>
-        <div style={{color:"#fff",fontSize:11,fontWeight:700}}>Nouvelle course</div>
-        <div style={{color:"rgba(255,255,255,0.5)",fontSize:9,marginTop:4}}>Chez Amidou → Ouaga 2000</div>
+      <div style={{background:"#fff",boxShadow:"0 8px 30px rgba(0,0,0,0.14)",borderRadius:14,padding:12,border:`1px solid ${O}`,position:"relative"}}>
+        <div style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>Nouvelle course</div>
+        <div style={{color:"rgba(26,26,26,0.55)",fontSize:9,marginTop:4}}>Chez Amidou → Ouaga 2000</div>
         <div style={{color:O,fontSize:12,fontWeight:800,marginTop:6}}>Gain : 1 200 FCFA</div>
         <HiBox style={{top:-4,left:-4,right:-4,bottom:-4,borderRadius:16}}/>
       </div>
@@ -274,11 +274,11 @@ function S5(){return(
   <div style={{flex:1,position:"relative",paddingBottom:48}}>
     <MapBg resto client/>
     <div style={{position:"absolute",left:8,right:8,bottom:56,zIndex:20}}>
-      <div style={{background:"rgba(20,20,20,0.95)",borderRadius:14,padding:12}}>
-        <div style={{color:"#fff",fontSize:11,fontWeight:700}}>Course acceptée</div>
-        <div style={{color:"rgba(255,255,255,0.5)",fontSize:9,marginTop:4}}>Chez Amidou · 2.3 km</div>
+      <div style={{background:"#fff",boxShadow:"0 8px 30px rgba(0,0,0,0.14)",borderRadius:14,padding:12}}>
+        <div style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>Course acceptée</div>
+        <div style={{color:"rgba(26,26,26,0.55)",fontSize:9,marginTop:4}}>Chez Amidou · 2.3 km</div>
         <div style={{marginTop:8,background:DO,borderRadius:8,padding:"8px",textAlign:"center",position:"relative"}}>
-          <span style={{color:"#fff",fontSize:11,fontWeight:700}}>Accepter</span>
+          <span style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>Accepter</span>
           <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
         </div>
       </div>
@@ -291,11 +291,11 @@ function S6(){return(
   <div style={{flex:1,position:"relative",paddingBottom:48}}>
     <MapBg resto route="toResto" courier="toResto"/>
     <div style={{position:"absolute",left:8,right:8,bottom:56,zIndex:20}}>
-      <div style={{background:"rgba(20,20,20,0.95)",borderRadius:14,padding:12}}>
+      <div style={{background:"#fff",boxShadow:"0 8px 30px rgba(0,0,0,0.14)",borderRadius:14,padding:12}}>
         <div style={{color:O,fontSize:10,fontWeight:700}}>En route vers le restaurant</div>
-        <div style={{color:"#fff",fontSize:11,marginTop:6}}>Chez Amidou</div>
+        <div style={{color:"#1A1A1A",fontSize:11,marginTop:6}}>Chez Amidou</div>
         <div style={{marginTop:8,background:DO,borderRadius:8,padding:"9px",textAlign:"center",position:"relative"}}>
-          <span style={{color:"#fff",fontSize:11,fontWeight:700}}>Arrivé au restaurant</span>
+          <span style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>Arrivé au restaurant</span>
           <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
         </div>
       </div>
@@ -308,11 +308,11 @@ function S7(){return(
   <div style={{flex:1,position:"relative",paddingBottom:48}}>
     <MapBg resto client/>
     <div style={{position:"absolute",left:8,right:8,bottom:56,zIndex:20}}>
-      <div style={{background:"rgba(20,20,20,0.95)",borderRadius:14,padding:12}}>
+      <div style={{background:"#fff",boxShadow:"0 8px 30px rgba(0,0,0,0.14)",borderRadius:14,padding:12}}>
         <div style={{color:O,fontSize:10,fontWeight:700}}>Commande récupérée</div>
-        <div style={{color:"rgba(255,255,255,0.5)",fontSize:9,marginTop:4}}>Direction client · Ouaga 2000</div>
+        <div style={{color:"rgba(26,26,26,0.55)",fontSize:9,marginTop:4}}>Direction client · Ouaga 2000</div>
         <div style={{marginTop:8,background:DO,borderRadius:8,padding:"9px",textAlign:"center",position:"relative"}}>
-          <span style={{color:"#fff",fontSize:11,fontWeight:700}}>J'ai récupéré la commande</span>
+          <span style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>J'ai récupéré la commande</span>
           <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
         </div>
       </div>
@@ -325,12 +325,12 @@ function S8(){return(
   <div style={{flex:1,position:"relative",paddingBottom:48}}>
     <MapBg client route="toClient" courier="toClient"/>
     <div style={{position:"absolute",left:8,right:8,bottom:56,zIndex:20}}>
-      <div style={{background:"rgba(20,20,20,0.95)",borderRadius:14,padding:12}}>
+      <div style={{background:"#fff",boxShadow:"0 8px 30px rgba(0,0,0,0.14)",borderRadius:14,padding:12}}>
         <div style={{color:O,fontSize:10,fontWeight:700}}>Chez le client</div>
-        <div style={{color:"#fff",fontSize:11,marginTop:6}}>Confirmer la livraison</div>
+        <div style={{color:"#1A1A1A",fontSize:11,marginTop:6}}>Confirmer la livraison</div>
         <TypedField label="Code client (si requis)" value="4829" delay={400} speed={80}/>
         <div style={{marginTop:6,background:"#B8860B",borderRadius:8,padding:"9px",textAlign:"center",position:"relative"}}>
-          <span style={{color:"#fff",fontSize:11,fontWeight:700}}>Confirmer la livraison</span>
+          <span style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>Confirmer la livraison</span>
           <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
         </div>
       </div>
@@ -354,19 +354,19 @@ function S9(){return(
 
 function S10(){return(
   <div style={{flex:1,position:"relative",paddingBottom:48}}>
-    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
-      <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Gains</span>
+    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(0,0,0,0.08)"}}>
+      <span style={{color:"#1A1A1A",fontSize:12,fontWeight:600}}>Gains</span>
     </div>
     <div style={{padding:12}}>
       <div style={{color:O,fontSize:18,fontWeight:800}}>12 400 FCFA</div>
-      <div style={{color:"rgba(255,255,255,0.4)",fontSize:9,marginTop:4}}>Cette semaine</div>
-      <div style={{marginTop:12,background:"rgba(255,255,255,0.05)",borderRadius:8,padding:10}}>
+      <div style={{color:"rgba(26,26,26,0.5)",fontSize:9,marginTop:4}}>Cette semaine</div>
+      <div style={{marginTop:12,background:"rgba(0,0,0,0.05)",borderRadius:8,padding:10}}>
         <div style={{display:"flex",justifyContent:"space-between",fontSize:10}}>
-          <span style={{color:"rgba(255,255,255,0.6)"}}>Course #2841</span>
+          <span style={{color:"rgba(26,26,26,0.6)"}}>Course #2841</span>
           <span style={{color:O,fontWeight:700}}>+1 200 F</span>
         </div>
         <div style={{display:"flex",justifyContent:"space-between",fontSize:10,marginTop:6}}>
-          <span style={{color:"rgba(255,255,255,0.6)"}}>Course #2835</span>
+          <span style={{color:"rgba(26,26,26,0.6)"}}>Course #2835</span>
           <span style={{color:O,fontWeight:700}}>+950 F</span>
         </div>
       </div>
@@ -417,7 +417,7 @@ function App(){
   // EMBED MINIMAL: screen only (steps/controls rendered by parent)
   if(isEmbed&&isMinimal){
     return(
-      <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",background:"#000",position:"relative",paddingTop:32}}>
+      <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",background:"#F5F0E6",position:"relative",paddingTop:32}}>
         <div key={sKey} style={{flex:1,display:"flex",flexDirection:"column",animation:"screenSlide 0.3s ease"}}>
           <Scr/>
         </div>
@@ -428,14 +428,14 @@ function App(){
   // EMBED FULL: screens with step overlay (legacy)
   if(isEmbed){
     return(
-      <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",background:"#000",position:"relative"}}>
+      <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",background:"#F5F0E6",position:"relative"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,zIndex:200,background:"linear-gradient(to bottom,rgba(0,0,0,0.8),transparent)",padding:"8px 12px 16px",pointerEvents:"none"}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{background:`linear-gradient(135deg,${O},${OD})`,borderRadius:6,width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-              <span style={{color:"#fff",fontSize:12,fontWeight:800}}>{cur+1}</span>
+              <span style={{color:"#1A1A1A",fontSize:12,fontWeight:800}}>{cur+1}</span>
             </div>
             <div>
-              <div style={{color:"#fff",fontSize:11,fontWeight:700}}>{steps[cur].label}</div>
+              <div style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>{steps[cur].label}</div>
               <div style={{color:O,fontSize:8,fontWeight:500}}>{steps[cur].sub}</div>
             </div>
           </div>
@@ -443,7 +443,7 @@ function App(){
         <div key={sKey} style={{flex:1,display:"flex",flexDirection:"column",animation:"screenSlide 0.3s ease",paddingTop:50}}>
           <Scr/>
         </div>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(255,255,255,0.03)",zIndex:200}}>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(0,0,0,0.04)",zIndex:200}}>
           <div key={`p-${cur}-${sKey}`} style={{height:"100%",background:`linear-gradient(to right,${O},${OD})`,borderRadius:2,animation:`progressFill ${steps[cur].dur}ms linear`,width:"100%"}}/>
         </div>
       </div>
@@ -452,41 +452,41 @@ function App(){
 
   // STANDALONE MODE: with controls
   return(
-    <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"#0a0a0a",padding:16}}>
+    <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"#F5F0E6",padding:16}}>
       <div style={{textAlign:"center",marginBottom:12}}>
         <span style={{color:O,fontSize:20,fontWeight:800,letterSpacing:-0.5}}>AFROBITE</span>
-        <div style={{color:"rgba(255,255,255,0.35)",fontSize:11,marginTop:2}}>Application livreur AfroBite</div>
+        <div style={{color:"rgba(26,26,26,0.45)",fontSize:11,marginTop:2}}>Application livreur AfroBite</div>
       </div>
 
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,background:"rgba(212,160,23,0.06)",borderRadius:12,padding:"8px 18px",border:"1.5px solid rgba(212,160,23,0.15)"}}>
         <div style={{background:`linear-gradient(135deg,${O},${OD})`,borderRadius:8,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(212,160,23,0.3)"}}>
-          <span style={{color:"#fff",fontSize:16,fontWeight:800}}>{cur+1}</span>
+          <span style={{color:"#1A1A1A",fontSize:16,fontWeight:800}}>{cur+1}</span>
         </div>
         <div>
-          <div style={{color:"#fff",fontSize:14,fontWeight:700}}>{steps[cur].label}</div>
+          <div style={{color:"#1A1A1A",fontSize:14,fontWeight:700}}>{steps[cur].label}</div>
           <div style={{color:O,fontSize:10,fontWeight:500,marginTop:1}}>{steps[cur].sub}</div>
         </div>
       </div>
 
       {/* Screen in a simple container */}
-      <div style={{width:280,height:520,borderRadius:12,overflow:"hidden",background:"#000",position:"relative"}}>
+      <div style={{width:280,height:520,borderRadius:12,overflow:"hidden",background:"#F5F0E6",position:"relative"}}>
         <div key={sKey} style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",animation:"screenSlide 0.3s ease"}}>
           <Scr/>
         </div>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(255,255,255,0.03)",zIndex:40}}>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(0,0,0,0.04)",zIndex:40}}>
           <div key={`p-${cur}-${sKey}`} style={{height:"100%",background:`linear-gradient(to right,${O},${OD})`,borderRadius:2,animation:playing?`progressFill ${steps[cur].dur}ms linear`:"none",width:playing?"100%":"0%"}}/>
         </div>
       </div>
 
       <div style={{display:"flex",alignItems:"center",gap:10,marginTop:16}}>
-        <button onClick={()=>go((cur-1+steps.length)%steps.length)} style={{width:36,height:36,borderRadius:9999,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.04)",color:"rgba(255,255,255,0.5)",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>←</button>
-        <button onClick={()=>setPlaying(!playing)} style={{width:44,height:44,borderRadius:9999,border:`2px solid ${O}`,background:playing?O:"transparent",color:"#fff",fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s",boxShadow:playing?"0 2px 12px rgba(212,160,23,0.3)":"none"}}>{playing?"⏸":"▶"}</button>
-        <button onClick={()=>go((cur+1)%steps.length)} style={{width:36,height:36,borderRadius:9999,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.04)",color:"rgba(255,255,255,0.5)",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>→</button>
+        <button onClick={()=>go((cur-1+steps.length)%steps.length)} style={{width:36,height:36,borderRadius:9999,border:"1px solid rgba(0,0,0,0.1)",background:"rgba(0,0,0,0.05)",color:"rgba(26,26,26,0.55)",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>←</button>
+        <button onClick={()=>setPlaying(!playing)} style={{width:44,height:44,borderRadius:9999,border:`2px solid ${O}`,background:playing?O:"transparent",color:"#1A1A1A",fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s",boxShadow:playing?"0 2px 12px rgba(212,160,23,0.3)":"none"}}>{playing?"⏸":"▶"}</button>
+        <button onClick={()=>go((cur+1)%steps.length)} style={{width:36,height:36,borderRadius:9999,border:"1px solid rgba(0,0,0,0.1)",background:"rgba(0,0,0,0.05)",color:"rgba(26,26,26,0.55)",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>→</button>
       </div>
 
       <div style={{display:"flex",gap:4,marginTop:12}}>
         {steps.map((_,i)=>
-          <button key={i} onClick={()=>go(i)} style={{width:i===cur?24:7,height:7,borderRadius:4,border:"none",background:i===cur?O:i<cur?"rgba(212,160,23,0.3)":"rgba(255,255,255,0.06)",cursor:"pointer",transition:"all 0.3s",boxShadow:i===cur?"0 0 8px rgba(212,160,23,0.3)":"none"}}/>
+          <button key={i} onClick={()=>go(i)} style={{width:i===cur?24:7,height:7,borderRadius:4,border:"none",background:i===cur?O:i<cur?"rgba(212,160,23,0.3)":"rgba(0,0,0,0.12)",cursor:"pointer",transition:"all 0.3s",boxShadow:i===cur?"0 0 8px rgba(212,160,23,0.3)":"none"}}/>
         )}
       </div>
     </div>

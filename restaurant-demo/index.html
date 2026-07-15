@@ -6,7 +6,7 @@
 <title>AfroBite Demo</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;color:#fff}
+html,body{width:100%;height:100%;overflow:hidden;background:#F5F0E6;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;color:#fff}
 body.has-nav-header #root{height:calc(100% - 56px)}
 body:not(.has-nav-header) #root{height:100%}
 #root{width:100%;overflow:hidden;display:block}
@@ -83,10 +83,10 @@ function TypedField({label,value,icon,delay=0,speed=40}){
   useEffect(()=>{const t=setTimeout(()=>setShow(true),Math.max(0,delay-200));return()=>clearTimeout(t)},[delay]);
   return(
     <div style={{marginBottom:6,opacity:show?1:0,transition:"opacity 0.3s ease"}}>
-      <div style={{color:"rgba(255,255,255,0.4)",fontSize:9,marginBottom:2,fontWeight:500}}>{label}</div>
-      <div style={{background:"rgba(255,255,255,0.06)",borderRadius:6,padding:"5px 8px",display:"flex",alignItems:"center",gap:4,minHeight:22}}>
-        {icon&&<Ic name={icon} size={11} color="rgba(255,255,255,0.45)"/>}
-        <span style={{color:typed?"rgba(255,255,255,0.75)":"rgba(255,255,255,0.15)",fontSize:10}}>
+      <div style={{color:"rgba(26,26,26,0.5)",fontSize:9,marginBottom:2,fontWeight:500}}>{label}</div>
+      <div style={{background:"#fff",border:"1px solid rgba(0,0,0,0.08)",borderRadius:6,padding:"5px 8px",display:"flex",alignItems:"center",gap:4,minHeight:22}}>
+        {icon&&<Ic name={icon} size={11} color="rgba(26,26,26,0.5)"/>}
+        <span style={{color:typed?"rgba(26,26,26,0.8)":"rgba(26,26,26,0.25)",fontSize:10}}>
           {typed}
           {typed.length<value.length&&<span style={{opacity:0.5,animation:"blink 0.8s step-end infinite"}}>|</span>}
         </span>
@@ -109,6 +109,7 @@ const IC={
   plate:"M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z",
   money:"M12 2v20 M17 7H9.5a2.5 2.5 0 0 0 0 5h5a2.5 2.5 0 0 1 0 5H7",
   list:"M8 6h13 M8 12h13 M8 18h13 M3 6h.01 M3 12h.01 M3 18h.01",
+  grid:"M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z",
   user:"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z",
   map:"M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z M8 2v16 M16 6v16",
   truck:"M1 3h15v13H1z M16 8h4l3 3v5h-7V8z M5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z M18.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z",
@@ -135,11 +136,11 @@ function Ic({name,size=16,color="currentColor",style:s}){
 
 function TabBar({tabs,activeIndex,highlightIndex,highlightLabel}){
   return(
-    <div style={{position:"absolute",left:0,right:0,bottom:0,height:48,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"flex-start",justifyContent:"space-around",paddingTop:6,borderTop:"1px solid rgba(255,255,255,0.06)",zIndex:30}}>
+    <div style={{position:"absolute",left:0,right:0,bottom:0,height:48,background:"rgba(255,255,255,0.97)",display:"flex",alignItems:"flex-start",justifyContent:"space-around",paddingTop:6,borderTop:"1px solid rgba(0,0,0,0.08)",zIndex:30}}>
       {tabs.map((tab,i)=>(
         <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,position:"relative",minWidth:44}}>
-          <Ic name={tab.icon} size={17} color={i===activeIndex?O:"rgba(255,255,255,0.35)"}/>
-          <span style={{fontSize:8,fontWeight:i===activeIndex?700:400,color:i===activeIndex?O:"rgba(255,255,255,0.35)"}}>{tab.label}</span>
+          <Ic name={tab.icon} size={17} color={i===activeIndex?O:"rgba(26,26,26,0.45)"}/>
+          <span style={{fontSize:8,fontWeight:i===activeIndex?700:400,color:i===activeIndex?O:"rgba(26,26,26,0.45)"}}>{tab.label}</span>
           {i===highlightIndex&&<>
             <HiBox style={{top:-4,left:-8,width:60,height:44,borderRadius:10}}/>
             <TapLabel label={highlightLabel||`Tapez « ${tab.label} »`} style={{bottom:50,left:"50%",transform:"translateX(-50%)"}}/>
@@ -154,21 +155,21 @@ const RT=[
   {icon:"video",label:"Ajouter"},
   {icon:"plate",label:"Mes plats"},
   {icon:"money",label:"Revenus"},
-  {icon:"list",label:"Activité"},
+  {icon:"grid",label:"Tableau"},
   {icon:"user",label:"Profil"},
 ];
 
 function StepDots({step}){return(
   <div style={{display:"flex",gap:4,justifyContent:"center",marginTop:6}}>
     <div style={{width:26,height:3,borderRadius:2,background:O}}/>
-    <div style={{width:26,height:3,borderRadius:2,background:step>=2?O:"rgba(255,255,255,0.12)"}}/>
+    <div style={{width:26,height:3,borderRadius:2,background:step>=2?O:"rgba(0,0,0,0.12)"}}/>
   </div>
 )}
 function S1(){return(
   <div style={{flex:1,padding:14}}>
     <div style={{textAlign:"center",marginBottom:10,marginTop:4}}>
       <div style={{color:O,fontSize:18,fontWeight:800,letterSpacing:-0.5}}>AFROBITE</div>
-      <div style={{color:"rgba(255,255,255,0.35)",fontSize:9,marginTop:2}}>Compte gérant — étape 1 sur 2</div>
+      <div style={{color:"rgba(26,26,26,0.45)",fontSize:9,marginTop:2}}>Compte gérant — étape 1 sur 2</div>
       <StepDots step={1}/>
     </div>
     <TypedField label="Nom de l'établissement *" value="Chez Amidou" delay={300} speed={45}/>
@@ -176,29 +177,29 @@ function S1(){return(
     <TypedField label="Email *" value="amidou@mail.bf" icon="mail" delay={2400} speed={45}/>
     <TypedField label="Mot de passe *" value="••••••••" icon="lock" delay={3500} speed={60}/>
     <div style={{marginTop:10,background:DO,borderRadius:8,padding:"10px",textAlign:"center",position:"relative",opacity:0,animation:"fadeIn 0.4s ease 4600ms forwards"}}>
-      <span style={{color:"#fff",fontSize:12,fontWeight:700}}>Continuer →</span>
+      <span style={{color:"#1A1A1A",fontSize:12,fontWeight:700}}>Continuer →</span>
       <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
       <TapLabel label="Étape suivante" style={{top:-24,left:"50%",transform:"translateX(-50%)"}}/>
     </div>
   </div>
 )}
 function Chip({label,on,delay}){return(
-  <div style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:12,border:on?`1px solid ${O}`:"1px solid rgba(255,255,255,0.12)",background:on?"rgba(212,160,23,0.15)":"transparent",opacity:0,animation:`bounceIn 0.4s ease ${delay}ms forwards`}}>
+  <div style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:12,border:on?`1px solid ${O}`:"1px solid rgba(0,0,0,0.12)",background:on?"rgba(212,160,23,0.15)":"transparent",opacity:0,animation:`bounceIn 0.4s ease ${delay}ms forwards`}}>
     {on&&<Ic name="check" size={9} color={O}/>}
-    <span style={{color:on?O:"rgba(255,255,255,0.4)",fontSize:9,fontWeight:600}}>{label}</span>
+    <span style={{color:on?O:"rgba(26,26,26,0.5)",fontSize:9,fontWeight:600}}>{label}</span>
   </div>
 )}
 function S1B(){return(
   <div style={{flex:1,padding:14}}>
     <div style={{textAlign:"center",marginBottom:10,marginTop:4}}>
       <div style={{color:O,fontSize:18,fontWeight:800,letterSpacing:-0.5}}>AFROBITE</div>
-      <div style={{color:"rgba(255,255,255,0.35)",fontSize:9,marginTop:2}}>Compte gérant — étape 2 sur 2</div>
+      <div style={{color:"rgba(26,26,26,0.45)",fontSize:9,marginTop:2}}>Compte gérant — étape 2 sur 2</div>
       <StepDots step={2}/>
     </div>
     <TypedField label="Ville *" value="Ouagadougou" icon="pin" delay={300} speed={45}/>
     <TypedField label="Adresse *" value="Avenue Kwame N'Krumah" icon="pin" delay={1300} speed={35}/>
     <div style={{marginBottom:6}}>
-      <div style={{color:"rgba(255,255,255,0.4)",fontSize:9,marginBottom:4,fontWeight:500}}>Catégories de cuisine *</div>
+      <div style={{color:"rgba(26,26,26,0.5)",fontSize:9,marginBottom:4,fontWeight:500}}>Catégories de cuisine *</div>
       <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
         <Chip label="Africain" on delay={2500}/>
         <Chip label="Grillades" on delay={2800}/>
@@ -208,7 +209,7 @@ function S1B(){return(
     </div>
     <TypedField label="WhatsApp (facultatif)" value="+226 70 12 34 56" delay={3500} speed={45}/>
     <div style={{marginTop:8,background:DO,borderRadius:8,padding:"10px",textAlign:"center",position:"relative",opacity:0,animation:"fadeIn 0.4s ease 5000ms forwards"}}>
-      <span style={{color:"#fff",fontSize:12,fontWeight:700}}>Créer mon compte</span>
+      <span style={{color:"#1A1A1A",fontSize:12,fontWeight:700}}>Créer mon compte</span>
       <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
       <TapLabel label="C'est parti !" style={{top:-24,left:"50%",transform:"translateX(-50%)"}}/>
     </div>
@@ -218,8 +219,8 @@ function S1B(){return(
 function S2(){return(
   <div style={{flex:1,padding:20,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center"}}>
     <Ic name="clock" size={36} color="#E8B839"/>
-    <div style={{color:"#fff",fontSize:14,fontWeight:700,marginTop:12}}>Compte en attente</div>
-    <div style={{color:"rgba(255,255,255,0.45)",fontSize:10,marginTop:6,lineHeight:1.5}}>
+    <div style={{color:"#1A1A1A",fontSize:14,fontWeight:700,marginTop:12}}>Compte en attente</div>
+    <div style={{color:"rgba(26,26,26,0.5)",fontSize:10,marginTop:6,lineHeight:1.5}}>
       AfroBite valide votre restaurant.<br/>Vous serez notifié sur WhatsApp.
     </div>
     <div style={{marginTop:14,background:"rgba(212,160,23,0.12)",border:`1px solid ${O}`,borderRadius:8,padding:"8px 14px"}}>
@@ -232,7 +233,7 @@ function Dish({img,name,price,delay,badge}){return(
   <div style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",opacity:0,animation:`slideIn 0.4s ease ${delay}ms forwards`}}>
     <img src={img} alt="" style={{width:38,height:38,borderRadius:8,objectFit:"cover"}}/>
     <div style={{flex:1}}>
-      <div style={{color:"#fff",fontSize:11,fontWeight:600}}>{name}</div>
+      <div style={{color:"#1A1A1A",fontSize:11,fontWeight:600}}>{name}</div>
       <div style={{color:O,fontSize:10,fontWeight:700}}>{price}</div>
     </div>
     <span style={{fontSize:8,color:O,fontWeight:600,background:"rgba(212,160,23,0.12)",padding:"2px 6px",borderRadius:4}}>{badge||"Dispo"}</span>
@@ -240,8 +241,8 @@ function Dish({img,name,price,delay,badge}){return(
 )}
 function S3(){return(
   <div style={{flex:1,position:"relative",paddingBottom:48}}>
-    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
-      <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Mes plats</span>
+    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(0,0,0,0.08)"}}>
+      <span style={{color:"#1A1A1A",fontSize:12,fontWeight:600}}>Mes plats</span>
     </div>
     <div style={{padding:11}}>
       <Dish img="../videos/brochettes-boeuf.jpg" name="Brochettes de Bœuf" price="2 000 FCFA" delay={200}/>
@@ -253,8 +254,8 @@ function S3(){return(
 
 function S4(){return(
   <div style={{flex:1,position:"relative",paddingBottom:48}}>
-    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
-      <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Mes plats</span>
+    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(0,0,0,0.08)"}}>
+      <span style={{color:"#1A1A1A",fontSize:12,fontWeight:600}}>Mes plats</span>
     </div>
     <div style={{padding:11}}>
       <Dish img="../videos/brochettes-boeuf.jpg" name="Brochettes de Bœuf" price="2 000 FCFA" delay={100}/>
@@ -262,8 +263,8 @@ function S4(){return(
     </div>
     <div style={{position:"absolute",bottom:62,right:14,zIndex:10}}>
       <div style={{display:"flex",alignItems:"center",gap:6,background:`linear-gradient(135deg,${DO},${OD})`,borderRadius:14,padding:"10px 18px",boxShadow:"0 4px 16px rgba(212,160,23,0.35)",position:"relative"}}>
-        <span style={{color:"#fff",fontSize:16,fontWeight:300}}>+</span>
-        <span style={{color:"#fff",fontSize:11,fontWeight:700}}>Ajouter un plat</span>
+        <span style={{color:"#1A1A1A",fontSize:16,fontWeight:300}}>+</span>
+        <span style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>Ajouter un plat</span>
         <HiBox style={{top:-4,left:-4,right:-4,bottom:-4,borderRadius:16}}/>
         <TapLabel label="Ajouter un plat" style={{top:-24,left:"50%",transform:"translateX(-50%)"}}/>
       </div>
@@ -274,9 +275,9 @@ function S4(){return(
 
 function S5(){return(
   <div style={{flex:1}}>
-    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",gap:6}}>
-      <span style={{color:"rgba(255,255,255,0.3)",fontSize:12}}>←</span>
-      <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Ajouter un plat</span>
+    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(0,0,0,0.08)",display:"flex",alignItems:"center",gap:6}}>
+      <span style={{color:"rgba(26,26,26,0.4)",fontSize:12}}>←</span>
+      <span style={{color:"#1A1A1A",fontSize:12,fontWeight:600}}>Ajouter un plat</span>
     </div>
     <div style={{padding:11}}>
       <div style={{width:"100%",height:52,borderRadius:8,overflow:"hidden",position:"relative",marginBottom:8,animation:"fadeIn 0.4s ease"}}>
@@ -291,7 +292,7 @@ function S5(){return(
       <TypedField label="Catégorie *" value="Plat principal" delay={2800} speed={50}/>
       <TypedField label="Temps de préparation" value="30 min" icon="clock" delay={3400} speed={50}/>
       <div style={{marginTop:5,background:DO,borderRadius:8,padding:"9px",textAlign:"center",position:"relative",opacity:0,animation:"fadeIn 0.4s ease 4200ms forwards"}}>
-        <span style={{color:"#fff",fontSize:11,fontWeight:700}}>Ajouter le plat ✓</span>
+        <span style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>Ajouter le plat ✓</span>
         <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:10}}/>
         <TapLabel label="Validez le plat" style={{top:-24,left:"50%",transform:"translateX(-50%)"}}/>
       </div>
@@ -301,8 +302,8 @@ function S5(){return(
 
 function S6(){return(
   <div style={{flex:1,position:"relative",paddingBottom:48}}>
-    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
-      <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Mes plats</span>
+    <div style={{padding:"8px 12px",borderBottom:"1px solid rgba(0,0,0,0.08)"}}>
+      <span style={{color:"#1A1A1A",fontSize:12,fontWeight:600}}>Mes plats</span>
     </div>
     <div style={{padding:11}}>
       <Dish img="../videos/riz-gras.jpg" name="Riz Gras Spécial" price="3 500 FCFA" delay={200} badge="Ajouté"/>
@@ -321,8 +322,8 @@ function S7(){return(
     <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}}>
       <div style={{textAlign:"center",marginBottom:20,animation:"fadeIn 0.4s ease"}}>
         <Ic name="camera" size={38} color="#E8B839"/>
-        <div style={{color:"#fff",fontSize:15,fontWeight:700,marginTop:6}}>Ajouter une vidéo</div>
-        <div style={{color:"rgba(255,255,255,0.35)",fontSize:10,marginTop:3}}>Onglet Ajouter — publiez en vidéo</div>
+        <div style={{color:"#1A1A1A",fontSize:15,fontWeight:700,marginTop:6}}>Ajouter une vidéo</div>
+        <div style={{color:"rgba(26,26,26,0.45)",fontSize:10,marginTop:3}}>Onglet Ajouter — publiez en vidéo</div>
       </div>
     </div>
     <TabBar tabs={RT} activeIndex={0} highlightIndex={0}/>
@@ -335,7 +336,7 @@ function S8(){return(
       <div style={{width:"100%",display:"flex",flexDirection:"column",gap:10}}>
         <div style={{background:`linear-gradient(135deg,${DO},${OD})`,borderRadius:12,padding:"13px 16px",display:"flex",alignItems:"center",gap:8,opacity:0,animation:"slideIn 0.4s ease 300ms forwards",boxShadow:"0 4px 14px rgba(212,160,23,0.3)",position:"relative"}}>
           <Ic name="video" size={16} color="#fff"/>
-          <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Enregistrer une vidéo</span>
+          <span style={{color:"#1A1A1A",fontSize:12,fontWeight:600}}>Enregistrer une vidéo</span>
           <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:14}}/>
           <TapLabel label="Filmez votre plat" style={{top:-24,right:0}}/>
         </div>
@@ -351,14 +352,14 @@ function S8(){return(
 
 function S9(){return(
   <div style={{flex:1}}>
-    <div style={{padding:"8px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+    <div style={{padding:"8px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid rgba(0,0,0,0.08)"}}>
       <div style={{display:"flex",alignItems:"center",gap:6}}>
-        <span style={{color:"rgba(255,255,255,0.3)",fontSize:12}}>←</span>
-        <span style={{color:"#fff",fontSize:12,fontWeight:600}}>Aperçu</span>
+        <span style={{color:"rgba(26,26,26,0.4)",fontSize:12}}>←</span>
+        <span style={{color:"#1A1A1A",fontSize:12,fontWeight:600}}>Aperçu</span>
       </div>
       <div style={{position:"relative"}}>
         <div style={{background:O,borderRadius:6,padding:"5px 14px"}}>
-          <span style={{color:"#fff",fontSize:11,fontWeight:700}}>Publier</span>
+          <span style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>Publier</span>
         </div>
         <HiBox style={{top:-3,left:-3,right:-3,bottom:-3,borderRadius:8}}/>
         <TapLabel label="Publiez !" style={{bottom:-24,right:0}}/>
@@ -367,7 +368,7 @@ function S9(){return(
     <div style={{height:105,position:"relative",overflow:"hidden"}}>
       <img src="../videos/riz-gras.jpg" alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
       <div style={{position:"absolute",bottom:4,background:"rgba(0,0,0,0.6)",borderRadius:4,padding:"2px 8px"}}>
-        <span style={{color:"rgba(255,255,255,0.4)",fontSize:8}}>▶ 0:15</span>
+        <span style={{color:"rgba(26,26,26,0.5)",fontSize:8}}>▶ 0:15</span>
       </div>
     </div>
     <div style={{padding:10}}>
@@ -375,7 +376,7 @@ function S9(){return(
       <div style={{background:"rgba(212,160,23,0.06)",border:`1.5px solid rgba(212,160,23,0.2)`,borderRadius:8,padding:"8px 10px",marginBottom:6,display:"flex",alignItems:"center",gap:6,opacity:0,animation:"fadeIn 0.4s ease 2200ms forwards"}}>
         <img src="../videos/riz-gras.jpg" alt="" style={{width:24,height:24,borderRadius:5,objectFit:"cover"}}/>
         <div style={{flex:1}}>
-          <div style={{color:"#fff",fontSize:10,fontWeight:600}}>Riz Gras Spécial</div>
+          <div style={{color:"#1A1A1A",fontSize:10,fontWeight:600}}>Riz Gras Spécial</div>
           <div style={{color:O,fontSize:9,fontWeight:700}}>3 500 FCFA</div>
         </div>
         <span style={{color:O,fontSize:12,fontWeight:700}}>✓</span>
@@ -488,7 +489,7 @@ function App(){
   // EMBED MINIMAL: screen only (steps/controls rendered by parent)
   if(isEmbed&&isMinimal){
     return(
-      <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",background:"#000",position:"relative",paddingTop:32}}>
+      <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",background:"#F5F0E6",position:"relative",paddingTop:32}}>
         <div key={sKey} style={{flex:1,display:"flex",flexDirection:"column",animation:"screenSlide 0.3s ease"}}>
           <Scr/>
         </div>
@@ -499,14 +500,14 @@ function App(){
   // EMBED FULL: screens with step overlay (legacy)
   if(isEmbed){
     return(
-      <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",background:"#000",position:"relative"}}>
+      <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",background:"#F5F0E6",position:"relative"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,zIndex:200,background:"linear-gradient(to bottom,rgba(0,0,0,0.8),transparent)",padding:"8px 12px 16px",pointerEvents:"none"}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{background:`linear-gradient(135deg,${O},${OD})`,borderRadius:6,width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-              <span style={{color:"#fff",fontSize:12,fontWeight:800}}>{cur+1}</span>
+              <span style={{color:"#1A1A1A",fontSize:12,fontWeight:800}}>{cur+1}</span>
             </div>
             <div>
-              <div style={{color:"#fff",fontSize:11,fontWeight:700}}>{steps[cur].label}</div>
+              <div style={{color:"#1A1A1A",fontSize:11,fontWeight:700}}>{steps[cur].label}</div>
               <div style={{color:O,fontSize:8,fontWeight:500}}>{steps[cur].sub}</div>
             </div>
           </div>
@@ -514,7 +515,7 @@ function App(){
         <div key={sKey} style={{flex:1,display:"flex",flexDirection:"column",animation:"screenSlide 0.3s ease",paddingTop:50}}>
           <Scr/>
         </div>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(255,255,255,0.03)",zIndex:200}}>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(0,0,0,0.04)",zIndex:200}}>
           <div key={`p-${cur}-${sKey}`} style={{height:"100%",background:`linear-gradient(to right,${O},${OD})`,borderRadius:2,animation:`progressFill ${steps[cur].dur}ms linear`,width:"100%"}}/>
         </div>
       </div>
@@ -523,41 +524,41 @@ function App(){
 
   // STANDALONE MODE: with controls
   return(
-    <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"#0a0a0a",padding:16}}>
+    <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"#F5F0E6",padding:16}}>
       <div style={{textAlign:"center",marginBottom:12}}>
         <span style={{color:O,fontSize:20,fontWeight:800,letterSpacing:-0.5}}>AFROBITE</span>
-        <div style={{color:"rgba(255,255,255,0.35)",fontSize:11,marginTop:2}}>Application restaurant AfroBite</div>
+        <div style={{color:"rgba(26,26,26,0.45)",fontSize:11,marginTop:2}}>Application restaurant AfroBite</div>
       </div>
 
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,background:"rgba(212,160,23,0.06)",borderRadius:12,padding:"8px 18px",border:"1.5px solid rgba(212,160,23,0.15)"}}>
         <div style={{background:`linear-gradient(135deg,${O},${OD})`,borderRadius:8,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(212,160,23,0.3)"}}>
-          <span style={{color:"#fff",fontSize:16,fontWeight:800}}>{cur+1}</span>
+          <span style={{color:"#1A1A1A",fontSize:16,fontWeight:800}}>{cur+1}</span>
         </div>
         <div>
-          <div style={{color:"#fff",fontSize:14,fontWeight:700}}>{steps[cur].label}</div>
+          <div style={{color:"#1A1A1A",fontSize:14,fontWeight:700}}>{steps[cur].label}</div>
           <div style={{color:O,fontSize:10,fontWeight:500,marginTop:1}}>{steps[cur].sub}</div>
         </div>
       </div>
 
       {/* Screen in a simple container */}
-      <div style={{width:280,height:520,borderRadius:12,overflow:"hidden",background:"#000",position:"relative"}}>
+      <div style={{width:280,height:520,borderRadius:12,overflow:"hidden",background:"#F5F0E6",position:"relative"}}>
         <div key={sKey} style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",animation:"screenSlide 0.3s ease"}}>
           <Scr/>
         </div>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(255,255,255,0.03)",zIndex:40}}>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,height:3,background:"rgba(0,0,0,0.04)",zIndex:40}}>
           <div key={`p-${cur}-${sKey}`} style={{height:"100%",background:`linear-gradient(to right,${O},${OD})`,borderRadius:2,animation:playing?`progressFill ${steps[cur].dur}ms linear`:"none",width:playing?"100%":"0%"}}/>
         </div>
       </div>
 
       <div style={{display:"flex",alignItems:"center",gap:10,marginTop:16}}>
-        <button onClick={()=>go((cur-1+steps.length)%steps.length)} style={{width:36,height:36,borderRadius:9999,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.04)",color:"rgba(255,255,255,0.5)",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>←</button>
-        <button onClick={()=>setPlaying(!playing)} style={{width:44,height:44,borderRadius:9999,border:`2px solid ${O}`,background:playing?O:"transparent",color:"#fff",fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s",boxShadow:playing?"0 2px 12px rgba(212,160,23,0.3)":"none"}}>{playing?"⏸":"▶"}</button>
-        <button onClick={()=>go((cur+1)%steps.length)} style={{width:36,height:36,borderRadius:9999,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.04)",color:"rgba(255,255,255,0.5)",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>→</button>
+        <button onClick={()=>go((cur-1+steps.length)%steps.length)} style={{width:36,height:36,borderRadius:9999,border:"1px solid rgba(0,0,0,0.1)",background:"rgba(0,0,0,0.05)",color:"rgba(26,26,26,0.55)",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>←</button>
+        <button onClick={()=>setPlaying(!playing)} style={{width:44,height:44,borderRadius:9999,border:`2px solid ${O}`,background:playing?O:"transparent",color:"#1A1A1A",fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s",boxShadow:playing?"0 2px 12px rgba(212,160,23,0.3)":"none"}}>{playing?"⏸":"▶"}</button>
+        <button onClick={()=>go((cur+1)%steps.length)} style={{width:36,height:36,borderRadius:9999,border:"1px solid rgba(0,0,0,0.1)",background:"rgba(0,0,0,0.05)",color:"rgba(26,26,26,0.55)",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>→</button>
       </div>
 
       <div style={{display:"flex",gap:4,marginTop:12}}>
         {steps.map((_,i)=>
-          <button key={i} onClick={()=>go(i)} style={{width:i===cur?24:7,height:7,borderRadius:4,border:"none",background:i===cur?O:i<cur?"rgba(212,160,23,0.3)":"rgba(255,255,255,0.06)",cursor:"pointer",transition:"all 0.3s",boxShadow:i===cur?"0 0 8px rgba(212,160,23,0.3)":"none"}}/>
+          <button key={i} onClick={()=>go(i)} style={{width:i===cur?24:7,height:7,borderRadius:4,border:"none",background:i===cur?O:i<cur?"rgba(212,160,23,0.3)":"rgba(0,0,0,0.12)",cursor:"pointer",transition:"all 0.3s",boxShadow:i===cur?"0 0 8px rgba(212,160,23,0.3)":"none"}}/>
         )}
       </div>
     </div>
