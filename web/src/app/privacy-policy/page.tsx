@@ -1,0 +1,174 @@
+import type { Metadata } from "next";
+import { LegalPage } from "@/components/legal-page";
+
+export const metadata: Metadata = {
+  title: "Politique de confidentialité",
+  description:
+    "Comment AfroBite collecte, utilise et protège vos informations lorsque vous utilisez notre plateforme de livraison de repas.",
+};
+
+const HTML = `
+<p class="legal-meta">Dernière mise à jour : 12 juillet 2026</p>
+
+<p>Chez AfroBite, nous nous engageons à protéger votre vie privée et à assurer la sécurité de vos informations personnelles. La présente Politique de confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez notre plateforme et nos services de livraison de repas.</p>
+
+<nav class="legal-toc" aria-label="Sommaire">
+  <h2>Sommaire</h2>
+  <ol>
+    <li><a href="#collecte">Informations que nous collectons</a></li>
+    <li><a href="#utilisation">Utilisation de vos informations</a></li>
+    <li><a href="#paiement">Traitement des paiements par des tiers</a></li>
+    <li><a href="#stockage">Conservation des données</a></li>
+    <li><a href="#securite">Mesures de sécurité</a></li>
+    <li><a href="#cookies">Cookies et technologies de suivi</a></li>
+    <li><a href="#partage">Partage et divulgation des informations</a></li>
+    <li><a href="#droits">Vos droits et choix</a></li>
+    <li><a href="#mineurs">Protection des mineurs</a></li>
+    <li><a href="#partenaires">Comptes partenaires</a></li>
+    <li><a href="#notifications">Notifications et communications</a></li>
+    <li><a href="#modifications">Modifications de la politique</a></li>
+    <li><a href="#contact">Nous contacter</a></li>
+    <li><a href="#droit-applicable">Droit applicable</a></li>
+  </ol>
+</nav>
+
+<h2 id="collecte">1. Informations que nous collectons</h2>
+<h3>1.1 Informations de compte</h3>
+<p>Lorsque vous créez un compte AfroBite, nous collectons :</p>
+<ul>
+  <li>Nom et coordonnées (adresse e-mail, numéro de téléphone)</li>
+  <li>Adresse de livraison et données de localisation</li>
+  <li>Identifiants de compte (nom d'utilisateur, mot de passe)</li>
+  <li>Préférences et paramètres de profil</li>
+</ul>
+<h3>1.2 Données de commande</h3>
+<p>Lorsque vous passez des commandes via notre plateforme, nous collectons :</p>
+<ul>
+  <li>Historique et détails des commandes (articles commandés, quantités, prix)</li>
+  <li>Préférences et évaluations de restaurants</li>
+  <li>Instructions de livraison et demandes particulières</li>
+  <li>Horodatages et informations sur le statut des commandes</li>
+</ul>
+<h3>1.3 Informations de paiement</h3>
+<p>AfroBite ne stocke pas directement vos identifiants de paiement complets. Le traitement des paiements est assuré par des prestataires tiers, notamment Orange Money, Wave et d'autres services de paiement autorisés. Nous pouvons collecter :</p>
+<ul>
+  <li>Préférences de moyen de paiement (par ex. Orange Money, Wave)</li>
+  <li>Identifiants de transaction et confirmations de paiement</li>
+  <li>Informations de facturation nécessaires au traitement des transactions</li>
+</ul>
+<p><strong>Nous ne stockons pas les numéros de carte bancaire, les coordonnées bancaires ni les codes PIN de mobile money.</strong> Toutes les données de paiement sensibles sont traitées de manière sécurisée par nos partenaires de paiement.</p>
+<h3>1.4 Informations sur l'appareil et l'utilisation</h3>
+<p>Nous collectons automatiquement certaines informations lorsque vous utilisez nos services :</p>
+<ul>
+  <li>Informations sur l'appareil (type, système d'exploitation, identifiants uniques)</li>
+  <li>Adresse IP et données de localisation</li>
+  <li>Modèles d'utilisation et interactions avec l'application</li>
+  <li>Fichiers journaux et rapports d'erreur</li>
+</ul>
+
+<h2 id="utilisation">2. Utilisation de vos informations</h2>
+<p>Nous utilisons les informations collectées aux fins suivantes :</p>
+<ul>
+  <li><strong>Prestation du service :</strong> traiter et exécuter vos commandes, coordonner avec les restaurants et les livreurs, et fournir une assistance client</li>
+  <li><strong>Traitement des paiements :</strong> faciliter des transactions sécurisées via nos prestataires de paiement tiers</li>
+  <li><strong>Communication :</strong> envoyer des confirmations de commande, des mises à jour de livraison et des notifications importantes relatives au service</li>
+  <li><strong>Amélioration de la plateforme :</strong> analyser les usages, améliorer nos services et développer de nouvelles fonctionnalités</li>
+  <li><strong>Personnalisation :</strong> adapter votre expérience, recommander des restaurants et mémoriser vos préférences</li>
+  <li><strong>Conformité légale :</strong> respecter les lois, réglementations et procédures juridiques applicables</li>
+  <li><strong>Sécurité :</strong> détecter, prévenir et traiter la fraude, les menaces de sécurité et les problèmes techniques</li>
+</ul>
+
+<h2 id="paiement">3. Traitement des paiements par des prestataires tiers</h2>
+<p>AfroBite s'associe à des prestataires de paiement de confiance, notamment Orange Money, Wave et d'autres services autorisés, pour traiter vos paiements de manière sécurisée. Lorsque vous effectuez un paiement :</p>
+<ul>
+  <li>Vos informations de paiement sont transmises directement au prestataire de paiement</li>
+  <li>Les prestataires gèrent l'authentification et le traitement des paiements</li>
+  <li>Nous recevons des confirmations de transaction et des mises à jour de statut</li>
+  <li>Les prestataires sont responsables de la sécurisation de vos identifiants de paiement conformément à leurs propres politiques de confidentialité et normes de sécurité</li>
+</ul>
+<p>Nous vous encourageons à consulter les politiques de confidentialité de nos partenaires de paiement afin de comprendre comment ils traitent vos informations de paiement.</p>
+
+<h2 id="stockage">4. Conservation des données</h2>
+<p>Vos informations personnelles sont stockées sur des serveurs sécurisés situés dans des installations disposant de mesures de protection physique et technique appropriées. Nous conservons vos informations aussi longtemps que nécessaire pour fournir nos services, respecter nos obligations légales, résoudre les litiges et faire respecter nos accords.</p>
+<p>Lorsque vous supprimez votre compte, nous supprimerons ou anonymiserons vos informations personnelles, sauf lorsque nous sommes tenus de les conserver pour des raisons légales, comptables ou de sécurité.</p>
+
+<h2 id="securite">5. Mesures de sécurité</h2>
+<p>AfroBite met en œuvre des mesures de sécurité conformes aux standards du secteur pour protéger vos informations :</p>
+<ul>
+  <li><strong>Chiffrement :</strong> nous utilisons des technologies de chiffrement (SSL/TLS) pour protéger la transmission des données</li>
+  <li><strong>Contrôles d'accès :</strong> l'accès aux informations personnelles est limité au personnel autorisé</li>
+  <li><strong>Stockage sécurisé :</strong> les données sont conservées sur des serveurs sécurisés avec des contrôles d'accès appropriés</li>
+  <li><strong>Audits réguliers :</strong> nous effectuons des évaluations et mises à jour de sécurité périodiques</li>
+  <li><strong>Sécurité des paiements :</strong> le traitement des paiements est assuré par des prestataires conformes aux normes PCI et sécurisés</li>
+</ul>
+<p>Bien que nous nous efforcions de protéger vos informations, aucune méthode de transmission sur Internet ou de stockage électronique n'est totalement sûre à 100 %. Nous ne pouvons garantir une sécurité absolue, mais nous nous engageons à maintenir les plus hauts standards de protection des données.</p>
+
+<h2 id="cookies">6. Cookies et technologies de suivi</h2>
+<p>Nous utilisons des cookies et des technologies de suivi similaires pour améliorer votre expérience sur notre plateforme. Les cookies sont de petits fichiers texte stockés sur votre appareil qui nous aident à :</p>
+<ul>
+  <li>Mémoriser vos préférences et paramètres</li>
+  <li>Maintenir votre session de connexion</li>
+  <li>Analyser l'utilisation et les performances de la plateforme</li>
+  <li>Proposer du contenu et des recommandations personnalisés</li>
+</ul>
+<p>Vous pouvez gérer vos préférences en matière de cookies via les paramètres de votre navigateur. Toutefois, la désactivation des cookies peut limiter certaines fonctionnalités de notre plateforme.</p>
+
+<h2 id="partage">7. Partage et divulgation des informations</h2>
+<p>Nous ne vendons pas vos informations personnelles. Nous pouvons partager vos informations dans les cas suivants :</p>
+<ul>
+  <li><strong>Prestataires de services :</strong> avec les restaurants, livreurs et processeurs de paiement nécessaires à l'exécution de vos commandes</li>
+  <li><strong>Obligations légales :</strong> lorsque la loi, une décision de justice ou une réglementation gouvernementale l'exige</li>
+  <li><strong>Transferts d'activité :</strong> dans le cadre d'une fusion, acquisition ou cession d'actifs (avec notification aux utilisateurs)</li>
+  <li><strong>Protection des droits :</strong> pour protéger les droits, biens ou sécurité d'AfroBite, de nos utilisateurs ou d'autres personnes</li>
+  <li><strong>Avec votre consentement :</strong> lorsque vous avez explicitement accepté le partage</li>
+</ul>
+
+<h2 id="droits">8. Vos droits et choix</h2>
+<p>Vous avez le droit de :</p>
+<ul>
+  <li>Accéder à vos informations personnelles et les consulter</li>
+  <li>Corriger des informations inexactes ou incomplètes</li>
+  <li>Demander la suppression de votre compte et de vos informations personnelles</li>
+  <li>Vous désinscrire des communications marketing</li>
+  <li>Vous opposer à certains traitements</li>
+  <li>Demander la portabilité de vos données</li>
+</ul>
+<p>Pour exercer ces droits, veuillez nous contacter aux coordonnées indiquées dans la section « Nous contacter » ci-dessous.</p>
+
+<h2 id="mineurs">9. Protection des mineurs</h2>
+<p>AfroBite n'est pas destiné aux utilisateurs de moins de 18 ans. Nous ne collectons pas sciemment d'informations personnelles auprès de mineurs. Si nous apprenons que nous avons collecté des informations concernant un mineur, nous prendrons les mesures nécessaires pour supprimer ces informations dans les plus brefs délais.</p>
+
+<h2 id="partenaires">10. Comptes partenaires (restaurants, sociétés de livraison et livreurs)</h2>
+<p>Les gérants de restaurants, les sociétés de livraison et les livreurs qui créent un compte partenaire via nos applications mobiles nous fournissent des informations supplémentaires nécessaires au fonctionnement du service : nom de l'établissement ou de la société, localisation, zones de couverture, catégories de cuisine, informations sur la flotte et coordonnées professionnelles.</p>
+<ul>
+  <li><strong>Validation :</strong> ces informations sont examinées par notre équipe avant l'activation du compte partenaire</li>
+  <li><strong>Visibilité :</strong> certaines informations (nom du restaurant, localisation, plats, vidéos) sont rendues publiques dans l'application afin de présenter l'offre aux clients</li>
+  <li><strong>Coordonnées de contact :</strong> le numéro WhatsApp fourni est utilisé uniquement par l'équipe AfroBite pour la validation et la coordination opérationnelle ; il n'est jamais vendu ni partagé à des fins commerciales</li>
+  <li><strong>Suppression :</strong> les partenaires peuvent demander la suppression de leur compte directement dans l'application (Réglages → Supprimer le compte) ou en nous contactant</li>
+</ul>
+
+<h2 id="notifications">11. Notifications et communications</h2>
+<p>Nous utilisons des notifications push, des e-mails et des messages in-app pour vous informer de l'état de vos commandes, des validations de compte, des mises à jour du service et, avec votre consentement, d'offres promotionnelles. Vous pouvez gérer vos préférences de notification dans les paramètres de votre appareil ou de l'application, et vous désinscrire des communications marketing à tout moment sans que cela affecte les notifications essentielles au fonctionnement du service (confirmations de commande, suivi de livraison).</p>
+
+<h2 id="modifications">12. Modifications de la présente politique</h2>
+<p>Nous pouvons mettre à jour cette Politique de confidentialité de temps à autre pour refléter l'évolution de nos pratiques ou des exigences légales. Nous vous informerons des modifications importantes en publiant la politique mise à jour sur notre site web et en actualisant la date de « Dernière mise à jour ». Votre utilisation continue de nos services après ces modifications vaut acceptation de la politique mise à jour.</p>
+
+<h2 id="contact">13. Nous contacter pour toute question relative à la confidentialité</h2>
+<p>Si vous avez des questions, préoccupations ou demandes concernant cette Politique de confidentialité ou nos pratiques en matière de données, contactez-nous :</p>
+<p><strong>E-mail :</strong> <a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a><br><strong>Objet :</strong> Demande relative à la politique de confidentialité</p>
+<p>Nous répondrons à votre demande dans un délai raisonnable et ferons le nécessaire pour traiter toute préoccupation que vous pourriez avoir.</p>
+
+<h2 id="droit-applicable">14. Droit applicable</h2>
+<p>La présente Politique de confidentialité est régie par les lois du Burkina Faso. Tout litige découlant de cette politique relève de la compétence exclusive des tribunaux du Burkina Faso.</p>
+`;
+
+export default function PrivacyPolicyPage() {
+  return (
+    <LegalPage
+      badge="Données personnelles"
+      title="Politique de confidentialité"
+      subtitle="Comment AfroBite collecte, utilise et protège vos informations lorsque vous utilisez notre plateforme de livraison de repas."
+      html={HTML}
+    />
+  );
+}
