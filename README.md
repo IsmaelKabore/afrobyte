@@ -1,90 +1,36 @@
-# AfroBite Website
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Official website for AfroBite - A food delivery platform operating in Burkina Faso.
+## Getting Started
 
-## Overview
-
-This is a static, production-ready website for AfroBite, designed for deployment on Vercel. The website serves as the official company presence and includes the external restaurant onboarding page used for iOS App Store compliance.
-
-## Features
-
-- **Home Page**: Company introduction and how it works section
-- **About Page**: Mission, vision, and company information
-- **Privacy Policy**: Comprehensive privacy policy for payment verification
-- **Terms & Conditions**: Full terms of service
-- **Support Page**: Contact information, FAQ, and support form
-- **Refund Page**: Orange Money refund request form (`refund.html`) with Vercel serverless API
-
-## Refund flow (Orange Money only)
-
-1. User chooses cash refund in the AfroBite app → Cloud Function `requestCashRefund` opens `https://afrobite.app/refund/{token}`.
-2. Static page `refund.html` decodes the JWT for display and submits to Cloud Function `submitRefundRequest`.
-3. Firestore collection `refund_requests` stores the ticket; confirmation shows `REF-2026-XXXXXX`.
-
-### Secret (Firebase only — never commit)
+First, run the development server:
 
 ```bash
-firebase functions:secrets:set AFROBITE_REFUND_JWT_SECRET
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Same secret is used by foodtok Cloud Functions and verified on submit.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Deployment to Vercel
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-1. Import this repository in Vercel.
-2. Keep root directory as project root (`afrobyte` repository root).
-3. Framework preset: **Other** (static site).
-4. Build command: empty.
-5. Output directory: empty.
-6. Deploy.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-After this initial setup, every push to GitHub triggers automatic redeployment on Vercel.
+## Learn More
 
-### Partenariat
+To learn more about Next.js, take a look at the following resources:
 
-Navigation **Partenaire → Restaurant | Livraison** :
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-| Page | Parcours |
-|------|----------|
-| `partenaire-restaurant.html` | Étape 1 candidature restaurant → Étape 2 compte (Auth + `setupPartnerAccount`, statut pending) |
-| `partenaire-livraison.html` | Toggle société (candidature seule, sans Auth) ou livreur (compte Auth pending) |
-| `partenaire.html` | Hub de choix + redirections depuis anciennes URLs Vercel (`/partner/restaurant`, etc.) |
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-Leads publics → `submitPartnerLead` → `partner_applications`. Comptes → `setupPartnerAccount`.
+## Deploy on Vercel
 
-Les fichiers `partner*.html` redirigent vers les pages dédiées. `vercel.json` n'est pas modifié.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Déploiement : push GitHub → le projet Vercel **afrobyte** existant redéploie automatiquement. Ne pas créer de second projet Vercel.
-
-## Local Development
-
-To view the website locally:
-
-1. Clone the repository
-2. Open `index.html` in a web browser
-3. Or use a local server:
-   ```bash
-   # Using Python 3
-   python3 -m http.server 8000
-   
-   # Using Node.js (if you have http-server installed)
-   npx http-server
-   ```
-4. Navigate to `http://localhost:8000` in your browser
-
-## Contact Information
-
-- **Support Email**: afrobyteapp@gmail.com
-- **Based in**: Burkina Faso
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## License
-
-© 2026 AfroBite. All rights reserved.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
