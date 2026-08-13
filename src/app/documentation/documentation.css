@@ -12,7 +12,8 @@
   padding: 142px 32px 58px;
   border-bottom: 1px solid var(--line);
   background:
-    radial-gradient(circle at 78% 15%, rgba(212, 162, 74, 0.2), transparent 32%),
+    radial-gradient(circle at 78% 15%, rgba(212, 162, 74, 0.22), transparent 32%),
+    radial-gradient(circle at 12% 72%, rgba(228, 109, 91, 0.1), transparent 28%),
     linear-gradient(180deg, color-mix(in srgb, var(--surface) 86%, transparent), var(--paper));
 }
 
@@ -113,6 +114,38 @@
   font-size: 12px;
   font-weight: 600;
 }
+
+.documentation-paths {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+.documentation-path {
+  display: grid;
+  grid-template-columns: 42px 1fr 18px;
+  align-items: center;
+  gap: 12px;
+  min-height: 84px;
+  padding: 16px 18px;
+  border: 1px solid color-mix(in srgb, var(--path-color) 45%, var(--line));
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--path-color) 8%, var(--surface));
+  transition: transform 0.25s var(--ease), border-color 0.25s, box-shadow 0.25s;
+}
+.documentation-path:hover {
+  transform: translateY(-3px);
+  border-color: var(--path-color);
+  box-shadow: 0 18px 38px -26px var(--path-color);
+}
+.documentation-path > svg:first-child { color: var(--path-color); }
+.documentation-path > svg:last-child { color: var(--muted); }
+.documentation-path span { display: grid; gap: 1px; }
+.documentation-path small { color: var(--muted); font-size: 9px; }
+.documentation-path strong { font-family: var(--f-display); font-size: 21px; font-weight: 500; }
+.documentation-path-user { --path-color: #e46d5b; }
+.documentation-path-resto { --path-color: #3b916e; }
+.documentation-path-driver { --path-color: #4b78b8; }
 
 .doc-live-dot {
   width: 7px;
@@ -256,9 +289,13 @@
 .doc-sidebar-backdrop { display: none; }
 
 .doc-chapter {
+  --chapter-accent: var(--gold);
   scroll-margin-top: 110px;
   padding: 18px 0 88px;
 }
+#utilisateur { --chapter-accent: #e46d5b; }
+#restaurant { --chapter-accent: #3b916e; }
+#livraison { --chapter-accent: #4b78b8; }
 .doc-chapter + .doc-chapter {
   padding-top: 88px;
   border-top: 1px solid var(--line);
@@ -274,11 +311,11 @@
   place-items: center;
   width: 52px;
   height: 52px;
-  border: 1px solid color-mix(in srgb, var(--gold) 58%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--chapter-accent) 58%, var(--line));
   border-radius: 50%;
   font-family: var(--f-mono);
   font-size: 11px;
-  color: var(--gold-ink);
+  color: var(--chapter-accent);
 }
 .doc-kicker,
 .doc-topic-eyebrow {
@@ -287,7 +324,7 @@
   font-weight: 650;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gold-ink);
+  color: var(--chapter-accent);
 }
 .doc-chapter h2 {
   margin: 9px 0 14px;
@@ -353,8 +390,8 @@
   height: 38px;
   margin-bottom: 22px;
   border-radius: 10px;
-  background: color-mix(in srgb, var(--gold) 15%, transparent);
-  color: var(--gold-ink);
+  background: color-mix(in srgb, var(--chapter-accent) 14%, transparent);
+  color: var(--chapter-accent);
 }
 .doc-card h4 {
   margin-bottom: 8px;
@@ -376,7 +413,7 @@
   padding-top: 2px;
   font-family: var(--f-mono);
   font-size: 10px;
-  color: var(--gold-ink);
+  color: var(--chapter-accent);
 }
 .doc-step-title {
   display: flex;
@@ -480,45 +517,48 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--gold);
+  background: var(--chapter-accent);
   transform: translateY(-50%);
 }
 
-.doc-architecture {
+.doc-compare {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-areas:
-    "user core resto"
-    ". core ."
-    "driver core admin";
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
-.doc-architecture > div {
-  display: flex;
-  min-height: 112px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--surface);
-  text-align: center;
+.doc-compare-panel {
+  --compare-color: #4b78b8;
+  min-height: 245px;
+  padding: 26px;
+  border: 1px solid color-mix(in srgb, var(--compare-color) 45%, var(--line));
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 90% 8%, color-mix(in srgb, var(--compare-color) 18%, transparent), transparent 32%),
+    color-mix(in srgb, var(--compare-color) 6%, var(--surface));
 }
-.doc-architecture > div:nth-child(1) { grid-area: user; }
-.doc-architecture > div:nth-child(2) { grid-area: resto; }
-.doc-architecture > div:nth-child(4) { grid-area: driver; }
-.doc-architecture > div:nth-child(5) { grid-area: admin; }
-.doc-architecture .doc-architecture-core {
-  grid-area: core;
-  border-color: var(--gold);
-  background: var(--ink);
-  color: var(--paper);
+.doc-compare-pickup { --compare-color: #d29436; }
+.doc-compare-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 30px;
+  border-radius: 13px;
+  background: var(--compare-color);
+  color: #fff;
 }
-.doc-architecture strong { font-size: 12px; }
-.doc-architecture span { color: var(--muted); font-size: 10px; }
-.doc-architecture-core span { color: color-mix(in srgb, var(--paper) 62%, transparent); }
+.doc-compare-panel > p {
+  margin-bottom: 5px;
+  color: var(--compare-color);
+  font-family: var(--f-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.doc-compare-panel h4 { margin-bottom: 18px; font-family: var(--f-display); font-size: 25px; font-weight: 500; }
+.doc-compare-panel ul { display: grid; gap: 8px; list-style: none; color: var(--muted); font-size: 12px; }
+.doc-compare-panel li::before { content: "✓"; margin-right: 8px; color: var(--compare-color); font-weight: 800; }
 
 html[data-theme="dark"] .doc-callout-success {
   color: #7bcf9c;
@@ -538,6 +578,7 @@ html[data-theme="dark"] .doc-callout-important {
   .documentation-hero-side { max-width: 620px; }
   .documentation-breadcrumb { margin-bottom: 34px; }
   .documentation-audiences { margin-top: 40px; }
+  .documentation-paths { grid-template-columns: 1fr; }
   .doc-shell {
     display: block;
     padding: 24px 22px 110px;
@@ -624,12 +665,6 @@ html[data-theme="dark"] .doc-callout-important {
   .doc-steps li { grid-template-columns: 34px minmax(0, 1fr); gap: 10px; }
   .doc-flow { margin-right: -18px; padding-right: 18px; }
   .doc-flow-node { flex-basis: 118px; }
-  .doc-architecture {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-      "core core"
-      "user resto"
-      "driver admin";
-  }
-  .doc-architecture > div { min-height: 104px; }
+  .doc-compare { grid-template-columns: 1fr; }
+  .doc-compare-panel { min-height: 0; }
 }

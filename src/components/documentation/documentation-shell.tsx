@@ -73,7 +73,7 @@ export function DocumentationShell({ children }: { children: ReactNode }) {
           <span><Icon icon={BookOpen} size={17} /></span>
           <div>
             <strong>Documentation</strong>
-            <small>Guide opérationnel</small>
+            <small>Guide pratique</small>
           </div>
           <button type="button" onClick={() => setOpen(false)} aria-label="Fermer">
             <Icon icon={X} size={19} />
@@ -110,15 +110,14 @@ export function DocumentationShell({ children }: { children: ReactNode }) {
       <aside className="doc-rail" aria-label="Repères rapides">
         <div className="doc-rail-card">
           <p>Repères rapides</p>
-          <a href="#cycle-commande">Cycle d’une commande</a>
+          <a href="#fonctionnement">La commande en bref</a>
+          <a href="#livraison-ou-retrait">Livraison ou retrait</a>
           <a href="#recevoir-commande">Nouvelle commande resto</a>
           <a href="#recuperation-restaurant">Remise au livreur</a>
-          <a href="#support-call-center">Checklist Call Center</a>
-          <a href="#architecture">Écosystème technique</a>
         </div>
         <div className="doc-rail-meta">
           <span className="doc-live-dot" />
-          Vérifié sur le code actuel
+          Guide public AfroBite
         </div>
       </aside>
     </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowDown, BookOpen, ShieldCheck, UsersRound } from "lucide-react";
+import { ArrowDown, Bike, BookOpen, ShieldCheck, Store, UserRound } from "lucide-react";
 import { DocumentationContent } from "@/components/documentation/documentation-content";
 import { DocumentationShell } from "@/components/documentation/documentation-shell";
 import { Icon } from "@/components/icon";
@@ -8,12 +8,12 @@ import "./documentation.css";
 export const metadata: Metadata = {
   title: "Documentation",
   description:
-    "Guide de référence AfroBite pour les utilisateurs, restaurants, livreurs, opérations et équipes techniques.",
+    "Guide public AfroBite pour commander, gérer un restaurant partenaire ou effectuer une livraison.",
   alternates: { canonical: "/documentation" },
   openGraph: {
     title: "Documentation AfroBite",
     description:
-      "Comprendre les parcours de commande, les applications partenaires et les opérations AfroBite.",
+      "Comprendre les parcours client, restaurant partenaire et livreur AfroBite.",
     url: "/documentation",
   },
 };
@@ -35,8 +35,8 @@ export default function DocumentationPage() {
             </div>
             <div className="documentation-hero-side">
               <p>
-                Parcours client, opérations restaurant, livraison, supervision et architecture
-                générale — documentés à partir du fonctionnement actuel des applications AfroBite.
+                Des explications simples pour commander, préparer ou livrer avec AfroBite — sans
+                jargon, avec chaque parcours présenté étape par étape.
               </p>
               <a href="#introduction">
                 Commencer la lecture <Icon icon={ArrowDown} size={17} />
@@ -44,10 +44,26 @@ export default function DocumentationPage() {
             </div>
           </div>
           <div className="documentation-audiences" aria-label="Public concerné">
-            <span><Icon icon={UsersRound} size={16} /> Équipes et partenaires</span>
-            <span><Icon icon={ShieldCheck} size={16} /> Sans données sensibles</span>
-            <span><span className="doc-live-dot" /> Vérifié sur le code actuel</span>
+            <span><Icon icon={ShieldCheck} size={16} /> Guide public et essentiel</span>
+            <span><span className="doc-live-dot" /> Mis à jour</span>
           </div>
+          <nav className="documentation-paths" aria-label="Choisir son parcours">
+            <a href="#utilisateur" className="documentation-path documentation-path-user">
+              <Icon icon={UserRound} size={24} />
+              <span><small>Je souhaite</small><strong>Commander</strong></span>
+              <ArrowDown size={17} />
+            </a>
+            <a href="#restaurant" className="documentation-path documentation-path-resto">
+              <Icon icon={Store} size={24} />
+              <span><small>Je suis</small><strong>Restaurant</strong></span>
+              <ArrowDown size={17} />
+            </a>
+            <a href="#livraison" className="documentation-path documentation-path-driver">
+              <Icon icon={Bike} size={24} />
+              <span><small>Je suis</small><strong>Livreur</strong></span>
+              <ArrowDown size={17} />
+            </a>
+          </nav>
         </div>
       </header>
 
