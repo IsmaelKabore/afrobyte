@@ -50,9 +50,9 @@ const FAQ_ITEMS: FaqItem[] = [
     q: "Où la livraison est-elle disponible ?",
     a: (
       <>
-        La livraison AfroBite est proposée jusqu'à <strong>25 km</strong> du restaurant choisi.
-        Saisissez votre adresse dans l'application : seuls les restaurants qui peuvent vous livrer
-        s'affichent, avec le tarif au kilomètre.
+        La livraison AfroBite est proposée jusqu&apos;à <strong>25 km</strong> du restaurant choisi.
+        Saisissez votre adresse dans l&apos;application : seuls les restaurants qui peuvent vous livrer
+        s&apos;affichent, avec le tarif au kilomètre.
       </>
     ),
     plain: "livraison disponible zone 25 km adresse tarif kilomètre",
@@ -67,7 +67,7 @@ const FAQ_ITEMS: FaqItem[] = [
     a: (
       <>
         Consultez la page <a href="/partenaire">Partenaire</a> ou écrivez à{" "}
-        <a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a> avec l'objet « Partenariat
+        <a href="mailto:afrobyteapp@gmail.com">afrobyteapp@gmail.com</a> avec l&apos;objet « Partenariat
         restaurant ».
       </>
     ),

@@ -32,6 +32,7 @@ export const NAV_LINKS: NavLink[] = [
   { href: "/", label: "Accueil" },
   { href: "/partenaire", label: "Partenaire" },
   { href: "/about", label: "À propos" },
+  { href: "/documentation", label: "Documentation" },
   { href: "/support", label: "Support" },
   { href: "/privacy-policy", label: "Confidentialité" },
   { href: "/terms", label: "Conditions" },
@@ -68,6 +69,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     links: [
       { label: "À propos", href: "/about" },
       { label: "Devenir partenaire", href: "/partenaire" },
+      { label: "Documentation", href: "/documentation" },
       { label: "Aide & Support", href: "/support" },
       { label: "Contact", href: "mailto:afrobyteapp@gmail.com" },
     ],

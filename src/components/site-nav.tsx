@@ -22,6 +22,8 @@ export function SiteNav() {
   // Le thème réel est posé avant paint par le script no-flash ; on le lit.
   useEffect(() => {
     const t = (document.documentElement.dataset.theme as "light" | "dark") || "light";
+    // Le thème provient d'un système externe (dataset posé avant hydratation).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(t);
   }, []);
 
@@ -95,9 +97,9 @@ export function SiteNav() {
         >
           <span />
         </button>
-        <a href="/#cta" className="cta">
+        <Link href="/#cta" className="cta">
           Télécharger l&apos;app <Icon icon={ArrowRight} size={16} />
-        </a>
+        </Link>
       </div>
     </nav>
   );
