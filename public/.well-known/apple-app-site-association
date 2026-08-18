@@ -2,11 +2,15 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["346NS37T4Z"],
+        "appIDs": ["346NS37T4Z.com.ismael.afrobyte"],
         "components": [
           {
             "/": "/video/*",
             "comment": "Lien video partage depuis l'app AfroBite"
+          },
+          {
+            "/": "/plat/*",
+            "comment": "Lien TikTok vers un plat AfroBite"
           }
         ]
       }

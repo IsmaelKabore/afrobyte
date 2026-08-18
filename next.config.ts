@@ -56,6 +56,12 @@ const nextConfig: NextConfig = {
     return [
       // Partage vidéo des apps : /video/:id sert la page interstitielle (deep link)
       { source: "/video/:id", destination: "/video.html?id=:id" },
+      // Liens TikTok restaurant : ouvre directement le plat dans l'app et
+      // conserve une landing page de téléchargement si l'app est absente.
+      {
+        source: "/plat/:restaurantId/:dishId",
+        destination: "/plat.html?restaurantId=:restaurantId&dishId=:dishId",
+      },
     ];
   },
 
