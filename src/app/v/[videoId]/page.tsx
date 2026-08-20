@@ -29,7 +29,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const description =
     [price, video.caption].filter(Boolean).join(' · ') ||
     `Découvrez ${dish} chez ${resto} sur AfroBite.`;
-  const image = video.posterUrl || `${SITE}/assets/logo-afrobite.png`;
+  const image =
+    video.ogImageUrl || video.posterUrl || `${SITE}/assets/logo-afrobite.png`;
 
   return {
     title,
@@ -41,7 +42,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       url: canonical,
       type: 'video.other',
       siteName: 'AfroBite',
-      images: [{ url: image }],
+      images: [
+        {
+          url: image,
+          secureUrl: image,
+          width: 1200,
+          height: 1200,
+          alt: `${dish} — ${resto}`,
+          type: 'image/jpeg',
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',

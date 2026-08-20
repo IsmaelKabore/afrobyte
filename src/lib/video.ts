@@ -17,6 +17,8 @@ export interface PublicVideo {
   muxPlaybackId: string | null;
   hlsUrl: string | null;
   posterUrl: string | null;
+  /** Image OG optimisée réseaux sociaux (carré 1200, frame nette à ~1s). */
+  ogImageUrl: string | null;
 }
 
 type FsValue = Record<string, unknown>;
@@ -56,6 +58,11 @@ export async function fetchVideo(videoId: string): Promise<PublicVideo | null> {
       posterUrl:
         explicitPoster ||
         (playbackId ? `https://image.mux.com/${playbackId}/thumbnail.jpg` : null),
+      // Aperçu social : carré 1200×1200, recadré intelligemment sur le plat,
+      // frame prise à ~1 s (évite une première image noire).
+      ogImageUrl: playbackId
+        ? `https://image.mux.com/${playbackId}/thumbnail.jpg?width=1200&height=1200&fit_mode=smartcrop&time=1`
+        : explicitPoster,
     };
   } catch {
     return null;
