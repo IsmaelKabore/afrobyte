@@ -49,13 +49,13 @@ const nextConfig: NextConfig = {
       })),
       // Ancien flux de remboursement (retiré) → accueil
       { source: "/refund/:token", destination: "/", permanent: false },
+      // Partage vidéo : /video/{id} (ancien) → /v/{id} (URL canonique).
+      { source: "/video/:id", destination: "/v/:id", permanent: true },
     ];
   },
 
   async rewrites() {
     return [
-      // Partage vidéo des apps : /video/:id sert la page interstitielle (deep link)
-      { source: "/video/:id", destination: "/video.html?id=:id" },
       // Liens TikTok restaurant : ouvre directement le plat dans l'app et
       // conserve une landing page de téléchargement si l'app est absente.
       {

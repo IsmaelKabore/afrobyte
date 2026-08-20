@@ -3,9 +3,9 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "apps.artcom.foodtok",
+      "package_name": "com.afrobite.android",
       "sha256_cert_fingerprints": [
-        "REPLACE_ME_WITH_RELEASE_KEY_SHA256_FINGERPRINT"
+        "D3:B5:3E:3D:33:F9:1A:67:EF:E7:93:54:2F:61:DE:1F:6B:7C:16:27:AB:0E:E3:7A:D6:ED:41:46:AB:26:AD:39"
       ]
     }
   }
