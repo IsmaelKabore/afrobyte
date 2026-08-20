@@ -2,9 +2,9 @@
 
 import { useCallback, useState } from 'react';
 
-const APP_STORE = 'https://apps.apple.com/app/afrobite/id6740143420';
+const APP_STORE = 'https://apps.apple.com/us/app/afrobite/id6759185659';
 const PLAY_STORE =
-  'https://play.google.com/store/apps/details?id=com.afrobite.android';
+  'https://play.google.com/store/apps/details?id=com.afrobite.android&pcampaignid=web_share';
 
 function isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);

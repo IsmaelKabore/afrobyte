@@ -75,10 +75,10 @@
 
     if (target) {
       var customUrl = 'afrobite://plat/' + encodeURIComponent(target.restaurantId) + '/' + encodeURIComponent(target.dishId);
-      var playUrl = 'https://play.google.com/store/apps/details?id=apps.artcom.foodtok';
+      var playUrl = 'https://play.google.com/store/apps/details?id=com.afrobite.android';
       var appUrl = isAndroid
         ? 'intent://plat/' + encodeURIComponent(target.restaurantId) + '/' + encodeURIComponent(target.dishId) +
-          '#Intent;scheme=afrobite;package=apps.artcom.foodtok;S.browser_fallback_url=' + encodeURIComponent(playUrl) + ';end'
+          '#Intent;scheme=afrobite;package=com.afrobite.android;S.browser_fallback_url=' + encodeURIComponent(playUrl) + ';end'
         : customUrl;
       openBtn.href = appUrl;
       openBtn.addEventListener('click', function() {
@@ -90,10 +90,10 @@
     }
 
     if (isAndroid) {
-      storeBtn.href = 'https://play.google.com/store/apps/details?id=apps.artcom.foodtok';
+      storeBtn.href = 'https://play.google.com/store/apps/details?id=com.afrobite.android';
       storeBtn.textContent = 'Télécharger sur Google Play';
     } else if (isIOS) {
-      storeBtn.href = 'https://apps.apple.com/app/afrobite/id6740143420';
+      storeBtn.href = 'https://apps.apple.com/us/app/afrobite/id6759185659';
       storeBtn.textContent = 'Télécharger sur App Store';
     }
   </script>
