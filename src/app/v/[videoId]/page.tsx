@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { fetchVideo, priceLabel } from '@/lib/video';
 import VideoPlayer from './VideoPlayer';
 import AppCtas from './AppCtas';
+import OpenPrompt from './OpenPrompt';
 
 const SITE = 'https://afrobite.app';
 
@@ -78,7 +79,23 @@ const styles = `
 .afv-brand span{color:#f5a623}
 .afv-info{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:18px 18px 22px;
   background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.35),transparent)}
-.afv-resto{font-size:13px;font-weight:700;opacity:.9;margin-bottom:4px}
+.afv-resto-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.afv-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:0 0 auto;
+  border:1.5px solid rgba(245,166,35,.85);background:#222;display:grid;place-items:center;font-size:16px}
+.afv-avatar-fallback{color:#f5a623}
+.afv-resto{font-size:14px;font-weight:800;opacity:.95}
+.afv-prompt{position:fixed;left:12px;right:12px;bottom:14px;z-index:30;max-width:520px;margin:0 auto;
+  display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;
+  background:rgba(22,22,30,.96);border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 10px 34px rgba(0,0,0,.5);backdrop-filter:blur(8px)}
+.afv-prompt-text{display:flex;flex-direction:column;flex:1;min-width:0}
+.afv-prompt-text strong{font-size:14px}
+.afv-prompt-text span{font-size:12px;opacity:.7}
+.afv-prompt-actions{display:flex;gap:8px;flex:0 0 auto}
+.afv-prompt-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.28);
+  border-radius:10px;padding:8px 10px;font-size:12px;font-weight:700;cursor:pointer}
+.afv-prompt-cta{background:#f5a623;color:#1a1a2e;border:none;border-radius:10px;
+  padding:8px 16px;font-size:13px;font-weight:800;cursor:pointer}
 .afv-dish{font-size:22px;font-weight:900;line-height:1.15;margin-bottom:6px}
 .afv-price{display:inline-block;background:#f5a623;color:#1a1a2e;font-weight:900;
   font-size:15px;padding:5px 12px;border-radius:999px;margin-bottom:10px}
@@ -151,15 +168,24 @@ export default async function VideoPage({ params }: Params) {
         </div>
 
         <div className="afv-info">
-          {video.restaurantName && (
-            <div className="afv-resto">📍 {video.restaurantName}</div>
-          )}
+          <div className="afv-resto-row">
+            {video.restaurantAvatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="afv-avatar" src={video.restaurantAvatar} alt="" />
+            ) : (
+              <span className="afv-avatar afv-avatar-fallback">🍽️</span>
+            )}
+            {video.restaurantName && (
+              <span className="afv-resto">{video.restaurantName}</span>
+            )}
+          </div>
           <div className="afv-dish">{video.dishName || 'Plat AfroBite'}</div>
           {price && <div className="afv-price">{price}</div>}
           {video.caption && <div className="afv-caption">{video.caption}</div>}
           <AppCtas videoId={video.id} />
         </div>
       </div>
+      <OpenPrompt videoId={video.id} />
     </main>
   );
 }

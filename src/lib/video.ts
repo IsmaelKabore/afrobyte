@@ -19,6 +19,8 @@ export interface PublicVideo {
   posterUrl: string | null;
   /** Image OG optimisée réseaux sociaux (carré 1200, frame nette à ~1s). */
   ogImageUrl: string | null;
+  /** Avatar/logo public du restaurant (userPhotoUrl de la vidéo). */
+  restaurantAvatar: string | null;
 }
 
 type FsValue = Record<string, unknown>;
@@ -63,6 +65,7 @@ export async function fetchVideo(videoId: string): Promise<PublicVideo | null> {
       ogImageUrl: playbackId
         ? `https://image.mux.com/${playbackId}/thumbnail.jpg?width=1200&height=1200&fit_mode=smartcrop&time=1`
         : explicitPoster,
+      restaurantAvatar: (fv(f.userPhotoUrl) as string | null) || null,
     };
   } catch {
     return null;
