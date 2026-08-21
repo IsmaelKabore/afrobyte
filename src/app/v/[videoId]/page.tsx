@@ -10,6 +10,7 @@ import { USER_APP_STORE_ID } from '@/lib/stores';
 import VideoPlayer from './VideoPlayer';
 import AppCtas from './AppCtas';
 import OpenPrompt from './OpenPrompt';
+import TopBanner from './TopBanner';
 
 const SITE = 'https://afrobite.app';
 
@@ -247,21 +248,7 @@ export default async function VideoPage({ params }: Params) {
     <main className="afv-root">
       <style dangerouslySetInnerHTML={{ __html: styles }} />
 
-      <header className="afv-banner">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="afv-banner-logo"
-          src="/assets/logo-afrobite.png"
-          alt="AfroBite"
-          width={34}
-          height={34}
-        />
-        <div className="afv-banner-text">
-          <strong>AfroBite</strong>
-          <span>Découvrez et commandez vos plats</span>
-        </div>
-        <AppCtas videoId={video.id} compact />
-      </header>
+      <TopBanner videoId={video.id} />
 
       <div className="afv-stage">
         <VideoPlayer hlsUrl={video.hlsUrl} poster={video.posterUrl} />

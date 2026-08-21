@@ -4,6 +4,9 @@ import {
   USER_PLAY_STORE,
 } from "@/lib/stores";
 
+/** Custom scheme UNIQUEMENT User — jamais partagé avec Resto/Livreur. */
+export const USER_URL_SCHEME = "afrobite-user";
+
 function log(msg: string, extra?: Record<string, string>) {
   if (typeof console === "undefined") return;
   const tail = extra ? ` ${JSON.stringify(extra)}` : "";
@@ -18,6 +21,17 @@ function isAndroid() {
   return /Android/i.test(navigator.userAgent);
 }
 
+/** Safari iOS (affiche le Smart App Banner Apple) — pas Chrome/Instagram/etc. */
+export function isIOSSafariWithSmartBanner() {
+  const ua = navigator.userAgent || "";
+  if (!/iPhone|iPad|iPod/i.test(ua)) return false;
+  if (/CriOS|FxiOS|EdgiOS|OPiOS|OPT\//i.test(ua)) return false;
+  if (/FBAN|FBAV|Instagram|Line\//i.test(ua)) return false;
+  // WebView générique (WKWebView in-app) : souvent sans "Safari"
+  if (!/Safari/i.test(ua)) return false;
+  return true;
+}
+
 export function storeUrlForDevice() {
   if (isIOS()) return USER_APP_STORE;
   if (isAndroid()) return USER_PLAY_STORE;
@@ -26,15 +40,13 @@ export function storeUrlForDevice() {
 
 /**
  * Ouvre AfroBite USER sur /v/{videoId}.
- * - Android : Intent explicite vers le package USER (jamais Resto/Livreur).
- * - iOS : scheme afrobite://v/{id} (seule l'app USER doit le gérer pour /v).
- * Fallback store UNIQUEMENT si la page reste visible (app non ouverte).
- * Dès que la page est hidden / blur / pagehide → annule le fallback.
- * JAMAIS de navigation vers la même Universal Link (évite app→web→store).
+ * - Android : Intent explicite package USER.
+ * - iOS : scheme afrobite-user:// (Resto/Livreur ne le déclarent PAS).
+ * Fallback store annulé dès hidden/blur/pagehide.
  */
 export function openAfroBiteUser(videoId: string) {
   const id = (videoId || "").trim();
-  log("attempt", { videoId: id || "(none)" });
+  log("attempt", { videoId: id || "(none)", appTarget: "user" });
 
   if (!id) {
     log("fallback store", { reason: "missing_videoId" });
@@ -42,7 +54,6 @@ export function openAfroBiteUser(videoId: string) {
     return;
   }
 
-  // Android Chrome Intent → package USER uniquement + fallback store intégré.
   if (isAndroid()) {
     const fallback = encodeURIComponent(USER_PLAY_STORE);
     const intent =
@@ -78,8 +89,6 @@ export function openAfroBiteUser(videoId: string) {
   window.addEventListener("pagehide", onPageHide);
   window.addEventListener("blur", onBlur);
 
-  // Si l'app s'ouvre, la page devient hidden rapidement → on annule.
-  // Sinon (app absente), on envoie au store après ~2 s.
   const timer = window.setTimeout(() => {
     if (settled) return;
     if (document.visibilityState !== "visible") {
@@ -94,8 +103,7 @@ export function openAfroBiteUser(videoId: string) {
     window.location.href = storeUrlForDevice();
   }, 2000);
 
-  // Custom scheme USER — ne pas recharger https://afrobite.app/v/... (même URL).
-  const scheme = `afrobite://v/${encodeURIComponent(id)}`;
-  log("ios scheme", { scheme: `afrobite://v/${id}` });
+  const scheme = `${USER_URL_SCHEME}://v/${encodeURIComponent(id)}`;
+  log("ios scheme", { scheme: `${USER_URL_SCHEME}://v/${id}` });
   window.location.href = scheme;
 }
