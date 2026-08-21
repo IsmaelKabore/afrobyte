@@ -18,8 +18,9 @@ export type StoreKey =
  * affiche « Bientôt disponible ».
  */
 export const STORE_LINKS: Record<StoreKey, string | null> = {
-  "client-ios": null,
-  "client-android": null,
+  "client-ios": "https://apps.apple.com/us/app/afrobite/id6759185659",
+  "client-android":
+    "https://play.google.com/store/apps/details?id=com.afrobite.android&pcampaignid=web_share",
   "restaurant-ios": null,
   "restaurant-android": null,
   "delivery-ios": null,

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
-import { SiteNav } from "@/components/site-nav";
-import { SiteFooter } from "@/components/site-footer";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -70,7 +68,6 @@ const JSON_LD = {
   parentOrganization: { "@type": "Organization", name: "CORRIDOR SARL" },
 };
 
-// Pose le thème avant le premier paint (aucun flash clair/sombre).
 const themeScript = `(function(){try{var k='afrobite-theme';var t=localStorage.getItem(k)||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;}catch(e){}})();`;
 
 export default function RootLayout({
@@ -90,9 +87,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
         />
-        <SiteNav />
         {children}
-        <SiteFooter />
       </body>
     </html>
   );

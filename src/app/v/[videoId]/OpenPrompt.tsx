@@ -1,61 +1,98 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { openAfroBiteUser } from '@/lib/openApp';
 
-const APP_STORE = 'https://apps.apple.com/us/app/afrobite/id6759185659';
-const PLAY_STORE =
-  'https://play.google.com/store/apps/details?id=com.afrobite.android&pcampaignid=web_share';
+const STAY_KEY = 'afv_stay_web';
 
-function storeUrl() {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) ? APP_STORE : PLAY_STORE;
-}
-
-/** Invitation DISCRÈTE à ouvrir l'app, après ~2,5 s. Ne bloque jamais la vidéo,
- *  n'est pas une popup plein écran, et ne se répète pas si l'user a choisi
- *  « Continuer sur le web » (mémorisé pour la session). */
-export default function OpenPrompt({ videoId }: { videoId: string }) {
+/**
+ * Modal CENTRAL bloquant (réf. TikTok).
+ * Apparaît après ~2,5 s. Pas d'auto-open app.
+ * Continuer sur le web → sessionStorage, ne se réaffiche pas.
+ */
+export default function OpenPrompt({
+  videoId,
+  thumbUrl,
+  dishName,
+}: {
+  videoId: string;
+  thumbUrl: string | null;
+  dishName: string | null;
+}) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
     if (!videoId) return;
     try {
-      if (sessionStorage.getItem('afv_stay_web') === '1') return;
+      if (sessionStorage.getItem(STAY_KEY) === '1') return;
     } catch {}
-    const t = window.setTimeout(() => setShow(true), 2500);
-    return () => window.clearTimeout(t);
+    const t = window.setTimeout(() => {
+      setShow(true);
+      console.log('[MODAL] shown');
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    }, 2500);
+    return () => {
+      window.clearTimeout(t);
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
   }, [videoId]);
 
-  if (!show) return null;
+  const unlock = useCallback(() => {
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+  }, []);
 
   const stayWeb = () => {
+    console.log('[MODAL] stay_web');
     try {
-      sessionStorage.setItem('afv_stay_web', '1');
+      sessionStorage.setItem(STAY_KEY, '1');
     } catch {}
     setShow(false);
+    unlock();
   };
 
   const openApp = () => {
-    setShow(false);
-    const started = Date.now();
-    const timer = window.setTimeout(() => {
-      if (Date.now() - started < 1700 && document.visibilityState === 'visible') {
-        window.location.href = storeUrl();
-      }
-    }, 1300);
-    const clear = () => window.clearTimeout(timer);
-    document.addEventListener('visibilitychange', clear, { once: true });
-    window.location.href = `https://afrobite.app/v/${videoId}`;
+    console.log('[MODAL] open_app');
+    openAfroBiteUser(videoId);
   };
 
+  if (!show) return null;
+
   return (
-    <div className="afv-prompt" role="dialog" aria-label="Ouvrir dans AfroBite">
-      <div className="afv-prompt-text">
-        <strong>Ouvrir dans AfroBite&nbsp;?</strong>
-        <span>Meilleure expérience dans l’app.</span>
-      </div>
-      <div className="afv-prompt-actions">
-        <button className="afv-prompt-ghost" onClick={stayWeb}>Continuer sur le web</button>
-        <button className="afv-prompt-cta" onClick={openApp}>Ouvrir</button>
+    <div
+      className="afv-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Ouvrir ce plat dans AfroBite"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="afv-modal-card">
+        <div className="afv-modal-avatar-wrap">
+          {thumbUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="afv-modal-avatar" src={thumbUrl} alt="" />
+          ) : (
+            <div className="afv-modal-avatar afv-modal-avatar-fallback">🍽️</div>
+          )}
+        </div>
+        <h2 className="afv-modal-title">
+          Ouvrir ce plat dans
+          <br />
+          AfroBite&nbsp;?
+        </h2>
+        <p className="afv-modal-desc">
+          {dishName
+            ? `Découvrez « ${dishName} » et commandez directement dans l’application.`
+            : 'Découvrez ce restaurant et commandez directement dans l’application pour une meilleure expérience.'}
+        </p>
+        <button type="button" className="afv-modal-primary" onClick={openApp}>
+          Ouvrir AfroBite
+        </button>
+        <button type="button" className="afv-modal-secondary" onClick={stayWeb}>
+          Continuer sur le web
+        </button>
       </div>
     </div>
   );

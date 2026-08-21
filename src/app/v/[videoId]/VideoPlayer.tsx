@@ -2,14 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-/** Player HLS (Mux) : natif sur Safari/iOS, hls.js ailleurs.
- *  Autoplay muted (politique navigateur), tap pour activer le son. */
+/** Player HLS (Mux) : natif Safari/iOS, hls.js ailleurs. Autoplay muted. */
 export default function VideoPlayer({
   hlsUrl,
   poster,
+  interactive = true,
 }: {
   hlsUrl: string;
   poster: string | null;
+  /** false quand le modal bloque l'UI */
+  interactive?: boolean;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
@@ -18,14 +20,12 @@ export default function VideoPlayer({
     const video = ref.current;
     if (!video) return;
 
-    // Safari / iOS : HLS natif.
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = hlsUrl;
       video.play().catch(() => {});
       return;
     }
 
-    // Autres navigateurs : hls.js chargé dynamiquement (léger, hors bundle initial).
     let hls: { destroy: () => void } | null = null;
     let cancelled = false;
     import('hls.js')
@@ -53,6 +53,7 @@ export default function VideoPlayer({
   }, [hlsUrl]);
 
   const toggleSound = () => {
+    if (!interactive) return;
     const video = ref.current;
     if (!video) return;
     video.muted = !video.muted;
@@ -61,7 +62,7 @@ export default function VideoPlayer({
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+    <div className="afv-player">
       <video
         ref={ref}
         poster={poster ?? undefined}
@@ -70,32 +71,14 @@ export default function VideoPlayer({
         playsInline
         autoPlay
         onClick={toggleSound}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          background: '#000',
-          cursor: 'pointer',
-        }}
+        style={{ pointerEvents: interactive ? 'auto' : 'none' }}
       />
-      {muted && (
+      {muted && interactive && (
         <button
+          type="button"
           onClick={toggleSound}
           aria-label="Activer le son"
-          style={{
-            position: 'absolute',
-            top: 14,
-            right: 14,
-            background: 'rgba(0,0,0,0.55)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 999,
-            padding: '8px 14px',
-            fontSize: 13,
-            fontWeight: 700,
-            cursor: 'pointer',
-            backdropFilter: 'blur(6px)',
-          }}
+          className="afv-mute"
         >
           🔇 Son
         </button>

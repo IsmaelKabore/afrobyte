@@ -3,10 +3,9 @@
 // lit qu'UN seul document et on n'expose QUE des champs publics (aucun userId,
 // numéro, orderId, token…). Aucun service account, aucun secret côté site.
 
-const PROJECT = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'foodsocialnetwork-74a07';
-// Clé API web Firebase = clé publique (restreinte par referrer côté console).
+const PROJECT = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "foodsocialnetwork-74a07";
 const API_KEY =
-  process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyCl7fBX2VrdNtNk_lS_eatnbdad9_BZDIs';
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyCl7fBX2VrdNtNk_lS_eatnbdad9_BZDIs";
 
 export interface PublicVideo {
   id: string;
@@ -17,9 +16,8 @@ export interface PublicVideo {
   muxPlaybackId: string | null;
   hlsUrl: string | null;
   posterUrl: string | null;
-  /** Image OG optimisée réseaux sociaux (carré 1200, frame nette à ~1s). */
+  /** Image Mux brute (ne pas exposer en og:image — robots noindex). */
   ogImageUrl: string | null;
-  /** Avatar/logo public du restaurant (userPhotoUrl de la vidéo). */
   restaurantAvatar: string | null;
 }
 
@@ -27,10 +25,10 @@ type FsValue = Record<string, unknown>;
 
 function fv(field: FsValue | undefined): string | number | boolean | null {
   if (!field) return null;
-  if ('stringValue' in field) return field.stringValue as string;
-  if ('integerValue' in field) return Number(field.integerValue);
-  if ('doubleValue' in field) return field.doubleValue as number;
-  if ('booleanValue' in field) return field.booleanValue as boolean;
+  if ("stringValue" in field) return field.stringValue as string;
+  if ("integerValue" in field) return Number(field.integerValue);
+  if ("doubleValue" in field) return field.doubleValue as number;
+  if ("booleanValue" in field) return field.booleanValue as boolean;
   return null;
 }
 
@@ -60,8 +58,6 @@ export async function fetchVideo(videoId: string): Promise<PublicVideo | null> {
       posterUrl:
         explicitPoster ||
         (playbackId ? `https://image.mux.com/${playbackId}/thumbnail.jpg` : null),
-      // Aperçu social : carré 1200×1200, recadré intelligemment sur le plat,
-      // frame prise à ~1 s (évite une première image noire).
       ogImageUrl: playbackId
         ? `https://image.mux.com/${playbackId}/thumbnail.jpg?width=1200&height=1200&fit_mode=smartcrop&time=1`
         : explicitPoster,
@@ -72,7 +68,21 @@ export async function fetchVideo(videoId: string): Promise<PublicVideo | null> {
   }
 }
 
+/** Image OG servie depuis afrobite.app (proxy) — WhatsApp-compatible. */
+export function publicOgImageUrl(videoId: string): string {
+  return `https://afrobite.app/api/og/${encodeURIComponent(videoId)}`;
+}
+
 export function priceLabel(price: number | null): string | null {
   if (price == null || Number.isNaN(price)) return null;
-  return `${Math.round(price)} FCFA`;
+  const n = Math.round(price);
+  const formatted = n.toLocaleString("fr-FR").replace(/\u202f/g, " ");
+  return `${formatted} FCFA`;
+}
+
+export function priceShort(price: number | null): string | null {
+  if (price == null || Number.isNaN(price)) return null;
+  const n = Math.round(price);
+  const formatted = n.toLocaleString("fr-FR").replace(/\u202f/g, " ");
+  return `${formatted} F`;
 }
