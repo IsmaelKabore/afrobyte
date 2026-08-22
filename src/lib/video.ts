@@ -21,6 +21,8 @@ export interface PublicVideo {
   /** Image Mux brute (ne pas exposer en og:image — robots noindex). */
   ogImageUrl: string | null;
   restaurantAvatar: string | null;
+  /** Si clone démo → UUID source à partager / rediriger. */
+  demoSourceVideoId: string | null;
 }
 
 type FsValue = Record<string, unknown>;
@@ -64,6 +66,7 @@ export async function fetchVideo(videoId: string): Promise<PublicVideo | null> {
         ? `https://image.mux.com/${playbackId}/thumbnail.jpg?width=1200&height=1200&fit_mode=smartcrop&time=1`
         : explicitPoster,
       restaurantAvatar: (fv(f.userPhotoUrl) as string | null) || null,
+      demoSourceVideoId: (fv(f.demoSourceVideoId) as string | null) || null,
     };
   } catch {
     return null;

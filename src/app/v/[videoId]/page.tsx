@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   fetchVideo,
   priceLabel,
@@ -159,22 +160,28 @@ html,body{margin:0;padding:0;background:#000}
 }
 .afv-ctas{display:none}
 .afv-stores{
-  display:flex;justify-content:center;padding:0 0 2px;
+  display:flex;justify-content:center;padding:2px 0 4px;width:100%;
 }
-.afv-stores .store-badges{
-  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%;
+.afv-stores .store-badges,
+.afv-stores .afv-store-inner .store-badges{
+  display:flex !important;flex-direction:row !important;flex-wrap:nowrap !important;
+  gap:8px;justify-content:center;align-items:stretch;width:100%;
 }
 .afv-stores .store-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:7px 12px 7px 10px;border-radius:11px;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 10px 6px 8px;border-radius:10px;
   border:1px solid rgba(255,255,255,.28);background:#060606;color:#fff;
-  text-decoration:none;line-height:1.1;flex:1 1 140px;max-width:180px;
+  text-decoration:none;line-height:1.05;
+  flex:1 1 0 !important;min-width:0;max-width:none !important;
 }
-.afv-stores .store-badge svg{width:20px;height:20px;flex:none}
+.afv-stores .store-badge svg{width:18px;height:18px;flex:none}
 .afv-stores .store-badge small{
-  display:block;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#b5ada0;
+  display:block;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:#b5ada0;
+  white-space:nowrap;
 }
-.afv-stores .store-badge strong{display:block;font-size:13px;font-weight:700}
+.afv-stores .store-badge strong{
+  display:block;font-size:12px;font-weight:700;white-space:nowrap;
+}
 .afv-fallback{
   min-height:100dvh;display:flex;flex-direction:column;align-items:center;
   justify-content:center;text-align:center;padding:32px;gap:14px;color:#fff;
@@ -247,6 +254,15 @@ html,body{margin:0;padding:0;background:#000}
 export default async function VideoPage({ params }: Params) {
   const { videoId } = await params;
   const video = await fetchVideo(videoId);
+
+  // Clones démo (afrobite-demo-preview-*) → URL canonique de la vraie vidéo.
+  if (
+    video?.demoSourceVideoId &&
+    video.demoSourceVideoId !== videoId &&
+    /^[a-zA-Z0-9-]{6,60}$/.test(video.demoSourceVideoId)
+  ) {
+    redirect(`/v/${video.demoSourceVideoId}`);
+  }
 
   if (!video || !video.hlsUrl) {
     return (

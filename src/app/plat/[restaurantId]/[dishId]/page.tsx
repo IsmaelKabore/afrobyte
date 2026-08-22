@@ -110,19 +110,24 @@ html,body{margin:0;padding:0;background:#0f0f14;color:#fff}
   font-size:14px;font-weight:800;padding:13px 16px;cursor:pointer;text-decoration:none;
   text-align:center;display:none;
 }
-.afp-store-row{margin-top:4px}
-.afp-store-row .store-badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.afp-store-row{margin-top:4px;width:100%}
+.afp-store-row .store-badges{
+  display:flex !important;flex-direction:row !important;flex-wrap:nowrap !important;
+  gap:8px;justify-content:center;align-items:stretch;width:100%;
+}
 .afp-store-row .store-badge{
-  display:inline-flex;align-items:center;gap:8px;flex:1 1 140px;max-width:180px;
-  padding:7px 12px 7px 10px;border-radius:11px;
+  display:inline-flex;align-items:center;gap:7px;
+  flex:1 1 0 !important;min-width:0;max-width:none !important;
+  padding:6px 10px 6px 8px;border-radius:10px;
   border:1px solid rgba(255,255,255,.28);background:#060606;color:#fff;
-  text-decoration:none;line-height:1.1;
+  text-decoration:none;line-height:1.05;
 }
-.afp-store-row .store-badge svg{width:20px;height:20px;flex:none}
+.afp-store-row .store-badge svg{width:18px;height:18px;flex:none}
 .afp-store-row .store-badge small{
-  display:block;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#b5ada0;
+  display:block;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:#b5ada0;
+  white-space:nowrap;
 }
-.afp-store-row .store-badge strong{display:block;font-size:13px;font-weight:700}
+.afp-store-row .store-badge strong{display:block;font-size:12px;font-weight:700;white-space:nowrap}
 .afp-fallback{
   text-align:center;max-width:360px;padding:32px 16px;
 }
