@@ -1,8 +1,13 @@
 'use client';
 
-import { openAfroBiteUser } from '@/lib/openApp';
+import { useEffect, useState } from 'react';
+import {
+  hrefOpenVideo,
+  openAfroBiteUser,
+  isSnapchatBrowser,
+} from '@/lib/openApp';
 
-/** CTAs vidéo : ouvre USER uniquement. Pas d'auto-redirect. */
+/** CTA vidéo : vrai <a href> — Snapchat ignore souvent location.href sur custom scheme. */
 export default function AppCtas({
   videoId,
   compact = false,
@@ -10,25 +15,24 @@ export default function AppCtas({
   videoId: string;
   compact?: boolean;
 }) {
-  if (compact) {
-    return (
-      <button
-        type="button"
-        className="afv-banner-cta"
-        onClick={() => openAfroBiteUser(videoId)}
-      >
-        Ouvrir
-      </button>
-    );
-  }
+  const [href, setHref] = useState('#');
+
+  useEffect(() => {
+    setHref(hrefOpenVideo(videoId));
+  }, [videoId]);
 
   return (
-    <button
-      type="button"
-      className="afv-order-btn"
-      onClick={() => openAfroBiteUser(videoId)}
+    <a
+      className={compact ? 'afv-banner-cta' : 'afv-order-btn'}
+      href={href}
+      onClick={(e) => {
+        // Snapchat : laisser le navigateur suivre le href natif (seul chemin fiable).
+        if (isSnapchatBrowser()) return;
+        e.preventDefault();
+        openAfroBiteUser(videoId);
+      }}
     >
-      Commander
-    </button>
+      {compact ? 'Ouvrir' : 'Commander'}
+    </a>
   );
 }

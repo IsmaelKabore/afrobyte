@@ -1,15 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { openAfroBiteUser, isIOSSafariWithSmartBanner } from '@/lib/openApp';
+import {
+  hrefOpenVideo,
+  openAfroBiteUser,
+  isIOSSafariWithSmartBanner,
+  isSnapchatBrowser,
+} from '@/lib/openApp';
 
 /** Bandeau haut : masqué sur Safari iOS (Smart App Banner natif déjà présent). */
 export default function TopBanner({ videoId }: { videoId: string }) {
   const [hide, setHide] = useState(false);
+  const [href, setHref] = useState('#');
 
   useEffect(() => {
     setHide(isIOSSafariWithSmartBanner());
-  }, []);
+    setHref(hrefOpenVideo(videoId));
+  }, [videoId]);
 
   if (hide) return null;
 
@@ -27,13 +34,17 @@ export default function TopBanner({ videoId }: { videoId: string }) {
         <strong>AfroBite</strong>
         <span>Découvrez et commandez vos plats</span>
       </div>
-      <button
-        type="button"
+      <a
         className="afv-banner-cta"
-        onClick={() => openAfroBiteUser(videoId)}
+        href={href}
+        onClick={(e) => {
+          if (isSnapchatBrowser()) return;
+          e.preventDefault();
+          openAfroBiteUser(videoId);
+        }}
       >
         Ouvrir
-      </button>
+      </a>
     </header>
   );
 }

@@ -4,9 +4,10 @@ import {
   fetchRestaurant,
   publicRestaurantOgImageUrl,
 } from '@/lib/restaurant';
-import { USER_APP_STORE_ID, USER_APP_STORE, USER_PLAY_STORE } from '@/lib/stores';
+import { USER_APP_STORE_ID } from '@/lib/stores';
 import RestaurantOpenButton from './RestaurantOpenButton';
 import RestaurantOpenPrompt from './RestaurantOpenPrompt';
+import DeepLinkStoreBadges from '@/components/deep-link-store-badges';
 
 const SITE = 'https://afrobite.app';
 
@@ -101,12 +102,26 @@ html,body{margin:0;padding:0;background:#0f0f14;color:#fff}
 .afr-btn-primary{
   width:100%;border:none;border-radius:14px;background:#f5a623;color:#1a1200;
   font-size:15px;font-weight:900;padding:14px 16px;cursor:pointer;
+  text-decoration:none;display:block;text-align:center;box-sizing:border-box;
 }
 .afr-btn-secondary{
   width:100%;border:none;border-radius:14px;background:rgba(255,255,255,.08);color:#fff;
   font-size:14px;font-weight:800;padding:13px 16px;cursor:pointer;text-decoration:none;
-  text-align:center;display:block;
+  text-align:center;display:none;
 }
+.afr-store-row{margin-top:4px}
+.afr-store-row .store-badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.afr-store-row .store-badge{
+  display:inline-flex;align-items:center;gap:8px;flex:1 1 140px;max-width:180px;
+  padding:7px 12px 7px 10px;border-radius:11px;
+  border:1px solid rgba(255,255,255,.28);background:#060606;color:#fff;
+  text-decoration:none;line-height:1.1;
+}
+.afr-store-row .store-badge svg{width:20px;height:20px;flex:none}
+.afr-store-row .store-badge small{
+  display:block;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#b5ada0;
+}
+.afr-store-row .store-badge strong{display:block;font-size:13px;font-weight:700}
 .afr-fallback{text-align:center;max-width:360px;padding:32px 16px}
 .afr-fallback h1{font-size:22px;font-weight:900;margin:12px 0 8px}
 .afr-fallback p{opacity:.7;line-height:1.5;margin:0 0 18px}
@@ -131,6 +146,7 @@ html,body{margin:0;padding:0;background:#0f0f14;color:#fff}
 .afr-modal-primary{
   width:100%;border:none;border-radius:14px;background:#f5a623;color:#1a1200;
   font-size:15px;font-weight:900;padding:14px 16px;cursor:pointer;margin-bottom:10px;
+  display:block;text-decoration:none;text-align:center;box-sizing:border-box;
 }
 .afr-modal-download{
   width:100%;border:1px solid #ddd;border-radius:14px;background:#f7f7f7;color:#222;
@@ -199,12 +215,7 @@ export default async function RestaurantPage({ params }: Params) {
           </p>
           <div className="afr-actions">
             <RestaurantOpenButton restaurantId={restaurantId} />
-            <a className="afr-btn-secondary" href={USER_APP_STORE}>
-              Télécharger sur l’App Store
-            </a>
-            <a className="afr-btn-secondary" href={USER_PLAY_STORE}>
-              Télécharger sur Google Play
-            </a>
+            <DeepLinkStoreBadges className="afr-store-row" />
           </div>
         </div>
       </article>

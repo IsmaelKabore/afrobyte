@@ -4,21 +4,15 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   openAfroBiteUser,
   openUserStore,
+  hrefOpenVideo,
   isIOSSafariWithSmartBanner,
   isInAppBrowserThatReclaims,
+  isSnapchatBrowser,
 } from '@/lib/openApp';
 
 const STAY_KEY = 'afv_stay_web';
 const WA_OPEN_KEY = 'afv_wa_scheme_once';
 
-/**
- * Modal + reclaim WhatsApp.
- *
- * WhatsApp (et IG/FB) ouvre souvent l'Universal Link HTTPS ~1–2 s puis
- * reprend son WebView → impression de « bounce ». Le bouton Ouvrir marche
- * car il utilise afrobite-user://. Ici on rejoue CE même chemin une fois
- * quand on détecte un in-app browser qui reclaim — sans timer store.
- */
 export default function OpenPrompt({
   videoId,
   thumbUrl,
@@ -31,6 +25,8 @@ export default function OpenPrompt({
   const [show, setShow] = useState(false);
   const [isSafari, setIsSafari] = useState(false);
   const [isReclaimBrowser, setIsReclaimBrowser] = useState(false);
+  const [isSnap, setIsSnap] = useState(false);
+  const [openHref, setOpenHref] = useState('#');
 
   useEffect(() => {
     if (!videoId) return;
@@ -40,14 +36,15 @@ export default function OpenPrompt({
 
     const safari = isIOSSafariWithSmartBanner();
     const reclaim = isInAppBrowserThatReclaims();
+    const snap = isSnapchatBrowser();
     setIsSafari(safari);
     setIsReclaimBrowser(reclaim);
+    setIsSnap(snap);
+    setOpenHref(hrefOpenVideo(videoId));
 
-    // WhatsApp / IG / FB : après le bounce UL→WebView, réouvrir via le
-    // custom scheme (identique au bouton qui marche). Une seule fois /
-    // onglet, jamais de fallback App Store.
     let onVis: (() => void) | null = null;
-    if (reclaim) {
+    // Snapchat bloque souvent l'auto-open scheme — on laisse le tap utilisateur.
+    if (reclaim && !snap) {
       const k = `${WA_OPEN_KEY}:${videoId}`;
       const trySchemeOnce = () => {
         try {
@@ -55,26 +52,20 @@ export default function OpenPrompt({
           if (sessionStorage.getItem(k) === '1') return;
           if (document.visibilityState !== 'visible') return;
           sessionStorage.setItem(k, '1');
-          console.log('[MODAL] whatsapp reclaim → custom scheme');
           openAfroBiteUser(videoId);
         } catch {}
       };
-      // Si la page est déjà visible (WA a déjà reclaim), ouvrir vite.
       window.setTimeout(trySchemeOnce, 350);
-      // Si UL a mis l'app au premier plan, le WebView est hidden : on
-      // retente dès que WhatsApp reprend la page (visibility visible).
       onVis = () => {
         if (document.visibilityState === 'visible') trySchemeOnce();
       };
       document.addEventListener('visibilitychange', onVis);
     }
 
-    // Modal plus rapide dans WhatsApp (si le scheme n'a pas sorti).
-    const delay = reclaim ? 1200 : 2500;
+    const delay = reclaim ? 900 : 2500;
     const t = window.setTimeout(() => {
       if (document.visibilityState !== 'visible') return;
       setShow(true);
-      console.log('[MODAL] shown');
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
     }, delay);
@@ -92,22 +83,11 @@ export default function OpenPrompt({
   }, []);
 
   const stayWeb = () => {
-    console.log('[MODAL] stay_web');
     try {
       sessionStorage.setItem(STAY_KEY, '1');
     } catch {}
     setShow(false);
     unlock();
-  };
-
-  const openApp = () => {
-    console.log('[MODAL] open_app');
-    openAfroBiteUser(videoId);
-  };
-
-  const download = () => {
-    console.log('[MODAL] download_store');
-    openUserStore();
   };
 
   if (!show) return null;
@@ -135,18 +115,28 @@ export default function OpenPrompt({
           AfroBite&nbsp;?
         </h2>
         <p className="afv-modal-desc">
-          {isReclaimBrowser
-            ? 'WhatsApp a rouvert la page web. Touchez Ouvrir AfroBite pour rester dans l’app.'
-            : isSafari
-              ? 'Astuce iPhone : utilisez le bouton bleu OPEN en haut de Safari pour ouvrir l’app directement.'
-              : dishName
-                ? `Découvrez « ${dishName} » et commandez directement dans l’application.`
-                : 'Découvrez ce restaurant et commandez directement dans l’application pour une meilleure expérience.'}
+          {isSnap
+            ? 'Sur Snapchat, touchez Ouvrir AfroBite. Si rien ne se passe, ouvrez le lien dans Safari (icône en bas à droite).'
+            : isReclaimBrowser
+              ? 'Touchez Ouvrir AfroBite pour rester dans l’app.'
+              : isSafari
+                ? 'Astuce iPhone : utilisez le bouton bleu OPEN en haut de Safari.'
+                : dishName
+                  ? `Découvrez « ${dishName} » et commandez dans l’application.`
+                  : 'Commandez ce plat directement dans l’application AfroBite.'}
         </p>
-        <button type="button" className="afv-modal-primary" onClick={openApp}>
+        <a
+          className="afv-modal-primary"
+          href={openHref}
+          onClick={(e) => {
+            if (isSnapchatBrowser()) return;
+            e.preventDefault();
+            openAfroBiteUser(videoId);
+          }}
+        >
           Ouvrir AfroBite
-        </button>
-        <button type="button" className="afv-modal-download" onClick={download}>
+        </a>
+        <button type="button" className="afv-modal-download" onClick={() => openUserStore()}>
           Télécharger l’app
         </button>
         <button type="button" className="afv-modal-secondary" onClick={stayWeb}>

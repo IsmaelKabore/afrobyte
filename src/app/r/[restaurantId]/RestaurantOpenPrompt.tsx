@@ -4,8 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   openAfroBiteUserRestaurant,
   openUserStore,
+  hrefOpenRestaurant,
   isIOSSafariWithSmartBanner,
   isInAppBrowserThatReclaims,
+  isSnapchatBrowser,
 } from '@/lib/openApp';
 
 const STAY_KEY = 'afr_stay_web';
@@ -23,6 +25,8 @@ export default function RestaurantOpenPrompt({
   const [show, setShow] = useState(false);
   const [isSafari, setIsSafari] = useState(false);
   const [isReclaimBrowser, setIsReclaimBrowser] = useState(false);
+  const [isSnap, setIsSnap] = useState(false);
+  const [openHref, setOpenHref] = useState('#');
 
   useEffect(() => {
     if (!restaurantId) return;
@@ -32,11 +36,14 @@ export default function RestaurantOpenPrompt({
 
     const safari = isIOSSafariWithSmartBanner();
     const reclaim = isInAppBrowserThatReclaims();
+    const snap = isSnapchatBrowser();
     setIsSafari(safari);
     setIsReclaimBrowser(reclaim);
+    setIsSnap(snap);
+    setOpenHref(hrefOpenRestaurant(restaurantId));
 
     let onVis: (() => void) | null = null;
-    if (reclaim) {
+    if (reclaim && !snap) {
       const k = `${RECLAIM_KEY}:${restaurantId}`;
       const trySchemeOnce = () => {
         try {
@@ -54,7 +61,7 @@ export default function RestaurantOpenPrompt({
       document.addEventListener('visibilitychange', onVis);
     }
 
-    const delay = reclaim ? 1200 : 2500;
+    const delay = reclaim ? 900 : 2500;
     const t = window.setTimeout(() => {
       if (document.visibilityState !== 'visible') return;
       setShow(true);
@@ -93,26 +100,28 @@ export default function RestaurantOpenPrompt({
           AfroBite&nbsp;?
         </h2>
         <p className="afr-modal-desc">
-          {isReclaimBrowser
-            ? 'Touchez Ouvrir AfroBite pour rester dans l’app sur ce restaurant.'
-            : isSafari
-              ? 'Astuce iPhone : utilisez le bouton bleu OPEN en haut de Safari.'
-              : restaurantName
-                ? `Découvrez « ${restaurantName} » et ses plats dans l’application.`
-                : 'Découvrez ce restaurant et ses plats dans l’application.'}
+          {isSnap
+            ? 'Sur Snapchat, touchez Ouvrir AfroBite. Si rien ne se passe, ouvrez le lien dans Safari.'
+            : isReclaimBrowser
+              ? 'Touchez Ouvrir AfroBite pour rester dans l’app.'
+              : isSafari
+                ? 'Astuce iPhone : utilisez le bouton bleu OPEN en haut de Safari.'
+                : restaurantName
+                  ? `Découvrez « ${restaurantName} » et ses plats dans l’application.`
+                  : 'Découvrez ce restaurant et ses plats dans l’application.'}
         </p>
-        <button
-          type="button"
+        <a
           className="afr-modal-primary"
-          onClick={() => openAfroBiteUserRestaurant(restaurantId)}
+          href={openHref}
+          onClick={(e) => {
+            if (isSnapchatBrowser()) return;
+            e.preventDefault();
+            openAfroBiteUserRestaurant(restaurantId);
+          }}
         >
           Ouvrir AfroBite
-        </button>
-        <button
-          type="button"
-          className="afr-modal-download"
-          onClick={() => openUserStore()}
-        >
+        </a>
+        <button type="button" className="afr-modal-download" onClick={() => openUserStore()}>
           Télécharger l’app
         </button>
         <button

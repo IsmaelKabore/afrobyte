@@ -11,6 +11,7 @@ import VideoPlayer from './VideoPlayer';
 import AppCtas from './AppCtas';
 import OpenPrompt from './OpenPrompt';
 import TopBanner from './TopBanner';
+import DeepLinkStoreBadges from '@/components/deep-link-store-badges';
 
 const SITE = 'https://afrobite.app';
 
@@ -100,7 +101,7 @@ html,body{margin:0;padding:0;background:#000}
   flex:0 0 auto;border:none;border-radius:999px;
   background:#f5a623;color:#1a1200;
   font-size:13px;font-weight:800;letter-spacing:.02em;
-  padding:9px 16px;cursor:pointer;
+  padding:9px 16px;cursor:pointer;text-decoration:none;display:inline-block;
 }
 .afv-stage{
   position:relative;flex:1 1 auto;min-height:0;width:100%;
@@ -154,9 +155,26 @@ html,body{margin:0;padding:0;background:#000}
   flex:0 0 auto;border:none;border-radius:12px;
   background:#f5a623;color:#1a1200;
   font-size:13px;font-weight:800;padding:11px 14px;cursor:pointer;
+  text-decoration:none;display:inline-block;text-align:center;
 }
 .afv-ctas{display:none}
-.afv-stores{display:none}
+.afv-stores{
+  display:flex;justify-content:center;padding:0 0 2px;
+}
+.afv-stores .store-badges{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%;
+}
+.afv-stores .store-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 12px 7px 10px;border-radius:11px;
+  border:1px solid rgba(255,255,255,.28);background:#060606;color:#fff;
+  text-decoration:none;line-height:1.1;flex:1 1 140px;max-width:180px;
+}
+.afv-stores .store-badge svg{width:20px;height:20px;flex:none}
+.afv-stores .store-badge small{
+  display:block;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#b5ada0;
+}
+.afv-stores .store-badge strong{display:block;font-size:13px;font-weight:700}
 .afv-fallback{
   min-height:100dvh;display:flex;flex-direction:column;align-items:center;
   justify-content:center;text-align:center;padding:32px;gap:14px;color:#fff;
@@ -205,7 +223,8 @@ html,body{margin:0;padding:0;background:#000}
   width:100%;border:none;border-radius:14px;
   background:#f5a623;color:#1a1200;
   font-size:15px;font-weight:900;padding:14px 16px;cursor:pointer;
-  margin-bottom:10px;
+  margin-bottom:10px;display:block;text-decoration:none;text-align:center;
+  box-sizing:border-box;
 }
 .afv-modal-download{
   width:100%;border:1px solid #ddd;border-radius:14px;
@@ -280,6 +299,10 @@ export default async function VideoPage({ params }: Params) {
               {priceMini && <span>{priceMini}</span>}
             </div>
             <AppCtas videoId={video.id} />
+          </div>
+
+          <div className="afv-stores">
+            <DeepLinkStoreBadges className="afv-store-inner" />
           </div>
         </div>
       </div>

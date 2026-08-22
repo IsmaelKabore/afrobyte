@@ -1,19 +1,34 @@
 'use client';
 
-import { openAfroBiteUserRestaurant } from '@/lib/openApp';
+import { useEffect, useState } from 'react';
+import {
+  hrefOpenRestaurant,
+  openAfroBiteUserRestaurant,
+  isSnapchatBrowser,
+} from '@/lib/openApp';
 
 export default function RestaurantOpenButton({
   restaurantId,
 }: {
   restaurantId: string;
 }) {
+  const [href, setHref] = useState('#');
+
+  useEffect(() => {
+    setHref(hrefOpenRestaurant(restaurantId));
+  }, [restaurantId]);
+
   return (
-    <button
-      type="button"
+    <a
       className="afr-btn-primary"
-      onClick={() => openAfroBiteUserRestaurant(restaurantId)}
+      href={href}
+      onClick={(e) => {
+        if (isSnapchatBrowser()) return;
+        e.preventDefault();
+        openAfroBiteUserRestaurant(restaurantId);
+      }}
     >
       Ouvrir dans AfroBite
-    </button>
+    </a>
   );
 }

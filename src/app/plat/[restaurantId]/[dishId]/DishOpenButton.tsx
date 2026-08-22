@@ -1,6 +1,11 @@
 'use client';
 
-import { openAfroBiteUserDish } from '@/lib/openApp';
+import { useEffect, useState } from 'react';
+import {
+  hrefOpenDish,
+  openAfroBiteUserDish,
+  isSnapchatBrowser,
+} from '@/lib/openApp';
 
 export default function DishOpenButton({
   restaurantId,
@@ -11,13 +16,23 @@ export default function DishOpenButton({
   dishId: string;
   label?: string;
 }) {
+  const [href, setHref] = useState('#');
+
+  useEffect(() => {
+    setHref(hrefOpenDish(restaurantId, dishId));
+  }, [restaurantId, dishId]);
+
   return (
-    <button
-      type="button"
+    <a
       className="afp-btn-primary"
-      onClick={() => openAfroBiteUserDish(restaurantId, dishId)}
+      href={href}
+      onClick={(e) => {
+        if (isSnapchatBrowser()) return;
+        e.preventDefault();
+        openAfroBiteUserDish(restaurantId, dishId);
+      }}
     >
       {label}
-    </button>
+    </a>
   );
 }

@@ -33,6 +33,10 @@ export function isIOSSafariWithSmartBanner() {
   return true;
 }
 
+export function isSnapchatBrowser() {
+  return /Snapchat/i.test(navigator.userAgent || "");
+}
+
 /**
  * In-app browsers that often open Universal Links briefly then reclaim WebView.
  */
@@ -53,50 +57,93 @@ export function openUserStore() {
   window.location.href = storeUrlForDevice();
 }
 
+/**
+ * Snapchat (et certains WebViews) ignorent `location.href = myapp://`.
+ * Un vrai clic sur `<a href>` marche plus souvent. On simule ça.
+ */
 function navigateScheme(url: string) {
-  log("navigate scheme", { url });
-  window.location.href = url;
+  log("navigate scheme", { url, snapchat: String(isSnapchatBrowser()) });
+  try {
+    const a = document.createElement("a");
+    a.href = url;
+    a.rel = "noopener";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    window.setTimeout(() => {
+      try {
+        a.remove();
+      } catch {}
+    }, 1500);
+  } catch {
+    window.location.href = url;
+  }
+  // Dernier recours Snapchat / iframe WebView
+  try {
+    if (isSnapchatBrowser()) {
+      (window.top || window).location.href = url;
+    }
+  } catch {
+    try {
+      window.location.href = url;
+    } catch {}
+  }
 }
 
-/**
- * Ouvre AfroBite USER sur /v/{videoId} (feed Découvertes).
- * Pas de timer → store (anti-bounce).
- */
+/** Hrefs pour boutons <a> (Snapchat exige un vrai lien, pas un button+JS). */
+export function hrefOpenVideo(videoId: string): string {
+  const id = (videoId || "").trim();
+  if (!id) return storeUrlForDevice();
+  if (isAndroid()) {
+    return (
+      `intent://afrobite.app/v/${encodeURIComponent(id)}` +
+      `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`
+    );
+  }
+  // Legacy d'abord pour build 7 (parse afrobite:// + afrobite-user://).
+  return `${USER_URL_SCHEME_LEGACY}://v/${encodeURIComponent(id)}`;
+}
+
+export function hrefOpenDish(restaurantId: string, dishId: string): string {
+  const rid = (restaurantId || "").trim();
+  const did = (dishId || "").trim();
+  if (!rid || !did) return storeUrlForDevice();
+  if (isAndroid()) {
+    return (
+      `intent://afrobite.app/plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}` +
+      `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`
+    );
+  }
+  return `${USER_URL_SCHEME_LEGACY}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
+}
+
+export function hrefOpenRestaurant(restaurantId: string): string {
+  const rid = (restaurantId || "").trim();
+  if (!rid) return storeUrlForDevice();
+  if (isAndroid()) {
+    return (
+      `intent://afrobite.app/r/${encodeURIComponent(rid)}` +
+      `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`
+    );
+  }
+  return `${USER_URL_SCHEME_LEGACY}://r/${encodeURIComponent(rid)}`;
+}
+
 export function openAfroBiteUser(videoId: string) {
   const id = (videoId || "").trim();
   log("attempt", { videoId: id || "(none)", appTarget: "user", kind: "video" });
-
   if (!id) {
     openUserStore();
     return;
   }
-
-  if (isAndroid()) {
-    const intent =
-      `intent://afrobite.app/v/${encodeURIComponent(id)}` +
-      `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`;
-    log("android intent", { package: USER_ANDROID_PACKAGE, kind: "video" });
-    window.location.href = intent;
-    return;
+  const href = hrefOpenVideo(id);
+  navigateScheme(href);
+  if (isIOS() && !isAndroid()) {
+    const user = `${USER_URL_SCHEME}://v/${encodeURIComponent(id)}`;
+    if (user !== href) window.setTimeout(() => navigateScheme(user), 400);
   }
-
-  const primary = `${USER_URL_SCHEME}://v/${encodeURIComponent(id)}`;
-  log("ios scheme navigate — no store timer", {
-    primary,
-    safari: String(isIOSSafariWithSmartBanner()),
-    inApp: String(isInAppBrowserThatReclaims()),
-  });
-  navigateScheme(primary);
 }
 
-/**
- * Ouvre AfroBite USER sur le plat /plat/{restaurantId}/{dishId}.
- *
- * Build 7 parse les plats via `afrobite://plat/...` (DishDeepLink).
- * `afrobite-user://plat/...` n'est reconnu qu'après update parse.
- * On ouvre donc d'abord le scheme legacy (USER-only aujourd'hui),
- * puis le scheme User pour les builds récents.
- */
 export function openAfroBiteUserDish(restaurantId: string, dishId: string) {
   const rid = (restaurantId || "").trim();
   const did = (dishId || "").trim();
@@ -106,34 +153,19 @@ export function openAfroBiteUserDish(restaurantId: string, dishId: string) {
     appTarget: "user",
     kind: "dish",
   });
-
   if (!rid || !did) {
     openUserStore();
     return;
   }
-
-  if (isAndroid()) {
-    const intent =
-      `intent://afrobite.app/plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}` +
-      `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`;
-    log("android intent", { package: USER_ANDROID_PACKAGE, kind: "dish" });
-    window.location.href = intent;
-    return;
+  const href = hrefOpenDish(rid, did);
+  navigateScheme(href);
+  if (isIOS()) {
+    const user =
+      `${USER_URL_SCHEME}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
+    if (user !== href) window.setTimeout(() => navigateScheme(user), 400);
   }
-
-  const legacy =
-    `${USER_URL_SCHEME_LEGACY}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
-  const primary =
-    `${USER_URL_SCHEME}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
-  log("ios dish scheme — legacy then user", { legacy, primary });
-  // Legacy d'abord : build 7 ouvre le plat. Puis user scheme (builds ≥ parse update).
-  navigateScheme(legacy);
-  window.setTimeout(() => navigateScheme(primary), 400);
 }
 
-/**
- * Ouvre AfroBite USER sur le profil restaurant /r/{restaurantId}.
- */
 export function openAfroBiteUserRestaurant(restaurantId: string) {
   const rid = (restaurantId || "").trim();
   log("attempt", {
@@ -141,24 +173,14 @@ export function openAfroBiteUserRestaurant(restaurantId: string) {
     appTarget: "user",
     kind: "restaurant",
   });
-
   if (!rid) {
     openUserStore();
     return;
   }
-
-  if (isAndroid()) {
-    const intent =
-      `intent://afrobite.app/r/${encodeURIComponent(rid)}` +
-      `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`;
-    log("android intent", { package: USER_ANDROID_PACKAGE, kind: "restaurant" });
-    window.location.href = intent;
-    return;
+  const href = hrefOpenRestaurant(rid);
+  navigateScheme(href);
+  if (isIOS()) {
+    const user = `${USER_URL_SCHEME}://r/${encodeURIComponent(rid)}`;
+    if (user !== href) window.setTimeout(() => navigateScheme(user), 400);
   }
-
-  const legacy = `${USER_URL_SCHEME_LEGACY}://r/${encodeURIComponent(rid)}`;
-  const primary = `${USER_URL_SCHEME}://r/${encodeURIComponent(rid)}`;
-  log("ios restaurant scheme — legacy then user", { legacy, primary });
-  navigateScheme(legacy);
-  window.setTimeout(() => navigateScheme(primary), 400);
 }

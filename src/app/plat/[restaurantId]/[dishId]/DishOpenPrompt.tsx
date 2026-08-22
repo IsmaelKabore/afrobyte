@@ -4,14 +4,15 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   openAfroBiteUserDish,
   openUserStore,
+  hrefOpenDish,
   isIOSSafariWithSmartBanner,
   isInAppBrowserThatReclaims,
+  isSnapchatBrowser,
 } from '@/lib/openApp';
 
 const STAY_KEY = 'afp_stay_web';
 const RECLAIM_KEY = 'afp_scheme_once';
 
-/** Modal + reclaim in-app browser pour les liens /plat/*. */
 export default function DishOpenPrompt({
   restaurantId,
   dishId,
@@ -26,6 +27,8 @@ export default function DishOpenPrompt({
   const [show, setShow] = useState(false);
   const [isSafari, setIsSafari] = useState(false);
   const [isReclaimBrowser, setIsReclaimBrowser] = useState(false);
+  const [isSnap, setIsSnap] = useState(false);
+  const [openHref, setOpenHref] = useState('#');
 
   useEffect(() => {
     if (!restaurantId || !dishId) return;
@@ -35,11 +38,14 @@ export default function DishOpenPrompt({
 
     const safari = isIOSSafariWithSmartBanner();
     const reclaim = isInAppBrowserThatReclaims();
+    const snap = isSnapchatBrowser();
     setIsSafari(safari);
     setIsReclaimBrowser(reclaim);
+    setIsSnap(snap);
+    setOpenHref(hrefOpenDish(restaurantId, dishId));
 
     let onVis: (() => void) | null = null;
-    if (reclaim) {
+    if (reclaim && !snap) {
       const k = `${RECLAIM_KEY}:${restaurantId}:${dishId}`;
       const trySchemeOnce = () => {
         try {
@@ -47,7 +53,6 @@ export default function DishOpenPrompt({
           if (sessionStorage.getItem(k) === '1') return;
           if (document.visibilityState !== 'visible') return;
           sessionStorage.setItem(k, '1');
-          console.log('[DISH_MODAL] reclaim → custom scheme');
           openAfroBiteUserDish(restaurantId, dishId);
         } catch {}
       };
@@ -58,7 +63,7 @@ export default function DishOpenPrompt({
       document.addEventListener('visibilitychange', onVis);
     }
 
-    const delay = reclaim ? 1200 : 2500;
+    const delay = reclaim ? 900 : 2500;
     const t = window.setTimeout(() => {
       if (document.visibilityState !== 'visible') return;
       setShow(true);
@@ -105,26 +110,28 @@ export default function DishOpenPrompt({
           AfroBite&nbsp;?
         </h2>
         <p className="afp-modal-desc">
-          {isReclaimBrowser
-            ? 'L’app s’est ouverte puis la page web est revenue. Touchez Ouvrir AfroBite pour rester dans l’app.'
-            : isSafari
-              ? 'Astuce iPhone : utilisez le bouton bleu OPEN en haut de Safari pour ouvrir l’app.'
-              : dishName
-                ? `Découvrez « ${dishName} » et commandez directement dans l’application.`
-                : 'Commandez ce plat directement dans l’application AfroBite.'}
+          {isSnap
+            ? 'Sur Snapchat, touchez Ouvrir AfroBite. Si rien ne se passe, ouvrez le lien dans Safari.'
+            : isReclaimBrowser
+              ? 'Touchez Ouvrir AfroBite pour rester dans l’app.'
+              : isSafari
+                ? 'Astuce iPhone : utilisez le bouton bleu OPEN en haut de Safari.'
+                : dishName
+                  ? `Découvrez « ${dishName} » et commandez dans l’application.`
+                  : 'Commandez ce plat directement dans l’application AfroBite.'}
         </p>
-        <button
-          type="button"
+        <a
           className="afp-modal-primary"
-          onClick={() => openAfroBiteUserDish(restaurantId, dishId)}
+          href={openHref}
+          onClick={(e) => {
+            if (isSnapchatBrowser()) return;
+            e.preventDefault();
+            openAfroBiteUserDish(restaurantId, dishId);
+          }}
         >
           Ouvrir AfroBite
-        </button>
-        <button
-          type="button"
-          className="afp-modal-download"
-          onClick={() => openUserStore()}
-        >
+        </a>
+        <button type="button" className="afp-modal-download" onClick={() => openUserStore()}>
           Télécharger l’app
         </button>
         <button type="button" className="afp-modal-secondary" onClick={stayWeb}>
