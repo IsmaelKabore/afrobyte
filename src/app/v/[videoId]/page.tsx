@@ -21,7 +21,12 @@ type Params = { params: Promise<{ videoId: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { videoId } = await params;
   const video = await fetchVideo(videoId);
-  const canonical = `${SITE}/v/${videoId}`;
+  // Canonical = source réelle si clone démo (évite OG / Smart Banner sur demo-preview).
+  const canonicalId =
+    videoId.startsWith("afrobite-demo-preview-") && video?.demoSourceVideoId
+      ? video.demoSourceVideoId
+      : videoId;
+  const canonical = `${SITE}/v/${canonicalId}`;
   const appBanner = `app-id=${USER_APP_STORE_ID}, app-argument=${canonical}`;
 
   if (!video) {
@@ -39,8 +44,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const title = `${dish} — ${resto} | AfroBite`;
   const price = priceLabel(video.price);
   const description = [price, dish, resto].filter(Boolean).join(' · ');
-  // Proxy afrobite.app — Mux a x-robots-tag:noindex (WhatsApp refuse l'image).
-  const image = publicOgImageUrl(videoId);
+  const image = publicOgImageUrl(canonicalId);
 
   return {
     title,
@@ -255,8 +259,9 @@ export default async function VideoPage({ params }: Params) {
   const { videoId } = await params;
   const video = await fetchVideo(videoId);
 
-  // Clones démo (afrobite-demo-preview-*) → URL canonique de la vraie vidéo.
+  // Clones démo UNIQUEMENT (jamais une vraie vidéo) → UUID source.
   if (
+    videoId.startsWith('afrobite-demo-preview-') &&
     video?.demoSourceVideoId &&
     video.demoSourceVideoId !== videoId &&
     /^[a-zA-Z0-9-]{6,60}$/.test(video.demoSourceVideoId)

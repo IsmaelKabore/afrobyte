@@ -103,7 +103,8 @@ export function hrefOpenDish(restaurantId: string, dishId: string): string {
       `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`
     );
   }
-  return `${USER_URL_SCHEME}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
+  // Legacy d'abord : build 7 ne parse que afrobite://plat/...
+  return `${USER_URL_SCHEME_LEGACY}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
 }
 
 export function hrefOpenRestaurant(restaurantId: string): string {
@@ -115,7 +116,7 @@ export function hrefOpenRestaurant(restaurantId: string): string {
       `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`
     );
   }
-  return `${USER_URL_SCHEME}://r/${encodeURIComponent(rid)}`;
+  return `${USER_URL_SCHEME_LEGACY}://r/${encodeURIComponent(rid)}`;
 }
 
 export function openAfroBiteUser(videoId: string) {
@@ -142,8 +143,17 @@ export function openAfroBiteUserDish(restaurantId: string, dishId: string) {
     openUserStore();
     return;
   }
-  const href = hrefOpenDish(rid, did);
-  navigateScheme(href);
+  if (isAndroid()) {
+    navigateScheme(hrefOpenDish(rid, did));
+    return;
+  }
+  const legacy =
+    `${USER_URL_SCHEME_LEGACY}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
+  const primary =
+    `${USER_URL_SCHEME}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
+  // Legacy d'abord : build 7 ouvre le plat. Puis user scheme.
+  navigateScheme(legacy);
+  window.setTimeout(() => navigateScheme(primary), 400);
 }
 
 export function openAfroBiteUserRestaurant(restaurantId: string) {
@@ -157,6 +167,12 @@ export function openAfroBiteUserRestaurant(restaurantId: string) {
     openUserStore();
     return;
   }
-  const href = hrefOpenRestaurant(rid);
-  navigateScheme(href);
+  if (isAndroid()) {
+    navigateScheme(hrefOpenRestaurant(rid));
+    return;
+  }
+  const legacy = `${USER_URL_SCHEME_LEGACY}://r/${encodeURIComponent(rid)}`;
+  const primary = `${USER_URL_SCHEME}://r/${encodeURIComponent(rid)}`;
+  navigateScheme(legacy);
+  window.setTimeout(() => navigateScheme(primary), 400);
 }
