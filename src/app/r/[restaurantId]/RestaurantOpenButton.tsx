@@ -15,7 +15,11 @@ export default function RestaurantOpenButton({
   const [href, setHref] = useState('#');
 
   useEffect(() => {
-    setHref(hrefOpenRestaurant(restaurantId));
+    const hydrate = window.setTimeout(
+      () => setHref(hrefOpenRestaurant(restaurantId)),
+      0,
+    );
+    return () => window.clearTimeout(hydrate);
   }, [restaurantId]);
 
   return (

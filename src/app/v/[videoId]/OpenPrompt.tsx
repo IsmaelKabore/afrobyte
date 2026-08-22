@@ -11,7 +11,6 @@ import {
 } from '@/lib/openApp';
 
 const STAY_KEY = 'afv_stay_web';
-const WA_OPEN_KEY = 'afv_wa_scheme_once';
 
 export default function OpenPrompt({
   videoId,
@@ -37,30 +36,12 @@ export default function OpenPrompt({
     const safari = isIOSSafariWithSmartBanner();
     const reclaim = isInAppBrowserThatReclaims();
     const snap = isSnapchatBrowser();
-    setIsSafari(safari);
-    setIsReclaimBrowser(reclaim);
-    setIsSnap(snap);
-    setOpenHref(hrefOpenVideo(videoId));
-
-    let onVis: (() => void) | null = null;
-    // Snapchat bloque souvent l'auto-open scheme — on laisse le tap utilisateur.
-    if (reclaim && !snap) {
-      const k = `${WA_OPEN_KEY}:${videoId}`;
-      const trySchemeOnce = () => {
-        try {
-          if (sessionStorage.getItem(STAY_KEY) === '1') return;
-          if (sessionStorage.getItem(k) === '1') return;
-          if (document.visibilityState !== 'visible') return;
-          sessionStorage.setItem(k, '1');
-          openAfroBiteUser(videoId);
-        } catch {}
-      };
-      window.setTimeout(trySchemeOnce, 350);
-      onVis = () => {
-        if (document.visibilityState === 'visible') trySchemeOnce();
-      };
-      document.addEventListener('visibilitychange', onVis);
-    }
+    const hydrate = window.setTimeout(() => {
+      setIsSafari(safari);
+      setIsReclaimBrowser(reclaim);
+      setIsSnap(snap);
+      setOpenHref(hrefOpenVideo(videoId));
+    }, 0);
 
     const delay = reclaim ? 900 : 2500;
     const t = window.setTimeout(() => {
@@ -70,8 +51,8 @@ export default function OpenPrompt({
       document.body.style.overflow = 'hidden';
     }, delay);
     return () => {
+      window.clearTimeout(hydrate);
       window.clearTimeout(t);
-      if (onVis) document.removeEventListener('visibilitychange', onVis);
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
     };

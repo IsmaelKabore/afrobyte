@@ -11,7 +11,6 @@ import {
 } from '@/lib/openApp';
 
 const STAY_KEY = 'afp_stay_web';
-const RECLAIM_KEY = 'afp_scheme_once';
 
 export default function DishOpenPrompt({
   restaurantId,
@@ -39,29 +38,12 @@ export default function DishOpenPrompt({
     const safari = isIOSSafariWithSmartBanner();
     const reclaim = isInAppBrowserThatReclaims();
     const snap = isSnapchatBrowser();
-    setIsSafari(safari);
-    setIsReclaimBrowser(reclaim);
-    setIsSnap(snap);
-    setOpenHref(hrefOpenDish(restaurantId, dishId));
-
-    let onVis: (() => void) | null = null;
-    if (reclaim && !snap) {
-      const k = `${RECLAIM_KEY}:${restaurantId}:${dishId}`;
-      const trySchemeOnce = () => {
-        try {
-          if (sessionStorage.getItem(STAY_KEY) === '1') return;
-          if (sessionStorage.getItem(k) === '1') return;
-          if (document.visibilityState !== 'visible') return;
-          sessionStorage.setItem(k, '1');
-          openAfroBiteUserDish(restaurantId, dishId);
-        } catch {}
-      };
-      window.setTimeout(trySchemeOnce, 350);
-      onVis = () => {
-        if (document.visibilityState === 'visible') trySchemeOnce();
-      };
-      document.addEventListener('visibilitychange', onVis);
-    }
+    const hydrate = window.setTimeout(() => {
+      setIsSafari(safari);
+      setIsReclaimBrowser(reclaim);
+      setIsSnap(snap);
+      setOpenHref(hrefOpenDish(restaurantId, dishId));
+    }, 0);
 
     const delay = reclaim ? 900 : 2500;
     const t = window.setTimeout(() => {
@@ -71,8 +53,8 @@ export default function DishOpenPrompt({
       document.body.style.overflow = 'hidden';
     }, delay);
     return () => {
+      window.clearTimeout(hydrate);
       window.clearTimeout(t);
-      if (onVis) document.removeEventListener('visibilitychange', onVis);
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
     };

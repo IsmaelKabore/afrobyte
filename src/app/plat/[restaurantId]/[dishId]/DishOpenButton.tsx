@@ -19,7 +19,11 @@ export default function DishOpenButton({
   const [href, setHref] = useState('#');
 
   useEffect(() => {
-    setHref(hrefOpenDish(restaurantId, dishId));
+    const hydrate = window.setTimeout(
+      () => setHref(hrefOpenDish(restaurantId, dishId)),
+      0,
+    );
+    return () => window.clearTimeout(hydrate);
   }, [restaurantId, dishId]);
 
   return (

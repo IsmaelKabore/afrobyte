@@ -78,16 +78,6 @@ function navigateScheme(url: string) {
   } catch {
     window.location.href = url;
   }
-  // Dernier recours Snapchat / iframe WebView
-  try {
-    if (isSnapchatBrowser()) {
-      (window.top || window).location.href = url;
-    }
-  } catch {
-    try {
-      window.location.href = url;
-    } catch {}
-  }
 }
 
 /** Hrefs pour boutons <a> (Snapchat exige un vrai lien, pas un button+JS). */
@@ -100,8 +90,7 @@ export function hrefOpenVideo(videoId: string): string {
       `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`
     );
   }
-  // Legacy d'abord pour build 7 (parse afrobite:// + afrobite-user://).
-  return `${USER_URL_SCHEME_LEGACY}://v/${encodeURIComponent(id)}`;
+  return `${USER_URL_SCHEME}://v/${encodeURIComponent(id)}`;
 }
 
 export function hrefOpenDish(restaurantId: string, dishId: string): string {
@@ -114,7 +103,7 @@ export function hrefOpenDish(restaurantId: string, dishId: string): string {
       `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`
     );
   }
-  return `${USER_URL_SCHEME_LEGACY}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
+  return `${USER_URL_SCHEME}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
 }
 
 export function hrefOpenRestaurant(restaurantId: string): string {
@@ -126,7 +115,7 @@ export function hrefOpenRestaurant(restaurantId: string): string {
       `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`
     );
   }
-  return `${USER_URL_SCHEME_LEGACY}://r/${encodeURIComponent(rid)}`;
+  return `${USER_URL_SCHEME}://r/${encodeURIComponent(rid)}`;
 }
 
 export function openAfroBiteUser(videoId: string) {
@@ -138,10 +127,6 @@ export function openAfroBiteUser(videoId: string) {
   }
   const href = hrefOpenVideo(id);
   navigateScheme(href);
-  if (isIOS() && !isAndroid()) {
-    const user = `${USER_URL_SCHEME}://v/${encodeURIComponent(id)}`;
-    if (user !== href) window.setTimeout(() => navigateScheme(user), 400);
-  }
 }
 
 export function openAfroBiteUserDish(restaurantId: string, dishId: string) {
@@ -159,11 +144,6 @@ export function openAfroBiteUserDish(restaurantId: string, dishId: string) {
   }
   const href = hrefOpenDish(rid, did);
   navigateScheme(href);
-  if (isIOS()) {
-    const user =
-      `${USER_URL_SCHEME}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
-    if (user !== href) window.setTimeout(() => navigateScheme(user), 400);
-  }
 }
 
 export function openAfroBiteUserRestaurant(restaurantId: string) {
@@ -179,8 +159,4 @@ export function openAfroBiteUserRestaurant(restaurantId: string) {
   }
   const href = hrefOpenRestaurant(rid);
   navigateScheme(href);
-  if (isIOS()) {
-    const user = `${USER_URL_SCHEME}://r/${encodeURIComponent(rid)}`;
-    if (user !== href) window.setTimeout(() => navigateScheme(user), 400);
-  }
 }

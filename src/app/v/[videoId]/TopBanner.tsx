@@ -14,8 +14,11 @@ export default function TopBanner({ videoId }: { videoId: string }) {
   const [href, setHref] = useState('#');
 
   useEffect(() => {
-    setHide(isIOSSafariWithSmartBanner());
-    setHref(hrefOpenVideo(videoId));
+    const hydrate = window.setTimeout(() => {
+      setHide(isIOSSafariWithSmartBanner());
+      setHref(hrefOpenVideo(videoId));
+    }, 0);
+    return () => window.clearTimeout(hydrate);
   }, [videoId]);
 
   if (hide) return null;

@@ -18,7 +18,11 @@ export default function AppCtas({
   const [href, setHref] = useState('#');
 
   useEffect(() => {
-    setHref(hrefOpenVideo(videoId));
+    const hydrate = window.setTimeout(
+      () => setHref(hrefOpenVideo(videoId)),
+      0,
+    );
+    return () => window.clearTimeout(hydrate);
   }, [videoId]);
 
   return (
