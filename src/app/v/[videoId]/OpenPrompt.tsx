@@ -1,14 +1,18 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { openAfroBiteUser } from '@/lib/openApp';
+import {
+  openAfroBiteUser,
+  openUserStore,
+  isIOSSafariWithSmartBanner,
+} from '@/lib/openApp';
 
 const STAY_KEY = 'afv_stay_web';
 
 /**
- * Modal CENTRAL bloquant (réf. TikTok).
- * Apparaît après ~2,5 s. Pas d'auto-open app.
- * Continuer sur le web → sessionStorage, ne se réaffiche pas.
+ * Modal CENTRAL bloquant.
+ * Pas d'auto-open app. Pas de timer store.
+ * Ouvrir → tente l'app User. Télécharger → store explicite.
  */
 export default function OpenPrompt({
   videoId,
@@ -20,12 +24,14 @@ export default function OpenPrompt({
   dishName: string | null;
 }) {
   const [show, setShow] = useState(false);
+  const [isSafari, setIsSafari] = useState(false);
 
   useEffect(() => {
     if (!videoId) return;
     try {
       if (sessionStorage.getItem(STAY_KEY) === '1') return;
     } catch {}
+    setIsSafari(isIOSSafariWithSmartBanner());
     const t = window.setTimeout(() => {
       setShow(true);
       console.log('[MODAL] shown');
@@ -55,7 +61,14 @@ export default function OpenPrompt({
 
   const openApp = () => {
     console.log('[MODAL] open_app');
+    // Sur Safari iOS le Smart App Banner natif (OPEN) est le chemin fiable.
+    // On tente quand même les schemes silencieux (builds User ≥ 7).
     openAfroBiteUser(videoId);
+  };
+
+  const download = () => {
+    console.log('[MODAL] download_store');
+    openUserStore();
   };
 
   if (!show) return null;
@@ -83,12 +96,17 @@ export default function OpenPrompt({
           AfroBite&nbsp;?
         </h2>
         <p className="afv-modal-desc">
-          {dishName
-            ? `Découvrez « ${dishName} » et commandez directement dans l’application.`
-            : 'Découvrez ce restaurant et commandez directement dans l’application pour une meilleure expérience.'}
+          {isSafari
+            ? 'Astuce iPhone : utilisez le bouton bleu OPEN en haut de Safari pour ouvrir l’app directement.'
+            : dishName
+              ? `Découvrez « ${dishName} » et commandez directement dans l’application.`
+              : 'Découvrez ce restaurant et commandez directement dans l’application pour une meilleure expérience.'}
         </p>
         <button type="button" className="afv-modal-primary" onClick={openApp}>
           Ouvrir AfroBite
+        </button>
+        <button type="button" className="afv-modal-secondary" onClick={download}>
+          Télécharger l’app
         </button>
         <button type="button" className="afv-modal-secondary" onClick={stayWeb}>
           Continuer sur le web
