@@ -5,14 +5,19 @@ import {
   openAfroBiteUser,
   openUserStore,
   isIOSSafariWithSmartBanner,
+  isInAppBrowserThatReclaims,
 } from '@/lib/openApp';
 
 const STAY_KEY = 'afv_stay_web';
+const WA_OPEN_KEY = 'afv_wa_scheme_once';
 
 /**
- * Modal CENTRAL bloquant.
- * Pas d'auto-open app. Pas de timer store.
- * Ouvrir → tente l'app User. Télécharger → store explicite.
+ * Modal + reclaim WhatsApp.
+ *
+ * WhatsApp (et IG/FB) ouvre souvent l'Universal Link HTTPS ~1–2 s puis
+ * reprend son WebView → impression de « bounce ». Le bouton Ouvrir marche
+ * car il utilise afrobite-user://. Ici on rejoue CE même chemin une fois
+ * quand on détecte un in-app browser qui reclaim — sans timer store.
  */
 export default function OpenPrompt({
   videoId,
@@ -25,21 +30,57 @@ export default function OpenPrompt({
 }) {
   const [show, setShow] = useState(false);
   const [isSafari, setIsSafari] = useState(false);
+  const [isReclaimBrowser, setIsReclaimBrowser] = useState(false);
 
   useEffect(() => {
     if (!videoId) return;
     try {
       if (sessionStorage.getItem(STAY_KEY) === '1') return;
     } catch {}
-    setIsSafari(isIOSSafariWithSmartBanner());
+
+    const safari = isIOSSafariWithSmartBanner();
+    const reclaim = isInAppBrowserThatReclaims();
+    setIsSafari(safari);
+    setIsReclaimBrowser(reclaim);
+
+    // WhatsApp / IG / FB : après le bounce UL→WebView, réouvrir via le
+    // custom scheme (identique au bouton qui marche). Une seule fois /
+    // onglet, jamais de fallback App Store.
+    let onVis: (() => void) | null = null;
+    if (reclaim) {
+      const k = `${WA_OPEN_KEY}:${videoId}`;
+      const trySchemeOnce = () => {
+        try {
+          if (sessionStorage.getItem(STAY_KEY) === '1') return;
+          if (sessionStorage.getItem(k) === '1') return;
+          if (document.visibilityState !== 'visible') return;
+          sessionStorage.setItem(k, '1');
+          console.log('[MODAL] whatsapp reclaim → custom scheme');
+          openAfroBiteUser(videoId);
+        } catch {}
+      };
+      // Si la page est déjà visible (WA a déjà reclaim), ouvrir vite.
+      window.setTimeout(trySchemeOnce, 350);
+      // Si UL a mis l'app au premier plan, le WebView est hidden : on
+      // retente dès que WhatsApp reprend la page (visibility visible).
+      onVis = () => {
+        if (document.visibilityState === 'visible') trySchemeOnce();
+      };
+      document.addEventListener('visibilitychange', onVis);
+    }
+
+    // Modal plus rapide dans WhatsApp (si le scheme n'a pas sorti).
+    const delay = reclaim ? 1200 : 2500;
     const t = window.setTimeout(() => {
+      if (document.visibilityState !== 'visible') return;
       setShow(true);
       console.log('[MODAL] shown');
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
-    }, 2500);
+    }, delay);
     return () => {
       window.clearTimeout(t);
+      if (onVis) document.removeEventListener('visibilitychange', onVis);
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
     };
@@ -61,8 +102,6 @@ export default function OpenPrompt({
 
   const openApp = () => {
     console.log('[MODAL] open_app');
-    // Sur Safari iOS le Smart App Banner natif (OPEN) est le chemin fiable.
-    // On tente quand même les schemes silencieux (builds User ≥ 7).
     openAfroBiteUser(videoId);
   };
 
@@ -96,11 +135,13 @@ export default function OpenPrompt({
           AfroBite&nbsp;?
         </h2>
         <p className="afv-modal-desc">
-          {isSafari
-            ? 'Astuce iPhone : utilisez le bouton bleu OPEN en haut de Safari pour ouvrir l’app directement.'
-            : dishName
-              ? `Découvrez « ${dishName} » et commandez directement dans l’application.`
-              : 'Découvrez ce restaurant et commandez directement dans l’application pour une meilleure expérience.'}
+          {isReclaimBrowser
+            ? 'WhatsApp a rouvert la page web. Touchez Ouvrir AfroBite pour rester dans l’app.'
+            : isSafari
+              ? 'Astuce iPhone : utilisez le bouton bleu OPEN en haut de Safari pour ouvrir l’app directement.'
+              : dishName
+                ? `Découvrez « ${dishName} » et commandez directement dans l’application.`
+                : 'Découvrez ce restaurant et commandez directement dans l’application pour une meilleure expérience.'}
         </p>
         <button type="button" className="afv-modal-primary" onClick={openApp}>
           Ouvrir AfroBite

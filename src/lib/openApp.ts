@@ -28,9 +28,20 @@ export function isIOSSafariWithSmartBanner() {
   const ua = navigator.userAgent || "";
   if (!/iPhone|iPad|iPod/i.test(ua)) return false;
   if (/CriOS|FxiOS|EdgiOS|OPiOS|OPT\//i.test(ua)) return false;
-  if (/FBAN|FBAV|Instagram|Line\//i.test(ua)) return false;
+  if (/FBAN|FBAV|Instagram|Line\/|WhatsApp/i.test(ua)) return false;
   if (!/Safari/i.test(ua)) return false;
   return true;
+}
+
+/**
+ * WhatsApp / Instagram / Facebook in-app browser.
+ * Ces clients ouvrent souvent l'Universal Link ~1–2 s puis REPRENNENT
+ * le WebView (bounce). Le custom scheme (comme le bouton Ouvrir) reste
+ * dans l'app — c'est le chemin fiable ici.
+ */
+export function isInAppBrowserThatReclaims() {
+  const ua = navigator.userAgent || "";
+  return /WhatsApp|FBAN|FBAV|Instagram|Line\//i.test(ua);
 }
 
 export function storeUrlForDevice() {
@@ -45,12 +56,6 @@ export function openUserStore() {
   window.location.href = storeUrlForDevice();
 }
 
-/**
- * Navigation custom-scheme sur geste utilisateur.
- * Les iframes cachés sont souvent ignorés par Safari → boutons « morts ».
- * location.href sur un tap ouvre l'app si installée.
- * PAS de timer → store (cause du bounce ~2s).
- */
 function navigateScheme(url: string) {
   log("navigate scheme", { url });
   window.location.href = url;
@@ -63,7 +68,7 @@ function navigateScheme(url: string) {
  * - Aucun timer de fallback store / web après l'ouverture.
  * - Le store n'est ouvert que via `openUserStore()` (clic Télécharger).
  *
- * iOS : custom scheme en navigation directe (geste utilisateur).
+ * iOS : custom scheme en navigation directe (geste utilisateur OU reclaim WA).
  * Android : Intent HTTPS package User, sans S.browser_fallback_url JS.
  */
 export function openAfroBiteUser(videoId: string) {
@@ -84,13 +89,11 @@ export function openAfroBiteUser(videoId: string) {
     return;
   }
 
-  // iOS (Safari + in-app browsers) : navigation directe au scheme User.
-  // Pas d'iframe silencieux (souvent bloqué → clic sans effet).
-  // Pas de setTimeout → App Store (bounce).
   const primary = `${USER_URL_SCHEME}://v/${encodeURIComponent(id)}`;
   log("ios scheme navigate — no store timer", {
     primary,
     safari: String(isIOSSafariWithSmartBanner()),
+    inApp: String(isInAppBrowserThatReclaims()),
   });
   navigateScheme(primary);
 }
