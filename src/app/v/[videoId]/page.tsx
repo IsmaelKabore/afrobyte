@@ -27,7 +27,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       ? video.demoSourceVideoId
       : videoId;
   const canonical = `${SITE}/v/${canonicalId}`;
-  const appBanner = `app-id=${USER_APP_STORE_ID}, app-argument=${canonical}`;
+  // NB: pas de `app-argument` — il renvoyait vers l'URL du deep link et créait un
+  // boomerang Universal Link ↔ Safari (l'app s'ouvrait puis rebondissait sur le web).
+  // On garde `app-id` seul (découverte/install). L'ouverture app = Universal Link natif.
+  const appBanner = `app-id=${USER_APP_STORE_ID}`;
 
   if (!video) {
     return {
