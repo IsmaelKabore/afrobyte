@@ -91,7 +91,11 @@ export function openAfroBiteUser(videoId: string) {
 
 /**
  * Ouvre AfroBite USER sur le plat /plat/{restaurantId}/{dishId}.
- * Scheme User-only (builds ≥ 7). Pas de timer store.
+ *
+ * Build 7 parse les plats via `afrobite://plat/...` (DishDeepLink).
+ * `afrobite-user://plat/...` n'est reconnu qu'après update parse.
+ * On ouvre donc d'abord le scheme legacy (USER-only aujourd'hui),
+ * puis le scheme User pour les builds récents.
  */
 export function openAfroBiteUserDish(restaurantId: string, dishId: string) {
   const rid = (restaurantId || "").trim();
@@ -117,11 +121,44 @@ export function openAfroBiteUserDish(restaurantId: string, dishId: string) {
     return;
   }
 
+  const legacy =
+    `${USER_URL_SCHEME_LEGACY}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
   const primary =
     `${USER_URL_SCHEME}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
-  log("ios dish scheme navigate — no store timer", {
-    primary,
-    inApp: String(isInAppBrowserThatReclaims()),
+  log("ios dish scheme — legacy then user", { legacy, primary });
+  // Legacy d'abord : build 7 ouvre le plat. Puis user scheme (builds ≥ parse update).
+  navigateScheme(legacy);
+  window.setTimeout(() => navigateScheme(primary), 400);
+}
+
+/**
+ * Ouvre AfroBite USER sur le profil restaurant /r/{restaurantId}.
+ */
+export function openAfroBiteUserRestaurant(restaurantId: string) {
+  const rid = (restaurantId || "").trim();
+  log("attempt", {
+    restaurantId: rid || "(none)",
+    appTarget: "user",
+    kind: "restaurant",
   });
-  navigateScheme(primary);
+
+  if (!rid) {
+    openUserStore();
+    return;
+  }
+
+  if (isAndroid()) {
+    const intent =
+      `intent://afrobite.app/r/${encodeURIComponent(rid)}` +
+      `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`;
+    log("android intent", { package: USER_ANDROID_PACKAGE, kind: "restaurant" });
+    window.location.href = intent;
+    return;
+  }
+
+  const legacy = `${USER_URL_SCHEME_LEGACY}://r/${encodeURIComponent(rid)}`;
+  const primary = `${USER_URL_SCHEME}://r/${encodeURIComponent(rid)}`;
+  log("ios restaurant scheme — legacy then user", { legacy, primary });
+  navigateScheme(legacy);
+  window.setTimeout(() => navigateScheme(primary), 400);
 }

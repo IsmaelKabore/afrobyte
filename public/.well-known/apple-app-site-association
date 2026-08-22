@@ -15,6 +15,10 @@
           {
             "/": "/plat/*",
             "comment": "Lien vers un plat AfroBite"
+          },
+          {
+            "/": "/r/*",
+            "comment": "Profil restaurant AfroBite"
           }
         ]
       }

@@ -1,3 +1,5 @@
+import { customerPriceLabel, customerPriceShort } from "@/lib/pricing";
+
 // Lecture PUBLIQUE d'une vidéo AfroBite via l'API REST Firestore.
 // La collection `videos` est en lecture publique (allow read: if true) : on ne
 // lit qu'UN seul document et on n'expose QUE des champs publics (aucun userId,
@@ -73,16 +75,11 @@ export function publicOgImageUrl(videoId: string): string {
   return `https://afrobite.app/api/og/${encodeURIComponent(videoId)}`;
 }
 
+/** Prix client (base Firestore + 5 %, arrondi 100). */
 export function priceLabel(price: number | null): string | null {
-  if (price == null || Number.isNaN(price)) return null;
-  const n = Math.round(price);
-  const formatted = n.toLocaleString("fr-FR").replace(/\u202f/g, " ");
-  return `${formatted} FCFA`;
+  return customerPriceLabel(price);
 }
 
 export function priceShort(price: number | null): string | null {
-  if (price == null || Number.isNaN(price)) return null;
-  const n = Math.round(price);
-  const formatted = n.toLocaleString("fr-FR").replace(/\u202f/g, " ");
-  return `${formatted} F`;
+  return customerPriceShort(price);
 }

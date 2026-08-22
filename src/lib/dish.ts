@@ -1,3 +1,5 @@
+import { customerPriceLabel } from "@/lib/pricing";
+
 // Lecture PUBLIQUE d'un plat AfroBite via l'API REST Firestore.
 // `restaurants/{id}` et `restaurants/{id}/dishes/{dishId}` : allow read: if true.
 
@@ -88,9 +90,7 @@ export function publicDishOgImageUrl(
   );
 }
 
+/** Prix client (base Firestore + 5 %, arrondi 100) — jamais le prix resto brut. */
 export function dishPriceLabel(price: number | null): string | null {
-  if (price == null || Number.isNaN(price)) return null;
-  const n = Math.round(price);
-  const formatted = n.toLocaleString("fr-FR").replace(/\u202f/g, " ");
-  return `${formatted} FCFA`;
+  return customerPriceLabel(price);
 }
