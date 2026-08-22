@@ -171,9 +171,9 @@ html,body{margin:0;padding:0;background:#000}
 .afv-brand{font-weight:900;font-size:22px}
 .afv-brand span{color:#f5a623}
 
-/* Modal bloquant centré */
+/* Modal bloquant centré (au-dessus du grain body::before z-index:100) */
 .afv-modal{
-  position:fixed;inset:0;z-index:100;
+  position:fixed;inset:0;z-index:200;
   background:rgba(0,0,0,.72);
   display:flex;align-items:center;justify-content:center;
   padding:24px 18px;touch-action:none;
@@ -206,6 +206,12 @@ html,body{margin:0;padding:0;background:#000}
   background:#f5a623;color:#1a1200;
   font-size:15px;font-weight:900;padding:14px 16px;cursor:pointer;
   margin-bottom:10px;
+}
+.afv-modal-download{
+  width:100%;border:1px solid #ddd;border-radius:14px;
+  background:#f7f7f7;color:#222;
+  font-size:14px;font-weight:800;padding:12px 16px;cursor:pointer;
+  margin-bottom:6px;
 }
 .afv-modal-secondary{
   width:100%;border:none;background:transparent;color:#888;

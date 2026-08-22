@@ -105,7 +105,7 @@ export default function OpenPrompt({
         <button type="button" className="afv-modal-primary" onClick={openApp}>
           Ouvrir AfroBite
         </button>
-        <button type="button" className="afv-modal-secondary" onClick={download}>
+        <button type="button" className="afv-modal-download" onClick={download}>
           Télécharger l’app
         </button>
         <button type="button" className="afv-modal-secondary" onClick={stayWeb}>

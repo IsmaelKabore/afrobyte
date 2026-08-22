@@ -46,22 +46,14 @@ export function openUserStore() {
 }
 
 /**
- * Tente un custom scheme SANS `window.location` (évite l'alerte Safari
- * « address is invalid » et évite de remplacer la page web).
+ * Navigation custom-scheme sur geste utilisateur.
+ * Les iframes cachés sont souvent ignorés par Safari → boutons « morts ».
+ * location.href sur un tap ouvre l'app si installée.
+ * PAS de timer → store (cause du bounce ~2s).
  */
-function trySchemeQuiet(url: string) {
-  try {
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.setAttribute("aria-hidden", "true");
-    iframe.src = url;
-    document.body.appendChild(iframe);
-    window.setTimeout(() => {
-      try {
-        iframe.remove();
-      } catch {}
-    }, 2000);
-  } catch {}
+function navigateScheme(url: string) {
+  log("navigate scheme", { url });
+  window.location.href = url;
 }
 
 /**
@@ -69,14 +61,10 @@ function trySchemeQuiet(url: string) {
  *
  * RÈGLE ANTI-BOUNCE :
  * - Aucun timer de fallback store / web après l'ouverture.
- * - Si l'app s'ouvre, le navigateur NE DOIT PAS reprendre la main tout seul.
- * - Le store n'est ouvert que via `openUserStore()` (clic utilisateur).
+ * - Le store n'est ouvert que via `openUserStore()` (clic Télécharger).
  *
- * iOS Safari : laisser le Smart App Banner natif ; tenter les schemes en
- * silencieux pour les builds qui les supportent (pas de location.href).
- *
- * Android : Intent HTTPS package User (fallback store géré par le système
- * Intent lui-même, pas par un setTimeout JS).
+ * iOS : custom scheme en navigation directe (geste utilisateur).
+ * Android : Intent HTTPS package User, sans S.browser_fallback_url JS.
  */
 export function openAfroBiteUser(videoId: string) {
   const id = (videoId || "").trim();
@@ -88,8 +76,6 @@ export function openAfroBiteUser(videoId: string) {
   }
 
   if (isAndroid()) {
-    // Pas de S.browser_fallback_url agressif : si l'app s'ouvre, Chrome
-    // ne doit pas rebondir vers le store 1–2 s plus tard.
     const intent =
       `intent://afrobite.app/v/${encodeURIComponent(id)}` +
       `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`;
@@ -98,17 +84,13 @@ export function openAfroBiteUser(videoId: string) {
     return;
   }
 
-  // iOS (Safari + in-app browsers) :
-  // - PAS de window.location = custom scheme (alerte / bounce)
-  // - PAS de setTimeout → App Store (cause n°1 du retour web après 2 s)
-  // - Schemes en iframe silencieux uniquement
+  // iOS (Safari + in-app browsers) : navigation directe au scheme User.
+  // Pas d'iframe silencieux (souvent bloqué → clic sans effet).
+  // Pas de setTimeout → App Store (bounce).
   const primary = `${USER_URL_SCHEME}://v/${encodeURIComponent(id)}`;
-  const legacy = `${USER_URL_SCHEME_LEGACY}://v/${encodeURIComponent(id)}`;
-  log("ios quiet schemes only — no store timer", {
+  log("ios scheme navigate — no store timer", {
     primary,
-    legacy,
     safari: String(isIOSSafariWithSmartBanner()),
   });
-  trySchemeQuiet(primary);
-  window.setTimeout(() => trySchemeQuiet(legacy), 350);
+  navigateScheme(primary);
 }
