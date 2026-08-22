@@ -23,25 +23,22 @@ function isAndroid() {
   return /Android/i.test(navigator.userAgent);
 }
 
-/** Safari iOS (Smart App Banner Apple) — pas Chrome/Instagram/etc. */
+/** Safari iOS (Smart App Banner Apple) — pas Chrome / in-app browsers. */
 export function isIOSSafariWithSmartBanner() {
   const ua = navigator.userAgent || "";
   if (!/iPhone|iPad|iPod/i.test(ua)) return false;
   if (/CriOS|FxiOS|EdgiOS|OPiOS|OPT\//i.test(ua)) return false;
-  if (/FBAN|FBAV|Instagram|Line\/|WhatsApp/i.test(ua)) return false;
+  if (/FBAN|FBAV|Instagram|Line\/|WhatsApp|Snapchat/i.test(ua)) return false;
   if (!/Safari/i.test(ua)) return false;
   return true;
 }
 
 /**
- * WhatsApp / Instagram / Facebook in-app browser.
- * Ces clients ouvrent souvent l'Universal Link ~1–2 s puis REPRENNENT
- * le WebView (bounce). Le custom scheme (comme le bouton Ouvrir) reste
- * dans l'app — c'est le chemin fiable ici.
+ * In-app browsers that often open Universal Links briefly then reclaim WebView.
  */
 export function isInAppBrowserThatReclaims() {
   const ua = navigator.userAgent || "";
-  return /WhatsApp|FBAN|FBAV|Instagram|Line\//i.test(ua);
+  return /WhatsApp|FBAN|FBAV|Instagram|Line\/|Snapchat/i.test(ua);
 }
 
 export function storeUrlForDevice() {
@@ -63,17 +60,11 @@ function navigateScheme(url: string) {
 
 /**
  * Ouvre AfroBite USER sur /v/{videoId} (feed Découvertes).
- *
- * RÈGLE ANTI-BOUNCE :
- * - Aucun timer de fallback store / web après l'ouverture.
- * - Le store n'est ouvert que via `openUserStore()` (clic Télécharger).
- *
- * iOS : custom scheme en navigation directe (geste utilisateur OU reclaim WA).
- * Android : Intent HTTPS package User, sans S.browser_fallback_url JS.
+ * Pas de timer → store (anti-bounce).
  */
 export function openAfroBiteUser(videoId: string) {
   const id = (videoId || "").trim();
-  log("attempt", { videoId: id || "(none)", appTarget: "user" });
+  log("attempt", { videoId: id || "(none)", appTarget: "user", kind: "video" });
 
   if (!id) {
     openUserStore();
@@ -84,7 +75,7 @@ export function openAfroBiteUser(videoId: string) {
     const intent =
       `intent://afrobite.app/v/${encodeURIComponent(id)}` +
       `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`;
-    log("android intent", { package: USER_ANDROID_PACKAGE });
+    log("android intent", { package: USER_ANDROID_PACKAGE, kind: "video" });
     window.location.href = intent;
     return;
   }
@@ -93,6 +84,43 @@ export function openAfroBiteUser(videoId: string) {
   log("ios scheme navigate — no store timer", {
     primary,
     safari: String(isIOSSafariWithSmartBanner()),
+    inApp: String(isInAppBrowserThatReclaims()),
+  });
+  navigateScheme(primary);
+}
+
+/**
+ * Ouvre AfroBite USER sur le plat /plat/{restaurantId}/{dishId}.
+ * Scheme User-only (builds ≥ 7). Pas de timer store.
+ */
+export function openAfroBiteUserDish(restaurantId: string, dishId: string) {
+  const rid = (restaurantId || "").trim();
+  const did = (dishId || "").trim();
+  log("attempt", {
+    restaurantId: rid || "(none)",
+    dishId: did || "(none)",
+    appTarget: "user",
+    kind: "dish",
+  });
+
+  if (!rid || !did) {
+    openUserStore();
+    return;
+  }
+
+  if (isAndroid()) {
+    const intent =
+      `intent://afrobite.app/plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}` +
+      `#Intent;scheme=https;package=${USER_ANDROID_PACKAGE};end`;
+    log("android intent", { package: USER_ANDROID_PACKAGE, kind: "dish" });
+    window.location.href = intent;
+    return;
+  }
+
+  const primary =
+    `${USER_URL_SCHEME}://plat/${encodeURIComponent(rid)}/${encodeURIComponent(did)}`;
+  log("ios dish scheme navigate — no store timer", {
+    primary,
     inApp: String(isInAppBrowserThatReclaims()),
   });
   navigateScheme(primary);

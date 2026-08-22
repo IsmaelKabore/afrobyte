@@ -55,14 +55,7 @@ const nextConfig: NextConfig = {
   },
 
   async rewrites() {
-    return [
-      // Liens TikTok restaurant : ouvre directement le plat dans l'app et
-      // conserve une landing page de téléchargement si l'app est absente.
-      {
-        source: "/plat/:restaurantId/:dishId",
-        destination: "/plat.html?restaurantId=:restaurantId&dishId=:dishId",
-      },
-    ];
+    return [];
   },
 
   async headers() {
