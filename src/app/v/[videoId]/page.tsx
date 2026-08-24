@@ -12,6 +12,7 @@ import VideoPlayer from './VideoPlayer';
 import AppCtas from './AppCtas';
 import OpenPrompt from './OpenPrompt';
 import TopBanner from './TopBanner';
+import ViewTracker from './ViewTracker';
 import DeepLinkStoreBadges from '@/components/deep-link-store-badges';
 
 const SITE = 'https://afrobite.app';
@@ -296,6 +297,9 @@ export default async function VideoPage({ params }: Params) {
   return (
     <main className="afv-root">
       <style dangerouslySetInnerHTML={{ __html: styles }} />
+
+      {/* COUCHE DATA : trace la vue web (web_view) — video.id est déjà canonicalisé. */}
+      <ViewTracker videoId={video.id} />
 
       <TopBanner videoId={video.id} />
 
