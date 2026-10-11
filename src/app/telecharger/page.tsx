@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { DownloadFeed } from "./download-feed";
 import { DownloadButtons } from "./download-buttons";
+import { AdPixels } from "./ad-pixels";
 import "./telecharger.css";
 
 /**
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
 export default function TelechargerPage() {
   return (
     <main className="dl">
+      <AdPixels />
       <div className="dl-glow" aria-hidden />
       <section className="dl-copy">
         <Image src="/assets/logo-afrobite.png" alt="AfroBite" width={64} height={64} className="dl-logo" priority />
