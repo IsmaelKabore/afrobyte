@@ -3,6 +3,7 @@ import Image from "next/image";
 import { DownloadFeed } from "./download-feed";
 import { DownloadButtons } from "./download-buttons";
 import { AdPixels } from "./ad-pixels";
+import { InviteCode } from "./invite-code";
 import "./telecharger.css";
 
 /**
@@ -32,6 +33,7 @@ export default function TelechargerPage() {
           Scrolle. Choisis. <em>Mange.</em>
         </h1>
         <p className="dl-sub">Les plats d&apos;Ouaga en vidéo, livrés chez toi. Tu suis ton livreur en direct.</p>
+        <InviteCode />
         <DownloadButtons />
         <p className="dl-note">Gratuit · Ouagadougou</p>
       </section>
