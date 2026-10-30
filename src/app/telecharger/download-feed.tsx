@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bookmark, Clock, Heart, House, MessageSquareMore, Minus, Plus, ReceiptText, Send, ShoppingBag, Star, User, Zap, type LucideIcon } from "lucide-react";
+import { ensurePlaying, useAutoplayInView, usePrefersReducedMotion } from "@/lib/video-autoplay";
 import { FEED_CLIPS, type FeedClip } from "./feed-clips";
 
 const SLIDE_MS = 600;
@@ -12,13 +13,6 @@ const DESCRIPTION_MAX = 118;
 const ITEMS = [...FEED_CLIPS, FEED_CLIPS[0]];
 const LAST = FEED_CLIPS.length;
 
-const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
-const subscribeMotion = (onChange: () => void) => {
-  const query = window.matchMedia(REDUCED_MOTION);
-  query.addEventListener("change", onChange);
-  return () => query.removeEventListener("change", onChange);
-};
-
 /**
  * Téléphone qui reproduit l'écran Découvertes de l'app : de vraies vidéos de
  * restaurants (feed-clips.ts) qui défilent seules, une par une, avec l'interface
@@ -27,11 +21,11 @@ const subscribeMotion = (onChange: () => void) => {
 export function DownloadFeed() {
   const [index, setIndex] = useState(0);
   const [animate, setAnimate] = useState(true);
-  const reducedMotion = useSyncExternalStore(subscribeMotion, () => window.matchMedia(REDUCED_MOTION).matches, () => true);
+  const reducedMotion = usePrefersReducedMotion();
   const videos = useRef<(HTMLVideoElement | null)[]>([]);
   const phone = useRef<HTMLDivElement>(null);
   const indexRef = useRef(0);
-  const visible = useRef(true);
+  const visible = useAutoplayInView(phone, () => videos.current[indexRef.current], { enabled: !reducedMotion });
 
   // Défilement : chaque clip joue jusqu'au bout, puis on passe au suivant. Sur un
   // réseau lent la vidéo met du temps à démarrer : on attend sa vraie fin plutôt
@@ -60,7 +54,7 @@ export function DownloadFeed() {
       video?.removeEventListener("ended", next);
       clearTimeout(fallback);
     };
-  }, [index, reducedMotion]);
+  }, [index, reducedMotion, visible]);
 
   useEffect(() => {
     indexRef.current = index;
@@ -71,46 +65,7 @@ export function DownloadFeed() {
         ensurePlaying(v);
       } else v.pause();
     });
-  }, [index, reducedMotion]);
-
-  // Autoplay robuste, comme /v : les liens agents s'ouvrent souvent dans WhatsApp,
-  // TikTok ou Instagram, où un play() refusé n'est jamais relancé. On réessaie au
-  // premier geste, au retour au premier plan, à l'entrée dans l'écran, et quelques
-  // fois après le montage. Hors écran : pause, pour ne pas consommer de données.
-  useEffect(() => {
-    if (reducedMotion) return;
-    const current = () => videos.current[indexRef.current];
-    const resume = () => {
-      const v = current();
-      if (v && visible.current) ensurePlaying(v);
-    };
-    const onVisibility = () => {
-      if (document.visibilityState === "visible") resume();
-    };
-    document.addEventListener("touchstart", resume, { passive: true });
-    document.addEventListener("click", resume);
-    document.addEventListener("visibilitychange", onVisibility);
-    let io: IntersectionObserver | null = null;
-    if (phone.current && typeof IntersectionObserver !== "undefined") {
-      io = new IntersectionObserver(
-        ([entry]) => {
-          visible.current = entry.isIntersecting;
-          if (visible.current) resume();
-          else current()?.pause();
-        },
-        { threshold: 0.25 },
-      );
-      io.observe(phone.current);
-    }
-    const retries = [0, 200, 800, 2000].map((d) => window.setTimeout(resume, d));
-    return () => {
-      document.removeEventListener("touchstart", resume);
-      document.removeEventListener("click", resume);
-      document.removeEventListener("visibilitychange", onVisibility);
-      io?.disconnect();
-      retries.forEach((t) => window.clearTimeout(t));
-    };
-  }, [reducedMotion]);
+  }, [index, reducedMotion, visible]);
 
   return (
     <div
@@ -159,15 +114,6 @@ export function DownloadFeed() {
       </div>
     </div>
   );
-}
-
-function ensurePlaying(v: HTMLVideoElement) {
-  if (!v.paused) return;
-  // React n'écrit pas `muted` dans le HTML serveur : sans lui, la WebView refuse l'autoplay.
-  v.muted = true;
-  v.setAttribute("muted", "");
-  v.playsInline = true;
-  void v.play().catch(() => {});
 }
 
 function FeedItem({ clip, children }: { clip: FeedClip; children: ReactNode }) {

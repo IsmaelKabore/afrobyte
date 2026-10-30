@@ -660,26 +660,10 @@ h2.display em { font-style: italic; color: var(--gold); }
   overflow: hidden;
   position: relative;
 }
-.phone .status-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 48px;
-  z-index: 4;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 18px 28px 0;
-  font-family: var(--f-mono);
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  pointer-events: none;
-}
 
 /* ============ DISCOVERY (feed épinglé) ============ */
-.discovery { background: var(--ink); color: var(--paper); position: relative; }
+/* 2 écrans de scroll : le téléphone reste épinglé et vit au scroll pendant que la vidéo joue. */
+.discovery { background: var(--ink); color: var(--paper); position: relative; height: 200vh; }
 .discovery .sticky-stage {
   position: sticky;
   top: 0;
@@ -712,109 +696,14 @@ h2.display em { font-style: italic; color: var(--gold); }
   position: relative;
   z-index: 2;
 }
-.discovery .phone { width: 320px; }
+.discovery .phone { width: min(320px, calc((100svh - 140px) * 720 / 1560)); } /* tient aussi sur un portable peu haut */
 
-.feed { position: absolute; inset: 0; overflow: hidden; background: #000; }
-#phone-discovery .screen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.35) 100%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, transparent 18%, transparent 82%, rgba(0, 0, 0, 0.25) 100%);
-  mix-blend-mode: multiply;
-}
-.feed-track { display: flex; flex-direction: column; height: 400%; will-change: transform; }
-.feed-item {
-  width: 100%;
-  height: 25%;
-  flex-shrink: 0;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 24px;
-  color: #fff;
-  overflow: hidden;
-  transform: scale(0.96);
-  transition: transform 0.6s var(--ease), opacity 0.6s var(--ease);
-  opacity: 0.55;
-  will-change: transform, opacity;
-}
-.feed-item.is-active { transform: scale(1); opacity: 1; }
-.feed-item.is-neighbor { opacity: 0.8; }
-.feed-item .dish-visual { position: absolute; inset: 0; overflow: hidden; z-index: 0; background: #111; }
-.feed-item .dish-visual video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.feed-item .dish-visual::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, transparent 30%, transparent 55%, rgba(0, 0, 0, 0.9) 100%);
-}
-.feed-item .info { position: relative; z-index: 3; }
-.feed-item h4 { font-family: var(--f-display); font-size: 28px; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 6px; }
-.feed-item .meta { font-size: 13px; opacity: 0.85; margin-bottom: 14px; display: flex; gap: 12px; align-items: center; }
-.feed-item .meta .dot { width: 3px; height: 3px; border-radius: 50%; background: #fff; opacity: 0.6; }
-.feed-item .price-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.feed-item .price { font-family: var(--f-display); font-size: 24px; font-weight: 500; }
-.feed-item .add-btn {
-  background: var(--gold);
-  color: #000;
-  border-radius: 999px;
-  padding: 10px 18px;
-  font-size: 13px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.feed-item .actions-side {
-  position: absolute;
-  right: 16px;
-  bottom: 120px;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: center;
-}
-.feed-item .action-ico {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-.feed-item .action-ico.heart { color: #ff4466; }
-
-.discovery .scroll-pager {
-  position: absolute;
-  right: 32px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 3;
-}
-.scroll-pager .dot { width: 6px; height: 24px; border-radius: 3px; background: rgba(255, 255, 255, 0.15); transition: background 0.4s, height 0.4s; }
-.scroll-pager .dot.active { background: var(--gold); height: 40px; }
+/* Le téléphone joue l'enregistrement de l'app (720 × 1560), qui contient déjà la barre
+   d'état et la Dynamic Island : cadre vide, sans encoche ni heure dessinées par-dessus. */
+#phone-discovery { aspect-ratio: auto; }
+#phone-discovery::before { display: none; }
+#phone-discovery .screen { height: auto; aspect-ratio: 720 / 1560; }
+#phone-discovery video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 
 @media (max-width: 860px) {
   .discovery .sticky-stage {
@@ -828,14 +717,6 @@ h2.display em { font-style: italic; color: var(--gold); }
   .discovery .copy h2 { font-size: clamp(26px, 8vw, 38px); margin: 12px 0 14px; }
   .discovery .phone { width: min(240px, 62vw); }
   .discovery .phone-wrap { align-items: flex-start; }
-  .discovery .scroll-pager { display: none; }
-  .feed-item { padding: 18px; }
-  .feed-item h4 { font-size: 19px; margin-bottom: 4px; }
-  .feed-item .meta { font-size: 10px; gap: 8px; margin-bottom: 8px; }
-  .feed-item .price { font-size: 16px; }
-  .feed-item .add-btn { padding: 7px 12px; font-size: 11px; }
-  .feed-item .actions-side { right: 10px; bottom: 88px; gap: 12px; }
-  .feed-item .action-ico { width: 32px; height: 32px; }
 }
 
 /* ============ ORDER FLOW (scroll horizontal) ============ */
