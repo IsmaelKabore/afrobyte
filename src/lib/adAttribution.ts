@@ -7,11 +7,15 @@ import { USER_APP_STORE, USER_PLAY_STORE } from "@/lib/stores";
  *   par campagne.
  * - App Store : `ct=` (+ `pt=` jeton fournisseur App Store Connect) → App Analytics ›
  *   Sources › Campagnes.
+ * Venu d'un lien suivi (afrobite.app/go/CODE) : le code part aussi tel quel dans le
+ * referrer Google Play (`afb_code=CODE`) ; l'app Android le lit à l'installation
+ * et remplit le champ « code » de l'inscription.
  */
-export type AdSource = { source: string; campaign: string | null };
+export type AdSource = { source: string; campaign: string | null; code?: string | null };
 
 const KEY = "afb_ad_source";
 const APPLE_PROVIDER_TOKEN = process.env.NEXT_PUBLIC_APPSTORE_PROVIDER_TOKEN || "";
+const CODE_RE = /^[A-Z0-9][A-Z0-9-]{2,23}$/;
 
 const clean = (v: string | null) => (v ? v.toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 40) : "");
 
@@ -21,7 +25,8 @@ export function readAdSource(): AdSource | null {
     const source =
       clean(q.get("utm_source")) || (q.get("fbclid") ? "facebook" : q.get("ttclid") ? "tiktok" : "");
     if (source) {
-      const found = { source, campaign: clean(q.get("utm_campaign")) || null };
+      const code = (q.get("code") || "").toUpperCase();
+      const found = { source, campaign: clean(q.get("utm_campaign")) || null, code: CODE_RE.test(code) ? code : null };
       sessionStorage.setItem(KEY, JSON.stringify(found));
       return found;
     }
@@ -38,6 +43,7 @@ export function playStoreUrl(ad: AdSource | null): string {
     utm_source: ad.source,
     utm_medium: "paid",
     ...(ad.campaign ? { utm_campaign: ad.campaign } : {}),
+    ...(ad.code ? { afb_code: ad.code } : {}),
   }).toString();
   return `${USER_PLAY_STORE}&referrer=${encodeURIComponent(referrer)}`;
 }
