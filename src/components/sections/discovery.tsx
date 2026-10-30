@@ -1,19 +1,27 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValueEvent, useScroll, useTransform } from "motion/react";
+import { DECOUVERTES_POSTS, DecouvertesVideo } from "@/components/decouvertes-video";
 import { useAutoplayInView, usePrefersReducedMotion } from "@/lib/video-autoplay";
 
+const POSTS = DECOUVERTES_POSTS;
+const TOTAL = POSTS.length;
+
 /**
- * Découverte — section épinglée au scroll. Le téléphone joue l'enregistrement
- * de l'onglet Découvertes de l'app (public/videos/afrobite-decouvertes.*) : le
- * feed y défile tout seul, en boucle continue, avec toute l'interface de l'app
- * déjà incrustée. La vidéo ne se charge qu'à l'approche de la section.
+ * Découverte — feed vidéo vertical (type TikTok) épinglé au scroll. Le téléphone
+ * joue l'enregistrement de l'app, et c'est le scroll de la section qui choisit
+ * le post : en descendant, on joue le glissement de l'app jusqu'au post suivant ;
+ * en remontant, on revient directement au post. Chaque post tourne en boucle
+ * tant qu'on y reste ; le pager suit.
  */
 export function Discovery() {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const activeRef = useRef(0);
+  const [active, setActive] = useState(0);
   const reducedMotion = usePrefersReducedMotion();
+  // La vidéo ne se charge qu'à l'approche de la section.
   useAutoplayInView(videoRef, () => videoRef.current, { enabled: !reducedMotion, rootMargin: "300px 0px" });
 
   const { scrollYProgress } = useScroll({
@@ -31,8 +39,61 @@ export function Discovery() {
   const phoneRotateY = useTransform(scrollYProgress, [0, 1], [-8, -4]);
   const phoneRotateX = useTransform(scrollYProgress, [0, 1], [4, 2]);
 
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const i = Math.min(TOTAL - 1, Math.max(0, Math.round(v * (TOTAL - 1))));
+    const from = activeRef.current;
+    if (i === from) return;
+    activeRef.current = i;
+    setActive(i);
+    const video = videoRef.current;
+    if (!video) return;
+    // En descendant : le glissement de l'app jusqu'au post. En remontant (ou en
+    // mouvement réduit, image fixe) : le post directement.
+    video.currentTime = i > from && !reducedMotion ? POSTS[i].swipeFrom : POSTS[i].start;
+  });
+
+  // Le post en cours tourne en boucle : arrivé à sa fin (juste avant le
+  // glissement suivant de la vidéo), on revient à son début. Vérifié à chaque
+  // image affichée, pour ne jamais laisser voir le début du glissement.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || reducedMotion) return;
+    const check = (t: number) => {
+      const post = POSTS[activeRef.current];
+      if (!video.seeking && (t >= post.end || t < post.swipeFrom)) video.currentTime = post.start;
+    };
+    let stopped = false;
+    let handle = 0;
+    // requestVideoFrameCallback : Chrome, Safari 15.4+, Firefox 132+ ; sinon, à chaque frame d'écran.
+    const perFrame = typeof video.requestVideoFrameCallback === "function";
+    const next = () => {
+      if (stopped) return;
+      handle = perFrame
+        ? video.requestVideoFrameCallback((_, meta) => {
+            check(meta.mediaTime);
+            next();
+          })
+        : requestAnimationFrame(() => {
+            check(video.currentTime);
+            next();
+          });
+    };
+    next();
+    return () => {
+      stopped = true;
+      if (perFrame) video.cancelVideoFrameCallback(handle);
+      else cancelAnimationFrame(handle);
+    };
+  }, [reducedMotion]);
+
   return (
-    <section className="discovery" id="discover" ref={sectionRef} data-nav-dark>
+    <section
+      className="discovery"
+      id="discover"
+      ref={sectionRef}
+      data-nav-dark
+      style={{ height: `${TOTAL * 100}vh` }}
+    >
       <div className="sticky-stage">
         <motion.div className="bg-parallax" style={{ y: bgY }} aria-hidden />
 
@@ -53,7 +114,7 @@ export function Discovery() {
 
         <div className="phone-wrap">
           <motion.div
-            className="phone"
+            className="phone phone-video"
             id="phone-discovery"
             style={{
               y: phoneY,
@@ -64,20 +125,15 @@ export function Discovery() {
             }}
           >
             <div className="screen">
-              <video
-                ref={videoRef}
-                muted
-                loop
-                playsInline
-                preload="none"
-                poster="/videos/afrobite-decouvertes-poster.jpg"
-                aria-label="L'app AfroBite : le feed Découvertes, des plats de restaurants d'Ouagadougou en vidéo qu'on ajoute au panier"
-              >
-                <source src="/videos/afrobite-decouvertes.webm" type="video/webm; codecs=vp9" />
-                <source src="/videos/afrobite-decouvertes.mp4" type="video/mp4" />
-              </video>
+              <DecouvertesVideo ref={videoRef} />
             </div>
           </motion.div>
+        </div>
+
+        <div className="scroll-pager" aria-hidden>
+          {POSTS.map((p, i) => (
+            <div key={p.name} className={i === active ? "dot active" : "dot"} />
+          ))}
         </div>
       </div>
     </section>

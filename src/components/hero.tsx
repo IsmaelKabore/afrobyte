@@ -30,13 +30,13 @@ export function Hero() {
 
         <h1>
           <motion.span className="line" variants={item}>
-            Scrolle.
+            Tu scrolles.
           </motion.span>
           <motion.span className="line italic" variants={item}>
-            Choisis.
+            Tu tapes.
           </motion.span>
           <motion.span className="line" variants={item}>
-            Mange.
+            Tu manges.
           </motion.span>
         </h1>
 

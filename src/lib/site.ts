@@ -91,7 +91,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 
 export const BRAND = {
   name: "AfroBite",
-  tagline: "Scrolle. Choisis. Mange.",
+  tagline: "Tu scrolles. Tu tapes. Tu manges.",
   legal: "© 2026 AFROBITE, UN SERVICE DE CORRIDOR SARL",
   location: "OUAGADOUGOU · BURKINA FASO",
   contactEmail: "afrobyteapp@gmail.com",

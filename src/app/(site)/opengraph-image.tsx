@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "AfroBite — Scrolle. Choisis. Mange.";
+export const alt = "AfroBite — Tu scrolles. Tu tapes. Tu manges.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -47,18 +47,19 @@ export default function OpengraphImage() {
           style={{
             display: "flex",
             flexDirection: "column",
-            fontSize: 122,
+            fontSize: 98,
             fontWeight: 800,
-            letterSpacing: -5,
-            marginTop: 34,
+            letterSpacing: -4,
+            marginTop: 24,
             lineHeight: 1.02,
           }}
         >
-          <span>Scrolle. Choisis.</span>
-          <span>Mange.</span>
+          <span>Tu scrolles.</span>
+          <span>Tu tapes.</span>
+          <span>Tu manges.</span>
         </div>
 
-        <div style={{ fontSize: 34, color: "#6b6458", marginTop: 38, maxWidth: 920 }}>
+        <div style={{ fontSize: 34, color: "#6b6458", marginTop: 28, maxWidth: 920 }}>
           L&apos;app de livraison de repas en vidéo au Burkina Faso.
         </div>
       </div>

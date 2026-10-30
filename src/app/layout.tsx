@@ -17,7 +17,7 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL("https://afrobite.app"),
   title: {
-    default: "AfroBite — Scrolle. Choisis. Mange.",
+    default: "AfroBite — Tu scrolles. Tu tapes. Tu manges.",
     template: "%s · AfroBite",
   },
   description: DESCRIPTION,
@@ -40,12 +40,12 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: "https://afrobite.app",
     siteName: "AfroBite",
-    title: "AfroBite — Scrolle. Choisis. Mange.",
+    title: "AfroBite — Tu scrolles. Tu tapes. Tu manges.",
     description: DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: "AfroBite — Scrolle. Choisis. Mange.",
+    title: "AfroBite — Tu scrolles. Tu tapes. Tu manges.",
     description: DESCRIPTION,
   },
   icons: { icon: "/assets/logo-afrobite.png" },
