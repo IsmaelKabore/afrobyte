@@ -8,8 +8,9 @@ import "./telecharger.css";
 
 /**
  * Page d'atterrissage des publicités (Facebook / Instagram) : un seul écran,
- * pas de nav ni de footer. Le téléphone joue le feed vidéo (défilement auto
- * toutes les 3 s) ; les boutons App Store / Google Play restent visibles.
+ * pas de nav ni de footer. Le téléphone reproduit l'écran Découvertes de l'app
+ * avec de vraies vidéos de restaurants qui défilent seules ; les boutons
+ * App Store / Google Play restent visibles.
  */
 export const metadata: Metadata = {
   title: "Télécharger",
