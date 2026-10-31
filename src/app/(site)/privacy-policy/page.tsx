@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const HTML = `
-<p class="legal-meta">Dernière mise à jour : 12 juillet 2026</p>
+<p class="legal-meta">Dernière mise à jour : 31 octobre 2026</p>
 
 <p>Chez AfroBite, nous nous engageons à protéger votre vie privée et à assurer la sécurité de vos informations personnelles. La présente Politique de confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez notre plateforme et nos services de livraison de repas.</p>
 
@@ -112,11 +112,18 @@ const HTML = `
   <li>Proposer du contenu et des recommandations personnalisés</li>
 </ul>
 <p>Vous pouvez gérer vos préférences en matière de cookies via les paramètres de votre navigateur. Toutefois, la désactivation des cookies peut limiter certaines fonctionnalités de notre plateforme.</p>
+<p><strong>Mesure d'audience et publicité dans l'application.</strong> L'application AfroBite utilise Google Firebase Analytics et PostHog (hébergé dans l'Union européenne) pour comprendre l'utilisation de l'application, ainsi que le SDK Meta (Facebook et Instagram) pour mesurer l'efficacité de nos publicités : savoir quelle publicité a fait installer l'application et si elle a mené à une inscription ou à une commande. Ces outils reçoivent des événements d'utilisation (ouverture de l'application, consultation d'un restaurant, ajout au panier, paiement réussi et son montant) et un identifiant de l'appareil, dont l'identifiant publicitaire. Ils ne reçoivent jamais votre nom, votre numéro de téléphone ni votre adresse.</p>
+<ul>
+  <li><strong>Sur iPhone :</strong> l'identifiant publicitaire n'est utilisé que si vous l'acceptez dans la fenêtre « Autoriser le suivi ? ». Vous pouvez changer d'avis à tout moment dans Réglages → Confidentialité et sécurité → Suivi.</li>
+  <li><strong>Sur Android :</strong> vous pouvez supprimer ou réinitialiser votre identifiant publicitaire dans Paramètres → Google → Annonces (ou Confidentialité → Annonces).</li>
+  <li>Vous pouvez aussi gérer les publicités que Meta vous montre depuis les paramètres de publicité de votre compte Facebook ou Instagram.</li>
+</ul>
 
 <h2 id="partage">7. Partage et divulgation des informations</h2>
 <p>Nous ne vendons pas vos informations personnelles. Nous pouvons partager vos informations dans les cas suivants :</p>
 <ul>
   <li><strong>Prestataires de services :</strong> avec les restaurants, livreurs et processeurs de paiement nécessaires à l'exécution de vos commandes</li>
+  <li><strong>Mesure et publicité :</strong> avec Google (Firebase), PostHog et Meta (Facebook, Instagram), uniquement des événements d'utilisation et des identifiants d'appareil, pour mesurer l'audience et l'efficacité de nos publicités (voir la section 6)</li>
   <li><strong>Obligations légales :</strong> lorsque la loi, une décision de justice ou une réglementation gouvernementale l'exige</li>
   <li><strong>Transferts d'activité :</strong> dans le cadre d'une fusion, acquisition ou cession d'actifs (avec notification aux utilisateurs)</li>
   <li><strong>Protection des droits :</strong> pour protéger les droits, biens ou sécurité d'AfroBite, de nos utilisateurs ou d'autres personnes</li>
