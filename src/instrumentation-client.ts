@@ -26,6 +26,10 @@ function start() {
       persistence: "localStorage",
       disable_session_recording: true,
       autocapture: false,
+      // Pas de modules en plus à télécharger (connexions lentes au Burkina).
+      disable_surveys: true,
+      capture_dead_clicks: false,
+      capture_performance: false,
     });
     document.addEventListener(
       "click",
