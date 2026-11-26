@@ -93,7 +93,7 @@ function TeamCard({ m, featured }: { m: TeamMember; featured?: boolean }) {
     <article className={featured ? "team-card team-card--featured" : "team-card"}>
       <div className="team-photo">
         {m.photo ? (
-          <Image src={`/team/${m.slug}.jpg`} alt={m.name} width={360} height={360} />
+          <Image src={`/team/${m.slug}.jpg`} alt={m.name} width={900} height={900} sizes="(max-width: 860px) 100vw, 520px" />
         ) : (
           <span aria-hidden="true">{initials(m.name)}</span>
         )}
