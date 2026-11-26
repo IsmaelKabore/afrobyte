@@ -48,12 +48,12 @@ export const TEAM: TeamMember[] = [
     slug: "haphiz-ouarma",
     name: "Haphiz Ouarma",
     photo: true,
-    roleFr: "Directeur technique",
+    roleFr: "Directeur de la technologie",
     roleEn: "Chief Technology Officer (CTO)",
     bioFr:
-      "Diplômé d’une licence en science des données et intelligence artificielle obtenue au Maroc, Haphiz dirige le développement et la mise en œuvre des applications AfroBite : client, restaurant, livreur et tableau de bord.",
+      "Diplômé d’une licence en science des données et intelligence artificielle obtenue au Maroc, Haphiz dirige la technologie d’AfroBite : il conçoit et met en œuvre les nouvelles fonctionnalités des applications client, restaurant, livreur et du tableau de bord.",
     bioEn:
-      "With a bachelor’s degree in data science and artificial intelligence from Morocco, Haphiz leads the development and delivery of AfroBite’s apps: customer, restaurant, driver and dashboard.",
+      "With a bachelor’s degree in data science and artificial intelligence from Morocco, Haphiz leads AfroBite’s technology: he designs and ships new features across the customer, restaurant and driver apps and the dashboard.",
   },
   {
     slug: "alan-ouele",
