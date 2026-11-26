@@ -25,6 +25,7 @@ export const TEAM: TeamMember[] = [
   {
     slug: "sada-kabore",
     name: "Sada Kaboré",
+    photo: true,
     roleFr: "Président du conseil",
     roleEn: "Chairman of the Board",
     bioFr:
@@ -92,7 +93,7 @@ function TeamCard({ m, featured }: { m: TeamMember; featured?: boolean }) {
     <article className={featured ? "team-card team-card--featured" : "team-card"}>
       <div className="team-photo">
         {m.photo ? (
-          <Image src={`/team/${m.slug}.jpg`} alt={m.name} width={240} height={240} />
+          <Image src={`/team/${m.slug}.jpg`} alt={m.name} width={360} height={360} />
         ) : (
           <span aria-hidden="true">{initials(m.name)}</span>
         )}
