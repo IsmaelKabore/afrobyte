@@ -23,6 +23,7 @@ export type TeamMember = {
 export const TEAM: TeamMember[] = [
   {
     slug: "ismael-kabore",
+    photo: true,
     name: "Ismaël Kaboré",
     roleFr: "Fondateur & CEO",
     roleEn: "Founder & Chief Executive Officer",
@@ -43,6 +44,7 @@ export const TEAM: TeamMember[] = [
   },
   {
     slug: "haphiz-ouarma",
+    photo: true,
     name: "Haphiz Ouarma",
     roleFr: "Directeur technique",
     roleEn: "Chief Technology Officer (CTO)",
@@ -63,6 +65,7 @@ export const TEAM: TeamMember[] = [
   },
   {
     slug: "alan-ouele",
+    photo: true,
     name: "Alan Ouele",
     roleFr: "Coordinateur général & cybersécurité",
     roleEn: "Chief of Staff & Cybersecurity Engineer",
