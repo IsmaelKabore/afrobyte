@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useState } from "react";
 
 /**
- * Équipe AfroBite (page « À propos »).
+ * Équipe AfroBite (page « À propos »), en tête de page.
+ * Disposition : le président sur toute la largeur, puis deux cartes par ligne.
  * Titre en français, titre anglais en gris dessous ; bouton « English » par
  * carte pour lire la présentation en anglais.
  * Photo : déposer `public/team/<slug>.jpg` puis passer `photo: true` ; sans
@@ -22,17 +23,6 @@ export type TeamMember = {
 
 export const TEAM: TeamMember[] = [
   {
-    slug: "ismael-kabore",
-    photo: true,
-    name: "Ismaël Kaboré",
-    roleFr: "Fondateur & CEO",
-    roleEn: "Founder & Chief Executive Officer",
-    bioFr:
-      "Diplômé de l’Université de Californie à Berkeley et ingénieur en intelligence artificielle, Ismaël a fondé AfroBite pour rendre la commande de repas simple et fiable au Burkina Faso. Il porte la vision, le produit et la technologie.",
-    bioEn:
-      "A UC Berkeley graduate and AI engineer, Ismaël founded AfroBite to make ordering food simple and reliable in Burkina Faso. He leads the company’s vision, product and technology.",
-  },
-  {
     slug: "sada-kabore",
     name: "Sada Kaboré",
     roleFr: "Président du conseil",
@@ -43,15 +33,37 @@ export const TEAM: TeamMember[] = [
       "Founder and CEO of EKF (Établissement Kaboré et Frères) since 2007: HP and Canon Gold Partner in Burkina Faso, authorized HPE, Lenovo and Eaton partner, and government partner for the “One Student, One Computer” program. He brings nearly twenty years of business leadership to AfroBite.",
   },
   {
-    slug: "haphiz-ouarma",
+    slug: "ismael-kabore",
+    name: "Ismaël Kaboré",
     photo: true,
+    roleFr: "Fondateur & CEO",
+    roleEn: "Founder & Chief Executive Officer",
+    bioFr:
+      "Diplômé d’un Bachelor of Arts en informatique (Computer Science) de l’Université de Californie à Berkeley, Ismaël a fondé AfroBite pour rendre la commande de repas simple et fiable au Burkina Faso. Il porte la vision, le produit et la technologie de l’entreprise.",
+    bioEn:
+      "With a Bachelor of Arts in Computer Science from UC Berkeley, Ismaël founded AfroBite to make ordering food simple and reliable in Burkina Faso. He leads the company’s vision, product and technology.",
+  },
+  {
+    slug: "haphiz-ouarma",
     name: "Haphiz Ouarma",
+    photo: true,
     roleFr: "Directeur technique",
     roleEn: "Chief Technology Officer (CTO)",
     bioFr:
-      "Titulaire d’une licence en science des données et intelligence artificielle au Maroc, Haphiz dirige le développement et la mise en œuvre des applications AfroBite : client, restaurant, livreur et tableau de bord.",
+      "Diplômé d’une licence en science des données et intelligence artificielle obtenue au Maroc, Haphiz dirige le développement et la mise en œuvre des applications AfroBite : client, restaurant, livreur et tableau de bord.",
     bioEn:
       "With a bachelor’s degree in data science and artificial intelligence from Morocco, Haphiz leads the development and delivery of AfroBite’s apps: customer, restaurant, driver and dashboard.",
+  },
+  {
+    slug: "alan-ouele",
+    name: "Alan Ouele",
+    photo: true,
+    roleFr: "Coordinateur général & cybersécurité",
+    roleEn: "Chief of Staff & Cybersecurity Engineer",
+    bioFr:
+      "Diplômé d’une licence en génie informatique, spécialisé en cybersécurité et en master au Sénégal, Alan coordonne l’équipe et les projets, veille à la sécurité de la plateforme et participe au développement.",
+    bioEn:
+      "With a bachelor’s degree in computer engineering and a specialization in cybersecurity, now completing his master’s in Senegal, Alan coordinates the team and projects, safeguards the platform’s security and contributes to development.",
   },
   {
     slug: "khalil-sanou",
@@ -59,20 +71,9 @@ export const TEAM: TeamMember[] = [
     roleFr: "Directeur des opérations & ingénierie terrain",
     roleEn: "Head of Operations & Field Engineering",
     bioFr:
-      "Titulaire d’un master en informatique, Khalil représente AfroBite à Ouagadougou et dirige les opérations sur le terrain : installation et suivi des tablettes des restaurants, assistance technique aux partenaires et résolution des incidents.",
+      "Diplômé d’un master en informatique, Khalil représente AfroBite à Ouagadougou et dirige toute l’équipe terrain : installation et suivi des tablettes des restaurants, assistance technique aux partenaires et résolution des incidents.",
     bioEn:
-      "Holding a master’s degree in computer science, Khalil represents AfroBite in Ouagadougou and runs field operations: restaurant tablet setup and monitoring, technical support for partners and incident resolution.",
-  },
-  {
-    slug: "alan-ouele",
-    photo: true,
-    name: "Alan Ouele",
-    roleFr: "Coordinateur général & cybersécurité",
-    roleEn: "Chief of Staff & Cybersecurity Engineer",
-    bioFr:
-      "Diplômé d’une licence en génie informatique, spécialisé en cybersécurité et en master au Sénégal, Alan coordonne l’équipe et les projets, veille à la sécurité de la plateforme et participe au développement.",
-    bioEn:
-      "With a bachelor’s degree in computer engineering and a specialization in cybersecurity, now completing his master’s in Senegal, Alan coordinates the team and projects, safeguards the platform’s security and contributes to development.",
+      "With a master’s degree in computer science, Khalil represents AfroBite in Ouagadougou and leads the entire field team: restaurant tablet setup and monitoring, technical support for partners and incident resolution.",
   },
 ];
 
@@ -85,31 +86,33 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-function TeamCard({ m }: { m: TeamMember }) {
+function TeamCard({ m, featured }: { m: TeamMember; featured?: boolean }) {
   const [english, setEnglish] = useState(false);
   return (
-    <article className="team-card">
+    <article className={featured ? "team-card team-card--featured" : "team-card"}>
       <div className="team-photo">
         {m.photo ? (
-          <Image src={`/team/${m.slug}.jpg`} alt={m.name} width={160} height={160} />
+          <Image src={`/team/${m.slug}.jpg`} alt={m.name} width={240} height={240} />
         ) : (
           <span aria-hidden="true">{initials(m.name)}</span>
         )}
       </div>
-      <h3>{m.name}</h3>
-      <p className="team-role">{m.roleFr}</p>
-      <p className="team-role-en">{m.roleEn}</p>
-      <p className="team-bio" lang={english ? "en" : "fr"}>
-        {english ? m.bioEn : m.bioFr}
-      </p>
-      <button
-        type="button"
-        className="team-lang"
-        onClick={() => setEnglish((v) => !v)}
-        aria-pressed={english}
-      >
-        {english ? "Voir en français" : "See in English"}
-      </button>
+      <div className="team-body">
+        <h3>{m.name}</h3>
+        <p className="team-role">{m.roleFr}</p>
+        <p className="team-role-en">{m.roleEn}</p>
+        <p className="team-bio" lang={english ? "en" : "fr"}>
+          {english ? m.bioEn : m.bioFr}
+        </p>
+        <button
+          type="button"
+          className="team-lang"
+          onClick={() => setEnglish((v) => !v)}
+          aria-pressed={english}
+        >
+          {english ? "Voir en français" : "See in English"}
+        </button>
+      </div>
     </article>
   );
 }
@@ -117,8 +120,8 @@ function TeamCard({ m }: { m: TeamMember }) {
 export function TeamGrid({ members = TEAM }: { members?: TeamMember[] }) {
   return (
     <div className="team-grid">
-      {members.map((m) => (
-        <TeamCard key={m.slug} m={m} />
+      {members.map((m, i) => (
+        <TeamCard key={m.slug} m={m} featured={i === 0} />
       ))}
     </div>
   );

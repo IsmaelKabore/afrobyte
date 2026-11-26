@@ -17,6 +17,18 @@ export default function AboutPage() {
         title="À propos d'AfroBite"
         subtitle="Technologie locale au service de la gastronomie africaine et de la communauté."
       />
+      <section className="team-section" aria-labelledby="equipe">
+        <div className="container">
+          <div className="team-head">
+            <h2 id="equipe">L&apos;équipe AfroBite</h2>
+            <p>
+              Une équipe passionnée par la tech, la gastronomie et le service client. Nous améliorons
+              continuellement la plateforme pour offrir la meilleure expérience possible.
+            </p>
+          </div>
+          <TeamGrid />
+        </div>
+      </section>
       <ContentSection>
         <h2>Notre mission</h2>
         <p>
@@ -53,12 +65,6 @@ export default function AboutPage() {
           </InfoCard>
         </CardGrid>
 
-        <h2>L&apos;équipe AfroBite</h2>
-        <p>
-          Une équipe passionnée par la tech, la gastronomie et le service client. Nous améliorons
-          continuellement la plateforme pour offrir la meilleure expérience possible.
-        </p>
-        <TeamGrid />
         <p>
           Merci de faire partie de la communauté AfroBite. Ensemble, nous construisons l&apos;avenir
           de la livraison de repas en Afrique de l&apos;Ouest.
