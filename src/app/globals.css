@@ -1112,6 +1112,35 @@ html[data-theme="dark"] .step-card { background: #1b1916; box-shadow: 0 30px 80p
 .info-card h3 { font-family: var(--f-display); margin: 0 0 0.5rem; font-size: 1.2rem; font-weight: 600; color: var(--ink); }
 .info-card p { margin: 0; font-size: 0.95rem; color: var(--muted); line-height: 1.6; }
 
+/* ── Équipe (page À propos) ── */
+.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin: 2rem 0; }
+.team-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 20px 60px -30px rgba(0, 0, 0, 0.15);
+}
+.team-photo {
+  width: 104px; height: 104px; margin: 0 auto 1rem; border-radius: 50%; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(212, 162, 74, 0.12); border: 1px solid rgba(212, 162, 74, 0.3);
+  color: var(--gold-deep); font-family: var(--f-display); font-size: 1.8rem; font-weight: 600;
+}
+.team-photo img { width: 100%; height: 100%; object-fit: cover; }
+.team-card h3 { font-family: var(--f-display); margin: 0; font-size: 1.15rem; font-weight: 600; color: var(--ink); }
+.team-card { display: flex; flex-direction: column; align-items: center; }
+.team-card .team-role { margin: 0.3rem 0 0; font-size: 0.85rem; font-weight: 600; color: var(--gold-deep); }
+.team-card .team-role-en { margin: 0.1rem 0 0.75rem; font-size: 0.78rem; color: var(--muted); }
+.team-card .team-bio { flex: 1; }
+.team-card .team-lang {
+  margin-top: 0.9rem; padding: 0.35rem 0.8rem; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line); background: transparent; color: var(--ink); font-size: 0.78rem; font-weight: 600;
+}
+.team-card .team-lang:hover { border-color: var(--gold-deep); color: var(--gold-deep); }
+.team-card .team-bio { margin: 0; font-size: 0.92rem; color: var(--muted); line-height: 1.55; }
+
 @media (max-width: 640px) {
   .page-hero { padding: 104px 20px 48px; }
   .content-section { padding: 2rem 0 3rem; }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Handshake, Lock, Truck } from "lucide-react";
 import { CardGrid, ContentSection, InfoCard, PageHero } from "@/components/page-parts";
+import { TeamGrid } from "@/components/team";
 
 export const metadata: Metadata = {
   title: "À propos",
@@ -57,6 +58,7 @@ export default function AboutPage() {
           Une équipe passionnée par la tech, la gastronomie et le service client. Nous améliorons
           continuellement la plateforme pour offrir la meilleure expérience possible.
         </p>
+        <TeamGrid />
         <p>
           Merci de faire partie de la communauté AfroBite. Ensemble, nous construisons l&apos;avenir
           de la livraison de repas en Afrique de l&apos;Ouest.
